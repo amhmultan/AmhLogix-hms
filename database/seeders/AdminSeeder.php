@@ -135,6 +135,12 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'TokenReport edit']);
         $permission = Permission::create(['name' => 'TokenReport delete']);
 
+        $permission = Permission::create(['name' => 'Backup access']);
+        $permission = Permission::create(['name' => 'Backup create']);
+        $permission = Permission::create(['name' => 'Backup download']);
+        $permission = Permission::create(['name' => 'Backup delete']);
+        $permission = Permission::create(['name' => 'Backup restore']);
+
         $admin->assignRole($admin_role);
         $writer->assignRole($writer_role);
 

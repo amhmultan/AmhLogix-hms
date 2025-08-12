@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PatientController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\StockReportController;
 use App\Http\Controllers\Admin\TokenReportController;
+use App\Http\Controllers\Admin\BackupController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -124,4 +125,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('reports', [StockReportController::class, 'index'])->name('reports.index');
     Route::get('reports/print', [StockReportController::class, 'print'])->name('reports.print');
 
+    // Backup System Routes
+    Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+    Route::post('backups', [BackupController::class, 'create'])->name('backups.create');
+    Route::get('backups/download/{fileName}', [BackupController::class, 'download'])->name('backups.download');
+    Route::delete('backups/delete/{fileName}', [BackupController::class, 'delete'])->name('backups.delete');
+    Route::post('backups/restore/{fileName}', [BackupController::class, 'restore'])->name('backups.restore');
+    
 });

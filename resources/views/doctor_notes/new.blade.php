@@ -1,3 +1,15 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $tokenAlreadySaved = false;
+
+    if (!empty($search)) {
+        $tokenAlreadySaved = DB::table('doctor_notes')
+            ->whereIn('fk_token_id', $tokens->pluck('id'))
+            ->exists();
+    }
+@endphp
+
 <x-app-layout>
     <main>
         <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
@@ -20,6 +32,13 @@
                     </form>
                 </div>
             </div>
+
+            {{-- Warning if token already exists --}}
+            @if($tokenAlreadySaved)
+                <div class="alert alert-danger">
+                    Token number <strong>{{ $search }}</strong> is already saved in Doctor Notes.
+                </div>
+            @endif
 
             <hr />
 
@@ -145,7 +164,7 @@
                 <div class="row mt-5">
                     <div class="col-md-12 text-center">
                         <a class="btn btn-warning mx-2" href="{{ route('admin.doctor_notes.index')}}" role="button">Back</a>
-                        <button type="submit" class="btn btn-success mx-2">Submit</button>
+                        <button type="submit" class="btn btn-success mx-2" {{ $tokenAlreadySaved ? 'disabled' : '' }}>Submit</button>
                     </div>
                 </div>
 
