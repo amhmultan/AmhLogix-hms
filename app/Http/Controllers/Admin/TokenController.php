@@ -112,10 +112,13 @@ class TokenController extends Controller
                         'doctors.name as dName',
                         'specialities.title as sTitle',
                         'doctors.pmdc',
-                        'doctors.remarks'
+                        'doctors.remarks',
+                        'patients.phone as pPhone',
+                        'patients.address as pAddress',
+                        'patients.dob as pAge'
                     )
                     ->where('tokens.id', $token->id)
-                    ->first(); // use ->first() instead of ->get() to get a single object
+                    ->first();
 
         return view('token.show', [
             'token' => $tokenInfo,

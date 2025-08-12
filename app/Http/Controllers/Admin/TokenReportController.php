@@ -40,7 +40,7 @@ class TokenReportController extends Controller
         }
 
         // Get totals before pagination
-        $totalAmount = (clone $query)->sum('fees');
+        $totalAmount = (clone $query)->sum('denomination');
         $totalTokens = (clone $query)->count();
 
         return DataTables::of($query)
@@ -55,7 +55,7 @@ class TokenReportController extends Controller
                 return $row->specialties?->title ?? '-';
             })
             ->addColumn('amount_formatted', function ($row) {
-                return number_format($row->fees ?? 0, 2);
+                return number_format($row->denomination ?? 0, 2);
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->format('Y-m-d');

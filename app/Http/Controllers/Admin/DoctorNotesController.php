@@ -105,7 +105,10 @@ class DoctorNotesController extends Controller
                 ->select(
                     'tokens.*',
                     'patients.name as pName',
-                    'patients.fname as fName'
+                    'patients.fname as fName',
+                    'patients.dob as pAge',
+                    'patients.address as pAddress',
+                    'patients.phone as pPhone',
                 )
                 ->where('tokens.id', $doctor_notes->fk_token_id)
                 ->first();
