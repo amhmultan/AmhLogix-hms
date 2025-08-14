@@ -13,10 +13,14 @@
             @endforeach
 
             {{-- Create Backup Button --}}
-            <form action="#{{ route('admin.backups.create') }}" method="POST" class="mb-6">
+            <form action="{{ route('admin.backups.create') }}" method="POST" class="mb-6" id="backupForm">
                 @csrf
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    Create Backup Now
+                <button type="submit" id="backupBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2">
+                    <span id="btnText">Create Backup Now</span>
+                    <svg id="btnSpinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
                 </button>
             </form>
 
@@ -74,4 +78,10 @@
             </table>
         </div>
     </main>
+    <script>
+        document.getElementById('backupForm').addEventListener('submit', function() {
+            document.getElementById('btnText').classList.add('hidden');
+            document.getElementById('btnSpinner').classList.remove('hidden');
+        });
+    </script>
 </x-app-layout>

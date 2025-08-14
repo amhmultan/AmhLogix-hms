@@ -17,7 +17,7 @@
                     <textarea name="description" id="description" placeholder="Enter description" required class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200" rows="5">{{ old('description') }}</textarea>
                 </div>
     
-                <h3 class="text-xl my-4 text-gray-600">Role</h3>
+                <h3 class="text-xl my-4 text-gray-600">Status</h3>
                 <div class="grid grid-cols-3 gap-4">
                   <div class="relative inline-flex">
                     

@@ -81,6 +81,7 @@ require __DIR__.'/front_auth.php';
 
 
 // Admin routes
+
 Route::get('/admin/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('admin.dashboard');

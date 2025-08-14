@@ -14,51 +14,51 @@
             </div>
           
           @if (!$patients->isEmpty())
-            
-          <table id="patientTable" class="pb-4 table-responsive bg-white shadow-md rounded text-left border-collapse">
+          <div class="table-responsive bg-white shadow-md rounded border-collapse p-3"> 
+          <table id="patientTable" class="table w-100 border-collapse">
             <thead>
-              <tr>
-                <th class="py-3 px-1 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">MR No.</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">PATIENT NAME</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">FATHERS NAME</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">AGE</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">GENDER</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">MARITAL STATUS</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">PHONE</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">EMAIL</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">CNIC #</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">ADDRESS</th>
-                <th class="py-3 px-3 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">REGISTERED ON</th>
-                <th class="py-3 px-3 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">REGISTERED BY</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">UPDATED ON</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">ACTIONS</th>
+              <tr class="bg-indigo-500 text-white">
+                <th class="py-3 px-4 border text-center">MR No.</th>
+                <th class="py-3 px-4 border text-center">PATIENT NAME</th>
+                <th class="py-3 px-4 border text-center">FATHERS NAME</th>
+                <th class="py-3 px-4 border text-center">AGE</th>
+                <th class="py-3 px-4 border text-center">GENDER</th>
+                <th class="py-3 px-4 border text-center">MARITAL STATUS</th>
+                <th class="py-3 px-4 border text-center">PHONE</th>
+                <th class="py-3 px-4 border text-center">EMAIL</th>
+                <th class="py-3 px-4 border text-center">CNIC #</th>
+                <th class="py-3 px-4 border text-center">ADDRESS</th>
+                <th class="py-3 px-4 border text-center">REGISTERED ON</th>
+                <th class="py-3 px-4 border text-center">REGISTERED BY</th>
+                <th class="py-3 px-4 border text-center">UPDATED ON</th>
+                <th class="py-3 px-4 border text-center">ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               @can('Patient access')
                 @foreach($patients as $patient)
-                  <tr>
-                    <td class="text-nowrap text-xs px-4 border-grey-light">{{ $patient->id }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->name }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->fname }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">
+                  <tr class="text-center">
+                    <td class="px-4 py-2 border">{{ $patient->id }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->name }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->fname }}</td>
+                    <td class="px-4 py-2 border">
                       @if($patient->dob == null)
                         {{ '' }}
                       @else
                         {{\Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years, %m months and %d days');}}
                       @endif
                     </td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->gender }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->marital_status }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->phone }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->email }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->cnic }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->address }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->created_at }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->usersName }}</td>
-                    <td class="text-nowrap text-xs px-3 border-grey-light">{{ $patient->updated_at }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->gender }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->marital_status }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->phone }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->email }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->cnic }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->address }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->created_at }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->usersName }}</td>
+                    <td class="px-4 py-2 border">{{ $patient->updated_at }}</td>
                     
-                    <td class="text-nowrap text-xs px-3 border-grey-light">
+                    <td class="px-4 py-2 border">
                       @can('Patient access')
                         <a href="{{route('admin.patients.show',$patient->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-green-400">Show</a>
                       @endcan
@@ -79,7 +79,7 @@
                 @endcan
             </tbody>
           </table>
-        
+          </div>
         @else
 
           <div class="row flex text-center mt-5 pt-5">

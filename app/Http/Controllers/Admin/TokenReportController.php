@@ -48,6 +48,9 @@ class TokenReportController extends Controller
             ->addColumn('patient_name', function ($row) {
                 return $row->patient?->name ?? '-';
             })
+            ->addColumn('patient_mr_no', function ($row) {
+                return $row->patient?->id ?? '-';
+            })
             ->addColumn('doctor_name', function ($row) {
                 return $row->doctors?->name ?? '-';
             })
