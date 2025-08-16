@@ -21,14 +21,6 @@ class DatabaseSeeder extends Seeder
             SpecialitySeeder::class,
         ]);
 
-        $this->call([
-            ManufacturerSeeder::class,
-        ]);
-        
-        $this->call([
-            ProductSeeder::class,
-        ]);
-        
-        
+        $this->call(DrapeSeeder::class);
     }
 }

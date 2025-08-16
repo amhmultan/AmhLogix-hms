@@ -226,7 +226,7 @@
             {{-- SVG Icon --}}
             <?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
             <svg fill="#000000" width="24px" height="24px" viewBox="0 0 24 24" id="report-pie-chart-6" data-name="Flat Color" xmlns="http://www.w3.org/2000/svg" class="icon flat-color"><path id="primary" d="M16,19A7,7,0,0,1,16,5a6.63,6.63,0,0,1,1,.08V4a2,2,0,0,0-2-2H4A2,2,0,0,0,2,4V20a2,2,0,0,0,2,2H15a2,2,0,0,0,2-2V18.92A6.63,6.63,0,0,1,16,19Z" style="fill: #62adfc"></path><path id="secondary" d="M10,12a6,6,0,1,0,6-6A6,6,0,0,0,10,12Zm5-3.86V11H12.14A4,4,0,0,1,15,8.14ZM12.14,13H16a1,1,0,0,0,1-1V8.14A4,4,0,1,1,12.14,13Z" style="fill: rgb(44, 169, 188);"></path></svg>
-            <span class="mx-3">Token Report</span>
+            <span class="mx-3">OPD Report</span>
         </a>
         @endcanany
 
@@ -278,7 +278,7 @@
                 c85 0 165 4 179 10 61 23 79 112 32 159 -26 26 -28 26 -195 29 l-169 3 -4 169 c-3 166 -3 170 -29 195 -29 29 -85 41 -114 24z"/>
                 </g>
             </svg>
-            <span class="mx-3">Medicine Info</span>
+            <span class="mx-3">Product Info</span>
             </a>
         @endcanany
         

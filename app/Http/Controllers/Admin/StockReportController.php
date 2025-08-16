@@ -3,184 +3,195 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use setasign\Fpdi\Fpdi;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StockReportController extends Controller
 {
     public function index(Request $request)
-{
-    $fromDate = $request->input('from_date');
-    $toDate = $request->input('to_date');
-    $filterType = $request->input('filter_type'); // 'purchase', 'sale', 'both'
-    $excludeZeroPurchase = $request->boolean('exclude_zero_purchase', false);
-    $excludeZeroStock = $request->boolean('exclude_zero_stock', false);
-
-    $query = Product::select(
-        'products.id', 'products.name',
-        DB::raw('COALESCE(SUM(pii.quantity), 0) as total_purchased'),
-        DB::raw('COALESCE(SUM(pii.quantity * pii.unit_price), 0) as total_purchase_value'),
-        DB::raw('COALESCE(MAX(pii.created_at), NULL) as last_purchase'),
-        DB::raw('COALESCE(SUM(sii.quantity), 0) as total_sold'),
-        DB::raw('COALESCE(SUM(sii.quantity * sii.price), 0) as total_sale_value'),
-        DB::raw('COALESCE(MAX(sii.created_at), NULL) as last_sale')
-    )
-    ->leftJoin('purchase_invoice_items as pii', 'pii.product_id', '=', 'products.id')
-    ->leftJoin('sale_invoice_items as sii', 'sii.fk_product_id', '=', 'products.id');
-
-    // Apply date filters for purchase and sale items
-    if ($fromDate) {
-        $query->where(function ($q) use ($fromDate) {
-            $q->where('pii.created_at', '>=', $fromDate)
-              ->orWhere('sii.created_at', '>=', $fromDate);
-        });
-    }
-
-    if ($toDate) {
-        $query->where(function ($q) use ($toDate) {
-            $q->where('pii.created_at', '<=', $toDate)
-              ->orWhere('sii.created_at', '<=', $toDate);
-        });
-    }
-
-    // Filter by type
-    if ($filterType === 'purchase') {
-        $query->whereNotNull('pii.id');  // Only products with purchases
-    } elseif ($filterType === 'sale') {
-        $query->whereNotNull('sii.id');  // Only products with sales
-    } elseif ($filterType === 'both') {
-        // no additional filter, both purchase and sale products
-    }
-
-    $query->groupBy('products.id', 'products.name');
-
-    // Get raw data
-    $stockData = $query->get()->map(function ($product) {
-        $stock_in_hand = $product->total_purchased - $product->total_sold;
-        $stock_value = $product->total_purchase_value - $product->total_sale_value;
-
-        return [
-            'name' => $product->name,
-            'total_purchased' => (int) $product->total_purchased,
-            'total_purchase_value' => (float) $product->total_purchase_value,
-            'total_sold' => (int) $product->total_sold,
-            'total_sale_value' => (float) $product->total_sale_value,
-            'stock_in_hand' => $stock_in_hand,
-            'stock_value' => $stock_value,
-            'last_purchase' => $product->last_purchase,
-            'last_sale' => $product->last_sale,
-        ];
-    });
-
-    // Exclude products with zero purchased if checkbox checked
-    if ($excludeZeroPurchase) {
-        $stockData = $stockData->filter(fn($item) => $item['total_purchased'] > 0)->values();
-    }
-    // Exclude products with zero stock if checkbox checked
-    if ($excludeZeroStock) {
-        $stockData = $stockData->filter(fn($item) => $item['stock_in_hand'] > 0)->values();
-    }
-
-    // Calculate totals for footer as before
-    $totalPurchaseQty = $stockData->sum('total_purchased');
-    $totalPurchaseVal = $stockData->sum('total_purchase_value');
-    $totalSoldQty = $stockData->sum('total_sold');
-    $totalSoldVal = $stockData->sum('total_sale_value');
-    $totalStockQty = $stockData->sum('stock_in_hand');
-    $totalStockVal = $stockData->sum('stock_value');
-
-    return view('reports.index', compact(
-        'stockData',
-        'totalPurchaseQty', 'totalPurchaseVal',
-        'totalSoldQty', 'totalSoldVal',
-        'totalStockQty', 'totalStockVal'
-    ));
-}
-
-public function print(Request $request)
     {
         $fromDate = $request->input('from_date');
         $toDate = $request->input('to_date');
-        $filterType = $request->input('filter_type');
-        $excludeZeroPurchase = $request->boolean('exclude_zero_purchase', false);
-        $excludeZeroStock = $request->boolean('exclude_zero_stock', false);
+        $filterType = $request->input('filter_type', 'both');
 
         $query = Product::select(
             'products.id', 'products.name',
-            DB::raw('COALESCE(SUM(pii.quantity), 0) as total_purchased'),
-            DB::raw('COALESCE(SUM(pii.quantity * pii.unit_price), 0) as total_purchase_value'),
+            DB::raw('COALESCE(SUM(pii.quantity),0) as total_purchased'),
+            DB::raw('COALESCE(SUM(pii.quantity * pii.unit_price),0) as total_purchase_value'),
             DB::raw('COALESCE(MAX(pii.created_at), NULL) as last_purchase'),
-            DB::raw('COALESCE(SUM(sii.quantity), 0) as total_sold'),
-            DB::raw('COALESCE(SUM(sii.quantity * sii.price), 0) as total_sale_value'),
+            DB::raw('COALESCE(SUM(sii.quantity),0) as total_sold'),
+            DB::raw('COALESCE(SUM(sii.quantity * sii.price),0) as total_sale_value'),
             DB::raw('COALESCE(MAX(sii.created_at), NULL) as last_sale')
         )
         ->leftJoin('purchase_invoice_items as pii', 'pii.product_id', '=', 'products.id')
         ->leftJoin('sale_invoice_items as sii', 'sii.fk_product_id', '=', 'products.id');
 
-        // Apply date filters to purchase and sale joins
-        if ($fromDate) {
-            $query->where(function($q) use ($fromDate) {
-                $q->where('pii.created_at', '>=', $fromDate)
-                ->orWhere('sii.created_at', '>=', $fromDate);
-            });
-        }
-        if ($toDate) {
-            $query->where(function($q) use ($toDate) {
-                $q->where('pii.created_at', '<=', $toDate)
-                ->orWhere('sii.created_at', '<=', $toDate);
-            });
-        }
+        if ($fromDate) $query->where('pii.created_at', '>=', $fromDate);
+        if ($toDate) $query->where('pii.created_at', '<=', $toDate . ' 23:59:59');
 
-        // Filter type (purchase or sale)
-        if ($filterType === 'purchase') {
-            $query->whereNotNull('pii.id');
-        } elseif ($filterType === 'sale') {
-            $query->whereNotNull('sii.id');
-        }
+        if ($filterType === 'purchase') $query->whereNotNull('pii.id');
+        elseif ($filterType === 'sale') $query->whereNotNull('sii.id');
 
-        $query->groupBy('products.id', 'products.name');
+        $query->groupBy('products.id','products.name');
 
-        $stockData = $query->get()->map(function ($product) {
-            $stock_in_hand = $product->total_purchased - $product->total_sold;
-            $stock_value = $product->total_purchase_value - $product->total_sale_value;
+        $stockData = $query->paginate(50)->withQueryString();
 
+        return view('reports.index', compact('stockData'));
+    }
+
+    public function print(Request $request)
+    {
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+        $filterType = $request->input('filter_type', 'both');
+
+        // Build query
+        $query = Product::select(
+            'products.id', 'products.name',
+            DB::raw('COALESCE(SUM(pii.quantity),0) as total_purchased'),
+            DB::raw('COALESCE(SUM(pii.quantity * pii.unit_price),0) as total_purchase_value'),
+            DB::raw('COALESCE(MAX(pii.created_at), NULL) as last_purchase'),
+            DB::raw('COALESCE(SUM(sii.quantity),0) as total_sold'),
+            DB::raw('COALESCE(SUM(sii.quantity * sii.price),0) as total_sale_value'),
+            DB::raw('COALESCE(MAX(sii.created_at), NULL) as last_sale')
+        )
+        ->leftJoin('purchase_invoice_items as pii', 'pii.product_id', '=', 'products.id')
+        ->leftJoin('sale_invoice_items as sii', 'sii.fk_product_id', '=', 'products.id');
+
+        if ($fromDate) $query->where('pii.created_at', '>=', $fromDate);
+        if ($toDate) $query->where('pii.created_at', '<=', $toDate . ' 23:59:59');
+
+        if ($filterType === 'purchase') $query->whereNotNull('pii.id');
+        elseif ($filterType === 'sale') $query->whereNotNull('sii.id');
+
+        $query->groupBy('products.id','products.name');
+
+        $stockData = $query->get()->map(function($product){
+            $stockInHand = $product->total_purchased - $product->total_sold;
+            $stockValue = $product->total_purchase_value - $product->total_sale_value;
             return [
+                'id' => $product->id,
                 'name' => $product->name,
-                'total_purchased' => (int) $product->total_purchased,
-                'total_purchase_value' => (float) $product->total_purchase_value,
-                'total_sold' => (int) $product->total_sold,
-                'total_sale_value' => (float) $product->total_sale_value,
-                'stock_in_hand' => $stock_in_hand,
-                'stock_value' => $stock_value,
-                'last_purchase' => $product->last_purchase,
-                'last_sale' => $product->last_sale,
+                'total_purchased' => (int)$product->total_purchased,
+                'total_purchase_value' => (float)$product->total_purchase_value,
+                'total_sold' => (int)$product->total_sold,
+                'total_sale_value' => (float)$product->total_sale_value,
+                'stock_in_hand' => $stockInHand,
+                'stock_value' => $stockValue,
+                'last_purchase' => $product->last_purchase ? \Carbon\Carbon::parse($product->last_purchase)->format('d-m-Y') : '-',
+                'last_sale' => $product->last_sale ? \Carbon\Carbon::parse($product->last_sale)->format('d-m-Y') : '-',
             ];
         });
 
-        // Exclude zero purchased or zero stock if requested
-        if ($excludeZeroPurchase) {
-            $stockData = $stockData->filter(fn($item) => $item['total_purchased'] > 0);
-        }
-        if ($excludeZeroStock) {
-            $stockData = $stockData->filter(fn($item) => $item['stock_in_hand'] > 0);
+        // Initialize FPDI
+        $pdf = new Fpdi('L', 'mm', 'A4'); // Landscape
+        $pdf->SetAutoPageBreak(true, 20);  // bottom margin
+        $pdf->AddPage();
+        $pdf->AliasNbPages(); // enable {nb} in footer
+        $userName = Auth::user()->name ?? 'Unknown';
+
+        // Header
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(0,10,'Stock Report',0,1,'C');
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(0,6,"Generated by: $userName",0,1,'L');
+        $pdf->Cell(0,6,"From: ".($fromDate ?? 'All')." To: ".($toDate ?? 'All'),0,1,'L');
+        $pdf->Cell(0,6,"Type: ".ucfirst($filterType),0,1,'L');
+        $pdf->Ln(4);
+
+        // Table header
+        $pdf->SetFont('Arial','B',9);
+        $widths = [
+            'id' => 18,
+            'name' => 60,
+            'purchased_qty' => 18,
+            'purchase_value' => 28,
+            'sold_qty' => 18,
+            'sale_value' => 28,
+            'stock_qty' => 18,
+            'stock_value' => 30,
+            'last_purchase' => 28,
+            'last_sale' => 18
+        ];
+
+        $pdf->Cell($widths['id'],8,'Product ID',1,0,'C');
+        $pdf->Cell($widths['name'],8,'Name',1,0,'C');
+        $pdf->Cell($widths['purchased_qty'],8,'Purchased',1,0,'C');
+        $pdf->Cell($widths['purchase_value'],8,'Purchase Value',1,0,'C');
+        $pdf->Cell($widths['sold_qty'],8,'Sold',1,0,'C');
+        $pdf->Cell($widths['sale_value'],8,'Sale Value',1,0,'C');
+        $pdf->Cell($widths['stock_qty'],8,'Stock',1,0,'C');
+        $pdf->Cell($widths['stock_value'],8,'Stock Value',1,0,'C');
+        $pdf->Cell($widths['last_purchase'],8,'Last Purchase',1,0,'C');
+        $pdf->Cell($widths['last_sale'],8,'Last Sale',1,1,'C');
+
+        // Table body with totals
+        $pdf->SetFont('Arial','',8);
+        $totalPurchased = $totalPurchaseValue = $totalSold = $totalSaleValue = $totalStock = $totalStockValue = 0;
+
+        foreach($stockData as $item){
+            // Check for page break before row
+            if($pdf->GetY() + 6 > $pdf->GetPageHeight() - 25) { // 25mm safety margin for footer
+                $pdf->AddPage();
+                // Repeat table header
+                $pdf->SetFont('Arial','B',9);
+                foreach($widths as $key => $w) {
+                    $pdf->Cell($w,8,ucwords(str_replace('_',' ',$key)),1,0,'C');
+                }
+                $pdf->Ln();
+                $pdf->SetFont('Arial','',8);
+            }
+            
+            $pdf->Cell($widths['id'],6,$item['id'],1,0,'C');
+            $pdf->Cell($widths['name'],6,$item['name'],1,0,'L');
+            $pdf->Cell($widths['purchased_qty'],6,$item['total_purchased'],1,0,'C');
+            $pdf->Cell($widths['purchase_value'],6,number_format($item['total_purchase_value'],2),1,0,'R');
+            $pdf->Cell($widths['sold_qty'],6,$item['total_sold'],1,0,'C');
+            $pdf->Cell($widths['sale_value'],6,number_format($item['total_sale_value'],2),1,0,'R');
+            $pdf->Cell($widths['stock_qty'],6,$item['stock_in_hand'],1,0,'C');
+            $pdf->Cell($widths['stock_value'],6,number_format($item['stock_value'],2),1,0,'R');
+            $pdf->Cell($widths['last_purchase'],6,$item['last_purchase'],1,0,'C');
+            $pdf->Cell($widths['last_sale'],6,$item['last_sale'],1,1,'C');
+
+            // Accumulate totals
+            $totalPurchased += $item['total_purchased'];
+            $totalPurchaseValue += $item['total_purchase_value'];
+            $totalSold += $item['total_sold'];
+            $totalSaleValue += $item['total_sale_value'];
+            $totalStock += $item['stock_in_hand'];
+            $totalStockValue += $item['stock_value'];
         }
 
-        $totalPurchaseQty = $stockData->sum('total_purchased');
-        $totalPurchaseVal = $stockData->sum('total_purchase_value');
-        $totalSoldQty = $stockData->sum('total_sold');
-        $totalSoldVal = $stockData->sum('total_sale_value');
-        $totalStockQty = $stockData->sum('stock_in_hand');
-        $totalStockVal = $stockData->sum('stock_value');
-        $userName = Auth::user()->name ?? 'Unknown User';
-        
-        return view('reports.print', compact(
-            'stockData', 'totalPurchaseQty', 'totalPurchaseVal',
-            'totalSoldQty', 'totalSoldVal', 'totalStockQty', 'totalStockVal',
-            'fromDate', 'toDate', 'filterType', 'excludeZeroPurchase', 'excludeZeroStock',
-            'userName'
-        ));
+        // Totals row
+        $pdf->SetFont('Arial','B',8);
+        if($pdf->GetY() + 6 > $pdf->GetPageHeight() - 25) {
+            $pdf->AddPage();
+        }
+
+        $pdf->Cell($widths['id'] + $widths['name'],6,'TOTAL :-',1,0,'R');
+        $pdf->Cell($widths['purchased_qty'],6,$totalPurchased,1,0,'C');
+        $pdf->Cell($widths['purchase_value'],6,number_format($totalPurchaseValue,2),1,0,'R');
+        $pdf->Cell($widths['sold_qty'],6,$totalSold,1,0,'C');
+        $pdf->Cell($widths['sale_value'],6,number_format($totalSaleValue,2),1,0,'R');
+        $pdf->Cell($widths['stock_qty'],6,$totalStock,1,0,'C');
+        $pdf->Cell($widths['stock_value'],6,number_format($totalStockValue,2),1,0,'R');
+        $pdf->Cell($widths['last_purchase'],6,'-',1,0,'C');
+        $pdf->Cell($widths['last_sale'],6,'-',1,1,'C');
+
+        // Footer – bottom-right corner
+        $pdf->SetFont('Arial','I',8);
+        $pdf->SetY(-10); // 10mm from bottom
+        $pdf->Cell(0,6,'Page '.$pdf->PageNo().'/{nb}',0,0,'R');
+
+        // Stream PDF to browser
+        return response($pdf->Output('','S'), 200)
+            ->header('Content-Type','application/pdf');
     }
+
+
 
 }

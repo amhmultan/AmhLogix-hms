@@ -10,6 +10,7 @@ use App\Models\PurchaseInvoiceItem;
 use App\Models\Pharmacy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -31,49 +32,57 @@ class PurchaseInvoiceController extends Controller
     {
         $suppliers = Supplier::all();
         $products = Product::all();
-        return view('purchase.new', compact('suppliers', 'products'));
+
+        // Auto-generate invoice number
+        $latestInvoice = PurchaseInvoice::latest()->first();
+        $nextId = $latestInvoice ? $latestInvoice->id + 1 : 1;
+        $invoiceNumber = 'INV-' . date('Y') . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+
+        return view('purchase.new', compact('suppliers', 'products', 'invoiceNumber'));
     }
 
     public function store(Request $request)
-    {   
+    {
         $request->validate([
-            'invoice_number' => 'required|unique:purchase_invoices',
-            'supplier_id' => 'required',
-            'purchase_date' => 'required|date',
-            'discount' => 'nullable|numeric|min:0',
-            'tax_percent' => 'nullable|numeric|min:0',
-            'items.*.product_id' => 'required',
-            'items.*.quantity' => 'required|integer|min:1',
+            'invoice_number' => 'required|unique:purchase_invoices,invoice_number',
+            'supplier_id'    => 'required|exists:suppliers,id',
+            'purchase_date'  => 'required|date',
+            'discount'       => 'nullable|numeric|min:0',
+            'tax_percent'    => 'nullable|numeric|min:0',
+            'items'          => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity'   => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        DB::beginTransaction();
-
-        try {
-            $gross = 0;
+        DB::transaction(function () use ($request) {
+            // Calculate totals
+            $total_amount = 0;
             foreach ($request->items as $item) {
-                $gross += $item['quantity'] * $item['unit_price'];
+                $total_amount += $item['quantity'] * $item['unit_price'];
             }
 
-            $discount = floatval($request->discount ?? 0);
-            $taxPercentage = floatval($request->tax_percentage ?? 0);
+            $discount = $request->discount ?? 0;
+            $tax_percent = $request->tax_percent ?? 0;
+            $tax_amount = (($total_amount - $discount) * $tax_percent) / 100;
+            $net_amount = ($total_amount - $discount) + $tax_amount;
 
-            $afterDiscount = $gross - $discount;
-            $taxAmount = $afterDiscount * ($taxPercentage / 100);
-            $netAmount = $afterDiscount + $taxAmount;
-
+            // Create invoice
             $invoice = PurchaseInvoice::create([
-                'invoice_number'   => $request->invoice_number,
-                'supplier_id'      => $request->supplier_id,
-                'purchase_date'    => $request->purchase_date,
-                'discount'         => $discount,
-                'tax_percent'   => $taxPercentage,
-                'tax_amount'       => $taxAmount,
-                'total_amount'     => $gross,
-                'net_amount'       => $netAmount,
-                'notes'            => $request->notes,
+                'invoice_number' => $request->invoice_number,
+                'supplier_id'    => $request->supplier_id,
+                'purchase_date'  => $request->purchase_date,
+                'total_amount'   => $total_amount,
+                'discount'       => $discount,
+                'tax_percent'    => $tax_percent,   // ✅ new column
+                'tax_amount'     => $tax_amount,
+                'net_amount'     => $net_amount,
+                'notes'          => $request->notes,
+                'status'         => 'pending',
+                'payment_status' => 'unpaid',
             ]);
 
+            // Insert items
             foreach ($request->items as $item) {
                 PurchaseInvoiceItem::create([
                     'purchase_invoice_id' => $invoice->id,
@@ -85,13 +94,11 @@ class PurchaseInvoiceController extends Controller
                     'expiry_date'         => $item['expiry_date'] ?? null,
                 ]);
             }
+        });
 
-            DB::commit();
-            return redirect()->route('admin.purchases.index')->with('success', 'Invoice created successfully!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors('Error occurred: ' . $e->getMessage())->withInput();
-        }
+        return redirect()
+            ->route('admin.purchases.index')
+            ->with('success', 'Purchase invoice created successfully.');
     }
 
     public function show($id)
@@ -128,4 +135,29 @@ class PurchaseInvoiceController extends Controller
         $purchase_invoice->delete();
         return redirect()->route('admin.purchases.index')->with('success', 'Invoice deleted successfully!');
     }
+        /**
+     * Return products for Select2 AJAX search
+     */
+    public function getProductsAjax(Request $request)
+    {
+        
+        $term = $request->get('q', '');
+
+        $products = Product::query()
+            ->when($term, fn($q) => $q->where('name', 'like', "%{$term}%"))
+            ->select('id', DB::raw('name as text'))
+            ->limit(20)
+            ->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'results' => [
+                    ['id' => 0, 'text' => 'No products found']
+                ]
+            ]);
+        }
+
+        return response()->json(['results' => $products]);
+    }
+
 }

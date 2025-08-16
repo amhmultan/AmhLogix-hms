@@ -22,10 +22,8 @@
                       @foreach($roles as $role)
                       <tr class="hover:bg-grey-lighter">
                         <td class="py-4 px-6 border-b border-grey-light">{{ $role->name }}</td>
-                        <td class="py-4 px-6 border-b border-grey-light">
-                            @foreach($role->permissions as $permission)
-                              <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">{{ $permission->name }}</span>
-                            @endforeach
+                        <td class="py-4 px-6 border-b border-grey-light text-center">
+                              <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">{{ $role->permissions->count() }}</span>
                         </td>
                         <td class="py-4 px-6 border-b border-grey-light text-right">
 

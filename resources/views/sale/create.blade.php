@@ -1,199 +1,207 @@
 <x-app-layout>
-  <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
-    <div class="row mb-4">
-      <div class="col-sm-6">
-        <h2 class="text-danger font-bold">Add <span class="text-success">Sale Invoice</span></h2>
-      </div>
-    </div>
+<div class="container mx-auto py-6">
 
-    {{-- Error Display --}}
+    <h2 class="text-2xl font-bold mb-4 text-red-600">Add <span class="text-green-600">Sale Invoice</span></h2>
+
+    {{-- Display Errors --}}
     @if ($errors->any())
-      <div class="alert alert-danger">
-        <ul class="mb-0">
-          @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <ul class="list-disc pl-6 mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
-    
-    {{-- Search Form --}}
-    <form method="GET" action="">
-      <div class="row mb-4">
-        <div class="col-sm-3">
-          <input type="search" name="search" id="search" placeholder="Enter MR Number" class="form-control" value="{{ old('search', $search) }}">
+
+    {{-- Search Patient --}}
+    <form method="GET" action="" class="mb-6">
+        <div class="flex gap-2 items-center">
+            <input type="search" name="search" placeholder="Enter MR Number"
+                  class="border rounded p-2 w-1/4"
+                  value="{{ old('search', $search ?? '') }}">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Search</button>
         </div>
-        <div class="col-sm-9">
-          <button type="submit" class="btn btn-primary mx-2">Search</button>
-        </div>
-      </div>
     </form>
 
-    @if ($search && count($patients) > 0)
-    {{-- Patient Info --}}
-    @php $patient = $patients[0]; @endphp
-    <div class="row my-4">
-      <div class="col-md-6">
-        <label class="text-gray-700 font-black">Patient Name:</label>
-        <div class="form-control-plaintext">{{ $patient->name }}</div>
-      </div>
-      <div class="col-md-6">
-        <label class="text-gray-700 font-black">Contact Number:</label>
-        <div class="form-control-plaintext">{{ $patient->phone }}</div>
-      </div>
-    </div>
+    {{-- Patient Info & Invoice Form --}}
+    @if(!empty($search))
+        @if(!empty($patients) && count($patients) > 0)
+            @php $patient = $patients[0]; @endphp
 
-    {{-- Sale Invoice Form --}}
-    <form action="{{ route('admin.sales.store') }}" method="POST">
-      @csrf
+            {{-- Patient Info --}}
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="font-medium">Patient Name</label>
+                    <div class="p-2 border rounded">{{ $patient->name }}</div>
+                </div>
+                <div>
+                    <label class="font-medium">Contact</label>
+                    <div class="p-2 border rounded">{{ $patient->phone }}</div>
+                </div>
+                <div>
+                    <label class="font-medium">Address</label>
+                    <div class="p-2 border rounded">{{ $patient->address }}</div>
+                </div>
+            </div>
 
-      {{-- Hidden Patient ID --}}
-      <input type="hidden" name="fk_patient_id" value="{{ $patient->id }}">
+            {{-- Sale Invoice Form --}}
+            <form action="{{ route('admin.sales.store') }}" method="POST" id="sale-form">
+                @csrf
+                <input type="hidden" name="fk_patient_id" value="{{ $patient->id }}">
 
-      {{-- Invoice Items --}}
-      <div class="text-start mb-3">
-      <label for="date" class="form-label">Invoice Date</label>
-      <input type="date" name="date" id="date" class="form-control text-black" value="{{ old('date', date('Y-m-d')) }}" required>
-    </div>
-    <hr />
-      <h5 class="text-primary">Invoice Items</h5>
-      <div class="text-right mb-2">
-        <button type="button" class="btn btn-secondary" id="addRow">+ Add Item</button>
-      </div>
+                {{-- Invoice Date --}}
+                <div class="mb-4">
+                    <label class="font-medium">Invoice Date</label>
+                    <input type="date" name="date" class="border rounded p-2 w-full" value="{{ old('date', date('Y-m-d')) }}" required>
+                </div>
 
-      <div class="table-responsive">
-        <table class="table table-bordered" id="itemsTable">
-          <thead class="bg-light">
-            <tr>
-              <th>Product</th>
-              <th>Batch</th>
-              <th>Expiry</th>
-              <th>Qty</th>
-              <th>Unit Price</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <select name="items[0][fk_product_id]" class="form-control" required>
-                  <option value="">Select Product</option>
-                  @foreach ($products as $product)
-                    <option value="{{ $product->id }}">{{ $product->name }}</option>
-                  @endforeach
-                </select>
-              </td>
-              <td><input type="text" name="items[0][batch_no]" class="form-control"></td>
-              <td><input type="date" name="items[0][expiry_date]" class="form-control"></td>
-              <td><input type="number" name="items[0][quantity]" class="form-control quantity" min="1" required></td>
-              <td><input type="number" name="items[0][unit_price]" class="form-control unit_price" step="0.01" required></td>
-              <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                {{-- Items Table --}}
+                <h3 class="text-lg font-semibold mb-2">Invoice Items</h3>
+                <div class="mb-2 text-right">
+                    <button type="button" class="bg-gray-600 text-white px-3 py-1 rounded" id="addRow">+ Add Item</button>
+                </div>
 
-      {{-- Totals --}}
-      <div class="row">
-        <div class="col-md-3 mb-3">
-          <label>Discount (Rs.)</label>
-          <input type="number" step="0.01" name="discount" class="form-control" id="discount" value="{{ old('discount', 0) }}">
-        </div>
-        <div class="col-md-3 mb-3">
-          <label>Tax (%)</label>
-          <input type="number" step="0.01" name="tax_percentage" class="form-control" id="tax_percentage" value="{{ old('tax_percentage', 0) }}">
-        </div>
-      </div>
+                <div class="overflow-x-auto mb-4">
+                    <table class="table-auto border-collapse w-full border" id="itemsTable">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="border p-2">Product</th>
+                                <th class="border p-2">Batch</th>
+                                <th class="border p-2">Expiry</th>
+                                <th class="border p-2">Qty</th>
+                                <th class="border p-2">Unit Price</th>
+                                <th class="border p-2">Total</th>
+                                <th class="border p-2">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-      <div class="row mb-3">
-        <div class="col-md-3">
-          <strong>Gross Amount:</strong>
-          <div id="grossAmount">Rs. 0.00</div>
-        </div>
-        <div class="col-md-3">
-          <strong>Net Amount:</strong>
-          <div id="netAmount">Rs. 0.00</div>
-        </div>
-      </div>
+                {{-- Discount & Tax --}}
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="font-medium">Discount (Rs.)</label>
+                        <input type="number" step="0.01" name="discount" id="discount" class="border rounded p-2 w-full" value="{{ old('discount', 0) }}">
+                    </div>
+                    <div>
+                        <label class="font-medium">Tax (%)</label>
+                        <input type="number" step="0.01" name="tax_percentage" id="tax_percentage" class="border rounded p-2 w-full" value="{{ old('tax_percentage', 0) }}">
+                    </div>
+                </div>
 
-      {{-- Hidden Amounts --}}
-      <input type="hidden" name="gross_amount" id="gross_amount_input">
-      <input type="hidden" name="net_amount" id="net_amount_input">
-      <input type="hidden" name="tax_amount" id="tax_percentage_input">
+                {{-- Totals --}}
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="font-medium">Gross Amount</label>
+                        <input type="text" id="grossAmount" readonly class="border rounded p-2 w-full bg-gray-100">
+                        <input type="hidden" name="gross_amount" id="gross_amount_input">
+                    </div>
+                    <div>
+                        <label class="font-medium">Tax Amount</label>
+                        <input type="text" id="taxAmount" readonly class="border rounded p-2 w-full bg-gray-100">
+                        <input type="hidden" name="tax_amount" id="tax_amount_input">
+                    </div>
+                    <div>
+                        <label class="font-medium">Net Amount</label>
+                        <input type="text" id="netAmount" readonly class="border rounded p-2 w-full bg-gray-100">
+                        <input type="hidden" name="net_amount" id="net_amount_input">
+                    </div>
+                </div>
 
-      <div class="text-right">
-        <a class="btn btn-info mx-2" href="{{ route('admin.sales.index') }}"><u>B</u>ack</a>
-        <button type="submit" class="btn btn-success">Save Invoice</button>
-      </div>
-    </form>
+                <div class="text-right">
+                    <a href="{{ route('admin.sales.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded mr-2">Back</a>
+                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded">Save Invoice</button>
+                </div>
+            </form>
+        @else
+            <div class="bg-yellow-100 text-yellow-800 p-3 rounded">
+                No patient found with MR Number: {{ $search }}
+            </div>
+        @endif
     @endif
-  </div>
+</div>
 
-  @push('scripts')
-  <script>
-    let rowIndex = 1;
+@push('scripts')
+<script>
+let rowIndex = 0;
 
-    document.getElementById('addRow').addEventListener('click', function () {
-      const table = document.querySelector('#itemsTable tbody');
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>
-          <select name="items[${rowIndex}][fk_product_id]" class="form-control" required>
-            <option value="">Select Product</option>
-            @foreach ($products as $product)
-              <option value="{{ $product->id }}">{{ $product->name }}</option>
-            @endforeach
-          </select>
+// Add first row on load
+document.addEventListener('DOMContentLoaded', addRow);
+
+// Add Row
+document.getElementById('addRow').addEventListener('click', addRow);
+
+function addRow() {
+    const tbody = document.querySelector('#itemsTable tbody');
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+        <td class="border p-1">
+            <select name="items[${rowIndex}][fk_product_id]" class="product-select w-full border rounded p-1" required></select>
         </td>
-        <td><input type="text" name="items[${rowIndex}][batch_no]" class="form-control"></td>
-        <td><input type="date" name="items[${rowIndex}][expiry_date]" class="form-control"></td>
-        <td><input type="number" name="items[${rowIndex}][quantity]" class="form-control quantity" min="1" required></td>
-        <td><input type="number" name="items[${rowIndex}][unit_price]" class="form-control unit_price" step="0.01" required></td>
-        <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
-      `;
-      table.appendChild(row);
-      rowIndex++;
+        <td class="border p-1"><input type="text" name="items[${rowIndex}][batch_no]" class="border rounded p-1 w-full"></td>
+        <td class="border p-1"><input type="date" name="items[${rowIndex}][expiry_date]" class="border rounded p-1 w-full"></td>
+        <td class="border p-1"><input type="number" name="items[${rowIndex}][quantity]" class="quantity border rounded p-1 w-full" min="1" value="1"></td>
+        <td class="border p-1"><input type="number" step="0.01" name="items[${rowIndex}][unit_price]" class="unit_price border rounded p-1 w-full" value="0"></td>
+        <td class="border p-1"><input type="text" class="line-total border rounded p-1 w-full bg-gray-100" readonly></td>
+        <td class="border p-1 text-center"><button type="button" class="remove-item text-red-600">X</button></td>
+    `;
+    tbody.appendChild(row);
+
+    // Init AJAX Select2 for product search
+    $(row).find('.product-select').select2({
+        width: '100%',
+        placeholder: 'Search product...',
+        ajax: {
+            url: '{{ route("admin.products.ajax") }}',
+            dataType: 'json',
+            delay: 250,
+            data: params => ({ q: params.term }),
+            processResults: data => ({ results: data.results || [] })
+        }
     });
 
-    document.addEventListener('click', function (e) {
-      if (e.target.classList.contains('remove-item')) {
+    row.querySelector('.quantity').addEventListener('input', calculateAmounts);
+    row.querySelector('.unit_price').addEventListener('input', calculateAmounts);
+    row.querySelector('.remove-item').addEventListener('click', e => {
         e.target.closest('tr').remove();
         calculateAmounts();
-      }
     });
 
-    document.addEventListener('input', function (e) {
-      if (
-        e.target.classList.contains('quantity') ||
-        e.target.classList.contains('unit_price') ||
-        e.target.id === 'discount' ||
-        e.target.id === 'tax_percentage'
-      ) {
-        calculateAmounts();
-      }
+    rowIndex++;
+}
+
+// Recalculate totals
+document.getElementById('discount').addEventListener('input', calculateAmounts);
+document.getElementById('tax_percentage').addEventListener('input', calculateAmounts);
+
+function calculateAmounts() {
+    let total = 0;
+    document.querySelectorAll('#itemsTable tbody tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.quantity')?.value || 0);
+        const price = parseFloat(row.querySelector('.unit_price')?.value || 0);
+        const lineTotal = qty * price;
+        row.querySelector('.line-total').value = lineTotal.toFixed(2);
+        total += lineTotal;
     });
 
-    function calculateAmounts() {
-      let total = 0;
-      document.querySelectorAll('#itemsTable tbody tr').forEach(function (row) {
-        let qty = parseFloat(row.querySelector('.quantity')?.value || 0);
-        let price = parseFloat(row.querySelector('.unit_price')?.value || 0);
-        total += qty * price;
-      });
+    const discount = parseFloat(document.getElementById('discount')?.value || 0);
+    const taxPercent = parseFloat(document.getElementById('tax_percentage')?.value || 0);
 
-      let discount = parseFloat(document.getElementById('discount')?.value || 0);
-      let tax = parseFloat(document.getElementById('tax_percentage')?.value || 0);
+    const afterDiscount = total - discount;
+    const taxAmount = afterDiscount * (taxPercent / 100);
+    const net = afterDiscount + taxAmount;
 
-      let afterDiscount = total - discount;
-      let taxAmount = afterDiscount * (tax / 100);
-      let net = afterDiscount + taxAmount;
+    document.getElementById('grossAmount').value = total.toFixed(2);
+    document.getElementById('netAmount').value = net.toFixed(2);
+    document.getElementById('taxAmount').value = taxAmount.toFixed(2);
 
-      document.getElementById('grossAmount').textContent = 'Rs. ' + total.toFixed(2);
-      document.getElementById('netAmount').textContent = 'Rs. ' + net.toFixed(2);
-      document.getElementById('gross_amount_input').value = total.toFixed(2);
-      document.getElementById('net_amount_input').value = net.toFixed(2);
-      document.getElementById('tax_percentage_input').value = taxAmount.toFixed(2);
-    }
-  </script>
-  @endpush
+    document.getElementById('gross_amount_input').value = total.toFixed(2);
+    document.getElementById('net_amount_input').value = net.toFixed(2);
+    document.getElementById('tax_amount_input').value = taxAmount.toFixed(2);
+}
+</script>
+@endpush
 </x-app-layout>

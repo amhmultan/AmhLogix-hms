@@ -19,6 +19,12 @@
                 </div>
 
                 <h3 class="text-xl my-4 text-gray-600">Permissions</h3>
+                <div class="mb-4">
+                  <label class="inline-flex items-center">
+                      <input type="checkbox" id="select-all" class="form-checkbox h-5 w-5 text-green-600">
+                      <span class="ml-2 text-gray-800 font-semibold">Select All Permissions</span>
+                  </label>
+              </div>
                 <div class="grid grid-cols-4 gap-4">
                   @foreach($permissions as $permission)
                       <div class="flex flex-col justify-cente">
@@ -44,4 +50,16 @@
         </main>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAll = document.getElementById('select-all');
+        const checkboxes = document.querySelectorAll('input[name="permissions[]"]');
+
+        selectAll.addEventListener('change', function () {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        });
+    });
+</script>
+@endpush
 </x-app-layout>

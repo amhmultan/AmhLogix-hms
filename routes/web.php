@@ -89,48 +89,51 @@ Route::get('/admin/dashboard', function () {
 require __DIR__.'/auth.php';
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    Route::resource('roles','App\Http\Controllers\Admin\RoleController');
-    Route::resource('permissions','App\Http\Controllers\Admin\PermissionController');
-    Route::resource('users','App\Http\Controllers\Admin\UserController');
-    Route::resource('hospitals','App\Http\Controllers\Admin\HospitalController');
-    Route::resource('posts','App\Http\Controllers\Admin\PostController');
-    Route::resource('patients','App\Http\Controllers\Admin\PatientController');
-    Route::get('/tokens/token-report', [TokenReportController::class, 'index'])
-    ->name('tokens.token_report');
-    Route::get('/tokens/token-report/data', [TokenReportController::class, 'data'])
-        ->name('tokens.token_report.data');
-    Route::resource('tokens','App\Http\Controllers\Admin\TokenController');
-    Route::resource('manufacturers','App\Http\Controllers\Admin\ManufacturerController');
-    Route::resource('suppliers','App\Http\Controllers\Admin\SupplierController');
-    Route::resource('products','App\Http\Controllers\Admin\ProductController');
-    Route::resource('pharmacies','App\Http\Controllers\Admin\PharmacyController');
-    Route::resource('doctor_notes','App\Http\Controllers\Admin\DoctorNotesController');
-    // Extra route for printing doctor notes
-    Route::get('doctor_notes/{id}/print', [App\Http\Controllers\Admin\DoctorNotesController::class, 'print'])
-        ->name('doctor_notes.print');
-    Route::resource('sales','App\Http\Controllers\Admin\SaleController');
-    Route::resource('specialities','App\Http\Controllers\Admin\SpecialityController');
-    Route::resource('doctors','App\Http\Controllers\Admin\DoctorController');
-    Route::resource('appointments','App\Http\Controllers\Admin\AppointmentController');
-    Route::resource('purchases','App\Http\Controllers\Admin\PurchaseInvoiceController');
+    
+    // AJAX routes for Select2 product search
+    Route::get('/products/ajax', [PurchaseInvoiceController::class, 'getProductsAjax'])->name('products.ajax');
+    Route::get('/products/ajax', [SaleController::class, 'getProductsAjax'])->name('products.ajax');
+
+    // Token reports
+    Route::get('/tokens/token-report', [App\Http\Controllers\Admin\TokenReportController::class, 'index'])->name('tokens.token_report');
+    Route::get('/tokens/token-report/data', [App\Http\Controllers\Admin\TokenReportController::class, 'data'])->name('tokens.token_report.data');
+    
+    // Resources
+    Route::resource('purchases', App\Http\Controllers\Admin\PurchaseInvoiceController::class);
+    Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+    Route::resource('permissions', App\Http\Controllers\Admin\PermissionController::class);
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    Route::resource('hospitals', App\Http\Controllers\Admin\HospitalController::class);
+    Route::resource('posts', App\Http\Controllers\Admin\PostController::class);
+    Route::resource('patients', App\Http\Controllers\Admin\PatientController::class);
+    Route::resource('tokens', App\Http\Controllers\Admin\TokenController::class);
+    Route::resource('manufacturers', App\Http\Controllers\Admin\ManufacturerController::class);
+    Route::resource('suppliers', App\Http\Controllers\Admin\SupplierController::class);
+    Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('pharmacies', App\Http\Controllers\Admin\PharmacyController::class);
+    Route::resource('doctor_notes', App\Http\Controllers\Admin\DoctorNotesController::class);
+    Route::resource('sales', App\Http\Controllers\Admin\SaleController::class);
+    Route::resource('specialities', App\Http\Controllers\Admin\SpecialityController::class);
+    Route::resource('doctors', App\Http\Controllers\Admin\DoctorController::class);
+    Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
 
     // Custom prints
-    Route::get('purchases/{purchase}/print', [PurchaseInvoiceController::class, 'print'])->name('purchases.print');
-    Route::get('sales/{sale}/print', [SaleController::class, 'print'])->name('sales.print');
+    Route::get('purchases/{purchase}/print', [App\Http\Controllers\Admin\PurchaseInvoiceController::class, 'print'])->name('purchases.print');
+    Route::get('sales/{sale}/print', [App\Http\Controllers\Admin\SaleController::class, 'print'])->name('sales.print');
+    Route::get('doctor_notes/{id}/print', [App\Http\Controllers\Admin\DoctorNotesController::class, 'print'])->name('doctor_notes.print');
 
-    // Reports
-    Route::get('reports', function () {
-        return view('reports.index');
-    })->name('reports.index');
+    // Stock reports
+    Route::get('reports', [App\Http\Controllers\Admin\StockReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/print', [App\Http\Controllers\Admin\StockReportController::class, 'print'])->name('reports.print');
 
-    Route::get('reports', [StockReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/print', [StockReportController::class, 'print'])->name('reports.print');
+    // Backup system
+    Route::get('backups', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups.index');
+    Route::post('backups', [App\Http\Controllers\Admin\BackupController::class, 'create'])->name('backups.create');
+    Route::get('backups/download/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backups.download');
+    Route::delete('backups/delete/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backups.delete');
+    Route::post('backups/restore/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backups.restore');
 
-    // Backup System Routes
-    Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
-    Route::post('backups', [BackupController::class, 'create'])->name('backups.create');
-    Route::get('backups/download/{fileName}', [BackupController::class, 'download'])->name('backups.download');
-    Route::delete('backups/delete/{fileName}', [BackupController::class, 'delete'])->name('backups.delete');
-    Route::post('backups/restore/{fileName}', [BackupController::class, 'restore'])->name('backups.restore');
-    
+    // AJAX routes for products
+    Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
+
 });

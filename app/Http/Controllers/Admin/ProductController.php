@@ -25,17 +25,22 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $products = DB::table('products')
-                        ->join('manufacturers', 'manufacturers.id','fk_manufacturer_id')
-                        ->select('products.*','manufacturers.name as manufacturersName')
-                        ->get();
+            ->join('manufacturers', 'manufacturers.id', '=', 'products.fk_manufacturer_id')
+            ->select('products.*', 'manufacturers.name as manufacturersName')
+            ->when($request->search, function($query) use ($request) {
+                $query->where('products.name', 'like', '%' . $request->search . '%')
+                    ->orWhere('products.generic', 'like', '%' . $request->search . '%')
+                    ->orWhere('manufacturers.name', 'like', '%' . $request->search . '%');
+            })
+            ->paginate(50); // ✅ Load only 50 per page
 
-        return view('product.index', ['products' => $products]);
+        return view('product.index', compact('products'));
     }
 
-    /**as
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -44,10 +49,9 @@ class ProductController extends Controller
     {
        
         $manufacturers = DB::table('manufacturers')
-                        ->select('manufacturers.id','manufacturers.name as mName')
-                        ->get();
-
-
+            ->select('manufacturers.id', 'manufacturers.name as mName')
+            ->get();
+            
         return view('product.new', compact('manufacturers'));
 
     }
@@ -135,4 +139,51 @@ class ProductController extends Controller
         return redirect('/admin/products')->withSuccess('Product deleted !!!');
     }
 
+    public function getProducts(Request $request)
+    {
+        if ($request->ajax()) {
+            $products = Product::query()
+                ->leftJoin('manufacturers', 'products.fk_manufacturer_id', '=', 'manufacturers.id')
+                ->select(
+                    'products.id',
+                    'manufacturers.name as manufacturer_name',
+                    'products.name',
+                    'products.generic',
+                    'products.drug_class',
+                    'products.pack_size',
+                    'products.status',
+                    'products.created_at',
+                    'products.updated_at'
+                );
+
+            return datatables()->of($products)
+                ->addColumn('manufacturersName', function ($row) {
+                    return $row->manufacturer_name ?: '-';
+                })
+                ->addColumn('status', function ($row) {
+                    return $row->status == 1
+                        ? '<span class="text-success">Active</span>'
+                        : '<span class="text-danger">Inactive</span>';
+                })
+                ->addColumn('created_at', function ($row) {
+                    return \Carbon\Carbon::parse($row->created_at)->format('d M Y');
+                })
+                ->addColumn('updated_at', function ($row) {
+                    return \Carbon\Carbon::parse($row->updated_at)->format('d M Y');
+                })
+                ->addColumn('actions', function ($row) {
+                    $edit = '<a href="' . route('admin.products.edit', $row->id) . '" class="btn btn-sm btn-outline-primary me-1">Edit</a>';
+                    $delete = '<form action="' . route('admin.products.destroy', $row->id) . '" method="POST" class="d-inline">'
+                        . csrf_field()
+                        . method_field('delete')
+                        . '<button type="submit" class="btn btn-sm btn-outline-danger">Delete</button></form>';
+                    return $edit . $delete;
+                })
+                ->rawColumns(['status', 'actions'])
+                ->make(true);
+        }
+
+        return view('product.index');
+    }
+    
 }

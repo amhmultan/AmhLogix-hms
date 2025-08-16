@@ -18,12 +18,12 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('fk_manufacturer_id');
             $table->string('name', 255);
-            $table->string('generic', 255);
-            $table->string('drug_class', 255);
-            $table->string('description', 255);
-            $table->string('pack_size', 255);
-            $table->tinyInteger('status');
-            $table->string('remarks');
+            $table->text('generic')->nullable();
+            $table->string('drug_class', 255)->nullable();
+            $table->string('description', 255)->nullable();
+            $table->string('pack_size', 255)->nullable();
+            $table->tinyInteger('status')->default(1);
+            $table->string('remarks')->nullable();
             $table->timestamps();
 
             $table->foreign('fk_manufacturer_id')->on('manufacturers')->references('id')

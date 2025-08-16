@@ -1,183 +1,205 @@
 <x-app-layout>
-    <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
-        <div class="row mb-4">
-            <div class="col-sm-6">
-                <h2 class="text-danger font-bold">Add <span class="text-success">Purchase Invoice</span></h2>
-            </div>
-        </div>
+    <div class="container mx-auto py-6">
+        <h1 class="text-2xl font-bold mb-4">New Purchase Invoice</h1>
 
-        <form action="{{ route('admin.purchases.store') }}" method="POST">
+        {{-- Error Messages --}}
+        @if ($errors->any())
+            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+                <ul class="list-disc pl-6">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('admin.purchases.store') }}" method="POST" id="purchase-form">
             @csrf
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label for="invoice_number">Invoice Number</label>
-                    <input type="text" name="invoice_number" class="form-control" value="{{ old('invoice_number') }}" required>
+            {{-- Invoice Info --}}
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block mb-1 font-medium">Invoice Number</label>
+                    <input type="text" name="invoice_number" value="{{ old('invoice_number') }}"
+                           class="w-full border rounded p-2" required>
                 </div>
 
-                <div class="col-md-4 mb-3">
-                    <label for="purchase_date">Purchase Date</label>
-                    <input type="date" name="purchase_date" class="form-control" value="{{ old('purchase_date', date('Y-m-d')) }}" required>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <label for="supplier_id">Supplier</label>
-                    <select name="supplier_id" class="form-control" required>
+                <div>
+                    <label class="block mb-1 font-medium">Supplier</label>
+                    <select name="supplier_id" class="w-full border rounded p-2" required>
                         <option value="">-- Select Supplier --</option>
-                        @foreach ($suppliers as $supplier)
+                        @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>
                                 {{ $supplier->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
+
+                <div>
+                    <label class="block mb-1 font-medium">Purchase Date</label>
+                    <input type="date" name="purchase_date" value="{{ old('purchase_date', now()->toDateString()) }}"
+                           class="w-full border rounded p-2" required>
+                </div>
             </div>
 
-            <hr>
-
-            <h5 class="text-primary">Invoice Items</h5>
-            <div class="text-right mb-2">
-                <button type="button" class="btn btn-secondary" id="addRow">+ Add Item</button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered" id="itemsTable">
-                    <thead class="bg-light">
+            {{-- Items Table --}}
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold mb-2">Items</h2>
+                <table class="w-full border border-collapse" id="items-table">
+                    <thead class="bg-gray-100">
                         <tr>
-                            <th>Product</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Batch #</th>
-                            <th>Expiry</th>
-                            <th>Action</th>
+                            <th class="border p-2">Product</th>
+                            <th class="border p-2">Batch No</th>
+                            <th class="border p-2">Expiry Date</th>
+                            <th class="border p-2">Quantity</th>
+                            <th class="border p-2">Unit Price</th>
+                            <th class="border p-2">Total</th>
+                            <th class="border p-2">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <select name="items[0][product_id]" class="form-control" required>
-                                    <option value="">Select Product</option>
-                                    @foreach ($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->name }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td><input type="number" name="items[0][quantity]" class="form-control quantity" min="1" required></td>
-                            <td><input type="number" name="items[0][unit_price]" class="form-control unit_price" step="0.01" required></td>
-                            <td><input type="text" name="items[0][batch_no]" class="form-control"></td>
-                            <td><input type="date" name="items[0][expiry_date]" class="form-control"></td>
-                            <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
+                <button type="button" id="add-row"
+                        class="mt-2 bg-blue-600 text-white px-4 py-2 rounded">+ Add Item</button>
             </div>
 
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <label for="discount">Discount (Rs.)</label>
-                    <input type="number" step="0.01" name="discount" class="form-control" id="discount" value="{{ old('discount', 0) }}">
+            {{-- Totals --}}
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block mb-1 font-medium">Discount</label>
+                    <input type="number" step="0.01" name="discount" id="discount"
+                           value="{{ old('discount', 0) }}" class="w-full border rounded p-2">
                 </div>
-                <div class="col-md-3 mb-3">
-                    <label for="tax_percentage">Tax (%)</label>
-                    <input type="number" step="0.01" name="tax_percentage" class="form-control" id="tax_percentage" value="{{ old('tax_percentage', 0) }}">
+                <div>
+                    <label class="block mb-1 font-medium">Tax (%)</label>
+                    <input type="number" step="0.01" name="tax_percent" id="tax_percent"
+                           value="{{ old('tax_percent', 0) }}" class="w-full border rounded p-2">
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="notes">Remarks / Notes</label>
-                    <textarea name="notes" class="form-control">{{ old('notes') }}</textarea>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <strong>Gross Amount:</strong>
-                    <div id="grossAmount">Rs. 0.00</div>
-                </div>
-                <div class="col-md-3">
-                    <strong>Net Amount:</strong>
-                    <div id="netAmount">Rs. 0.00</div>
+                <div>
+                    <label class="block mb-1 font-medium">Notes</label>
+                    <textarea name="notes" class="w-full border rounded p-2">{{ old('notes') }}</textarea>
                 </div>
             </div>
 
-            {{-- Hidden fields to submit values --}}
-            <input type="hidden" name="gross_amount" id="gross_amount_input">
-            <input type="hidden" name="net_amount" id="net_amount_input">
-            <input type="hidden" name="tax_percentage" id="tax_percentage_input">
+            <div class="flex justify-end gap-6 mb-6">
+                <div>
+                    <label class="block font-medium">Total Amount</label>
+                    <input type="text" id="total_amount" name="total_amount" readonly
+                           class="w-full border rounded p-2 bg-gray-100">
+                </div>
+                <div>
+                    <label class="block font-medium">Tax Amount</label>
+                    <input type="text" id="tax_amount" name="tax_amount" readonly
+                           class="w-full border rounded p-2 bg-gray-100">
+                </div>
+                <div>
+                    <label class="block font-medium">Net Amount</label>
+                    <input type="text" id="net_amount" name="net_amount" readonly
+                           class="w-full border rounded p-2 bg-gray-100">
+                </div>
+            </div>
 
-            <div class="text-right">
-                <a class="btn btn-info mx-2" href="{{ route('admin.purchases.index')}}" accesskey="b" role="button"><u>B</u>ack</a>
-                <button type="submit" class="btn btn-success">Save Invoice</button>
+            <div class="flex justify-end">
+                <a class="btn-lg btn-warning mx-3" href="{{ route('admin.purchases.index')}}" accesskey="b" role="button"><u>B</u>ack</a>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 rounded">
+                    SAVE
+                </button>
             </div>
         </form>
     </div>
 
+    {{-- Scripts --}}
     @push('scripts')
-    <script>
-        let rowIndex = 1;
+        <script>
+            let rowCount = 0;
 
-        document.getElementById('addRow').addEventListener('click', function () {
-            const table = document.querySelector('#itemsTable tbody');
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <select name="items[${rowIndex}][product_id]" class="form-control" required>
-                        <option value="">Select Product</option>
-                        @foreach ($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->name }}</option>
-                        @endforeach
-                    </select>
-                </td>
-                <td><input type="number" name="items[${rowIndex}][quantity]" class="form-control quantity" min="1" required></td>
-                <td><input type="number" name="items[${rowIndex}][unit_price]" class="form-control unit_price" step="0.01" required></td>
-                <td><input type="text" name="items[${rowIndex}][batch_no]" class="form-control"></td>
-                <td><input type="date" name="items[${rowIndex}][expiry_date]" class="form-control"></td>
-                <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
-            `;
-            table.appendChild(row);
-            rowIndex++;
-        });
+            function recalcTotals() {
+                let total = 0;
+                document.querySelectorAll('.line-total').forEach(el => {
+                    total += parseFloat(el.value) || 0;
+                });
 
-        document.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-item')) {
-                e.target.closest('tr').remove();
-                calculateAmounts();
+                let discount = parseFloat(document.getElementById('discount').value) || 0;
+                let taxPercent = parseFloat(document.getElementById('tax_percent').value) || 0;
+                let taxable = Math.max(total - discount, 0);
+                let tax = taxable * (taxPercent / 100);
+                let net = taxable + tax;
+
+                document.getElementById('total_amount').value = total.toFixed(2);
+                document.getElementById('tax_amount').value = tax.toFixed(2);
+                document.getElementById('net_amount').value = net.toFixed(2);
             }
-        });
 
-        document.addEventListener('input', function (e) {
-            if (
-                e.target.classList.contains('quantity') ||
-                e.target.classList.contains('unit_price') ||
-                e.target.id === 'discount' ||
-                e.target.id === 'tax_percentage'
-            ) {
-                calculateAmounts();
+            function addRow() {
+                let tbody = document.querySelector('#items-table tbody');
+                let row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td class="border p-2">
+                        <select name="items[${rowCount}][product_id]" class="w-full product-select"></select>
+                    </td>
+                    <td class="border p-2">
+                        <input type="text" name="items[${rowCount}][batch_no]" class="w-full border rounded p-1">
+                    </td>
+                    <td class="border p-2">
+                        <input type="date" name="items[${rowCount}][expiry_date]" class="w-full border rounded p-1">
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" name="items[${rowCount}][quantity]" class="w-full border rounded p-1 qty" value="1" min="1">
+                    </td>
+                    <td class="border p-2">
+                        <input type="number" step="0.01" name="items[${rowCount}][unit_price]" class="w-full border rounded p-1 price" value="0">
+                    </td>
+                    <td class="border p-2">
+                        <input type="text" name="items[${rowCount}][total_price]" class="w-full border rounded p-1 line-total bg-gray-100" readonly>
+                    </td>
+                    <td class="border p-2 text-center">
+                        <button type="button" class="remove-row text-red-600">X</button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+
+                // Init Select2
+                $(row).find('.product-select').select2({
+                    width: '100%',
+                    placeholder: 'Search product...',
+                    ajax: {
+                        url: '{{ route("admin.products.ajax") }}',
+                        dataType: 'json',
+                        delay: 250,
+                        data: params => ({ q: params.term }),
+                        processResults: data => ({ results: data.results || [] })
+                    }
+                });
+
+                // Event listeners
+                row.querySelector('.qty').addEventListener('input', updateLineTotal);
+                row.querySelector('.price').addEventListener('input', updateLineTotal);
+                row.querySelector('.remove-row').addEventListener('click', () => {
+                    row.remove();
+                    recalcTotals();
+                });
+
+                rowCount++;
             }
-        });
 
-        function calculateAmounts() {
-            let total = 0;
-            document.querySelectorAll('#itemsTable tbody tr').forEach(function (row) {
-                let qty = parseFloat(row.querySelector('.quantity')?.value || 0);
-                let price = parseFloat(row.querySelector('.unit_price')?.value || 0);
-                total += qty * price;
-            });
+            function updateLineTotal(e) {
+                let row = e.target.closest('tr');
+                let qty = parseFloat(row.querySelector('.qty').value) || 0;
+                let price = parseFloat(row.querySelector('.price').value) || 0;
+                let total = qty * price;
+                row.querySelector('.line-total').value = total.toFixed(2);
+                recalcTotals();
+            }
 
-            let discount = parseFloat(document.getElementById('discount')?.value || 0);
-            let tax = parseFloat(document.getElementById('tax_percentage')?.value || 0);
+            document.getElementById('add-row').addEventListener('click', addRow);
+            document.getElementById('discount').addEventListener('input', recalcTotals);
+            document.getElementById('tax_percent').addEventListener('input', recalcTotals);
 
-            let afterDiscount = total - discount;
-            let taxAmount = afterDiscount * (tax / 100);
-            let net = afterDiscount + taxAmount;
-
-            // Display
-            document.getElementById('grossAmount').textContent = 'Rs. ' + total.toFixed(2);
-            document.getElementById('netAmount').textContent = 'Rs. ' + net.toFixed(2);
-
-            // Hidden inputs
-            document.getElementById('gross_amount_input').value = total.toFixed(2);
-            document.getElementById('net_amount_input').value = net.toFixed(2);
-            document.getElementById('tax_percentage_input').value = tax.toFixed(2);
-        }
-    </script>
+            // Add first row on load
+            addRow();
+        </script>
     @endpush
 </x-app-layout>

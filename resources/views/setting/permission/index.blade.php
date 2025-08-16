@@ -2,16 +2,16 @@
    <div>
         <main class="flex-1 bg-gray-200">
             <div class="container mx-auto px-6 py-5">
-                <div class="text-right">
+                <div class="text-right mb-4">
                   @can('Permission create')
-                    <a href="{{route('admin.permissions.create')}}" class="text-decoration-none bg-blue-500 text-white font-bold px-5 py-1 rounded focus:outline-none shadow hover:bg-blue-500 transition-colors ">New Permission</a>
+                    <a href="{{route('admin.permissions.create')}}" class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-500 transition-colors" accesskey="n"><u>N</u>ew Permission</a>
                   @endcan
                 </div>
-
-              <div class="bg-white shadow-md rounded my-6">
-                <table class="text-left w-full border-collapse">
+                <div class="table-responsive bg-white shadow-md rounded border-collapse p-3">
+              
+                <table class="table w-100 border-collapse" id="permissionsTable">
                   <thead>
-                    <tr>
+                    <tr class="bg-indigo-500 text-white">
                       <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light">Permission Name</th>
                       
                       <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light text-right">Actions</th>
@@ -48,4 +48,15 @@
         </main>
     </div>
 </div>
+@push('scripts')
+<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready( function () {
+    $('#permissionsTable').DataTable(
+    {
+      order: [[0, 'asc']],
+    });
+} );
+</script>
+@endpush
 </x-app-layout>

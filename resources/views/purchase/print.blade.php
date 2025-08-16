@@ -134,7 +134,7 @@
         <div class="totals">
             <p><strong>Gross Amount:</strong> Rs. {{ number_format($purchase_invoice->total_amount, 2) }}</p>
             <p><strong>Discount:</strong> Rs. {{ number_format($purchase_invoice->discount, 2) }}</p>
-            <p><strong>Tax ({{ $purchase_invoice->tax_percentage }}%):</strong> Rs. {{ number_format($purchase_invoice->tax_amount, 2) }}</p>
+            <p><strong>Tax ({{ $purchase_invoice->tax_percent }}%):</strong> Rs. {{ number_format($purchase_invoice->tax_amount, 2) }}</p>
             <p><strong>Net Amount:</strong> Rs. {{ number_format($purchase_invoice->net_amount, 2) }}</p>
         </div>
 

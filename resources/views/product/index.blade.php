@@ -1,100 +1,80 @@
 <x-app-layout>
-  <main>
-      <div class="container-fluid py-4 px-5 overflow-x-auto w-full">
-
-            <div class="row mb-5">
-              <div class="col-sm-6">
-                <p class="h3 text-danger"><strong><em>Products <span class="text-success">Dashboard</span></em></strong></p>
-              </div>
-              <div class="col-sm-6 text-right">
-                @can('Product create')
-                  <a href="{{route('admin.products.create')}}" class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-500 transition-colors" accesskey="a"><u>A</u>dd Product</a>
-                @endcan
-              </div>
-            </div>
-          
-          @if (!$products->isEmpty())
-            
-              <table id="productsTable" class="min-w-full bg-white shadow-md rounded text-left border-collapse">
-                <thead>
-                  <tr>
-                    <th class="py-3 px-5 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">ID</th>
-                    <th class="py-3 px-5 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">MANUFACTURER</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">NAME</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">GENERIC</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">CLASS</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">PACK SIZE</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">STATUS</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">CREATED ON</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">UPDATED ON</th>
-                    <th class="py-3 px-4 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @can('Product access')
-                  
-                    @foreach($products as $product)
-                      <tr>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->id }}</td>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->manufacturersName }}</td>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->name  }}</td>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->generic }}</td>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->drug_class }}</td>
-                        <td class="text-nowrap text-xs px-4 text-center border-grey-light">{{ $product->pack_size }}</td>
-                        
-                        {{-- Status --}}
-                        @if ($product->status == '1')
-                          <td class="text-nowrap text-xs px-4 text-success text-center border-grey-light">Active</td>
-                        @else
-                          <td class="text-nowrap text-xs px-4 text-danger text-center border-grey-light">Deactive</td>
-                        @endif
-                        <td class="text-nowrap text-xs px-4 border-grey-light">{{ $product->created_at }}</td>
-                        <td class="text-nowrap text-xs px-4 border-grey-light">{{ $product->updated_at }}</td>
-                        
-                        
-                        <td class="text-nowrap text-xs px-3 border-grey-light">
-                          
-                          @can('Product edit')
-                          <a href="{{route('admin.products.edit',$product->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-blue-400">Edit</a>
-                          @endcan
-      
-                          @can('Product delete')
-                          <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="inline">
-                              @csrf
-                              @method('delete')
-                              <button class="text-decoration-none text-grey-lighter font-bold py-1 px-1 rounded text-xs bg-blue hover:bg-blue-dark text-red-400">Delete</button>
-                          </form>
-                          @endcan
-                        </td>
-                      </tr>
-                    @endforeach
+    @push('styles')
+        <style>
+            #products-table td, 
+            #products-table th {
+            vertical-align: middle !important;
+            }
+        </style>
+    @endpush
+    <main>
+        <div class="container-fluid bg-grey py-4 px-5">
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <p class="h3 text-danger">
+                        <strong><em>Products <span class="text-success">Dashboard</span></em></strong>
+                    </p>
+                </div>
+                <div class="col-sm-6 text-right">
+                    @can('Product create')
+                        <a href="{{ route('admin.products.create') }}"
+                           class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded shadow hover:bg-blue-500">
+                           Add Product
+                        </a>
                     @endcan
-                </tbody>
-              </table>
-            
-                    
-        @else
-
-          <div class="row flex text-center mt-5 pt-5">
-            <div class="col-sm-12">
-              <h1 class="h4 italic text-danger">NO RECORD FOUND</h1>
+                </div>
             </div>
-          </div>
-        
-        @endif
 
-      </div>
-  </main>
-</div>
-@push('scripts')
-<script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script>
-  $(document).ready( function () {
-    $('#productsTable').DataTable(
-    {
-      order: [[0, 'desc']],
-    });
-} );
-</script>
-@endpush
+            <div class="table-responsive shadow rounded p-3 bg-white mt-5" style="max-height: 600px; overflow-y: auto;">
+                <table id="products-table" class="table table-bordered table-striped w-100 text-center align-middle" style="font-size: 0.9rem;">
+                    <thead class="bg-indigo-500 text-white text-center sticky-top" style="top: 0; z-index: 10;">
+                        <tr>
+                            <th class="text-center" style="vertical-align: middle;">ID</th>
+                            <th class="text-center" style="vertical-align: middle;">Manufacturer Name</th>
+                            <th class="text-center" style="vertical-align: middle;">Brand Name</th>
+                            <th class="text-center" style="vertical-align: middle;">Generic</th>
+                            <th class="text-center" style="vertical-align: middle;">Class</th>
+                            <th class="text-center" style="vertical-align: middle;">Pack Size</th>
+                            <th class="text-center" style="vertical-align: middle;">Status</th>
+                            <th class="text-center" style="vertical-align: middle;">Created At</th>
+                            <th class="text-center" style="vertical-align: middle;">Updated At</th>
+                            <th class="text-center" style="vertical-align: middle;">Actions</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    @push('scripts')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#products-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('admin.products.data') }}",
+                columns: [
+                    { data: 'id', name: 'products.id' },
+                    { data: 'manufacturersName', name: 'manufacturers.name' },
+                    { data: 'name', name: 'products.name' },
+                    { data: 'generic', name: 'products.generic' },
+                    { data: 'drug_class', name: 'products.drug_class' },
+                    { data: 'pack_size', name: 'products.pack_size' },
+                    { data: 'status', orderable: false, searchable: false },
+                    { data: 'created_at', name: 'products.created_at' },
+                    { data: 'updated_at', name: 'products.updated_at' },
+                    { data: 'actions', orderable: false, searchable: false }
+                ],
+                pageLength: 25,
+                order: [[0, 'desc']]
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
