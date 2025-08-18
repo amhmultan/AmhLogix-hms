@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -20,7 +21,7 @@ class AppointmentController extends Controller
     public function create()
     {
         $doctors = Doctor::all();
-        $patients = Patient::all();
+        $patients = Patient::whereDate('created_at', Carbon::today())->get();
 
         return view('appointments.create', compact('doctors', 'patients'));
     }
