@@ -3,12 +3,7 @@
 
 use App\Http\Controllers\Admin\PurchaseInvoiceController;
 use App\Http\Controllers\Admin\SaleController;
-use App\Http\Controllers\Admin;
-use App\Http\Controllers\Admin\PatientController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\StockReportController;
-use App\Http\Controllers\Admin\TokenReportController;
-use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\NoteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -136,4 +131,47 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // AJAX routes for products
     Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
 
+    // IPD Dashboard
+    Route::get('ipd', [App\Http\Controllers\Admin\AdmissionController::class, 'ipdDashboard'])->name('ipd.index');
+    
+    // IPD Admissions
+    Route::resource('admissions', App\Http\Controllers\Admin\AdmissionController::class);
+    Route::get('admissions/{admission}/print-slip', [App\Http\Controllers\Admin\AdmissionController::class, 'printSlip'])
+    ->name('admissions.print');
+    
+    // Bed & Ward Management
+    Route::resource('wards', App\Http\Controllers\Admin\WardController::class);
+    Route::resource('beds', App\Http\Controllers\Admin\BedController::class);
+    Route::post('beds/{admission}/shift', [App\Http\Controllers\Admin\BedController::class, 'shift'])->name('beds.shift');
+
+    // Daily Notes & Vitals
+    Route::prefix('daily-notes')->name('daily-notes.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\NoteController::class, 'index'])->name('index');
+        
+        // Custom create route with admission
+        Route::get('/create/{admission}', [App\Http\Controllers\Admin\NoteController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [App\Http\Controllers\Admin\NoteController::class, 'store'])->name('store');
+        
+        Route::get('/{dailyNote}/edit', [App\Http\Controllers\Admin\NoteController::class, 'edit'])->name('edit');
+        Route::put('/{dailyNote}', [App\Http\Controllers\Admin\NoteController::class, 'update'])->name('update');
+        Route::delete('/{dailyNote}', [App\Http\Controllers\Admin\NoteController::class, 'destroy'])->name('destroy');
+    });
+
+    // Charges & Billing
+    Route::resource('charges', App\Http\Controllers\Admin\ChargeController::class);
+    Route::get('admissions/{admission}/bill', [App\Http\Controllers\Admin\ChargeController::class, 'bill'])
+        ->name('admissions.bill');
+    
+    // Discharge
+    Route::get('admissions/{admission}/discharge', [App\Http\Controllers\Admin\DischargeController::class, 'create'])
+    ->name('admissions.discharge');
+    Route::post('admissions/{admission}/discharge', [App\Http\Controllers\Admin\DischargeController::class, 'store'])
+        ->name('admissions.discharge.store');
+    Route::get('admissions/{admission}/discharge-slip', [App\Http\Controllers\Admin\DischargeController::class, 'printSlip'])
+    ->name('admissions.discharge-slip');
+    
+    // IPD Reports
+    Route::get('ipd-reports', [App\Http\Controllers\Admin\IPDReportController::class, 'index'])->name('ipd.ipd_reports.index');
 });

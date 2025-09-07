@@ -48,6 +48,33 @@
           </select>
         </div>
       </div>
+      <div class="row my-4">
+        <div class="col-md-6">
+          <label class="text-gray-700 font-black">Panel:</label>
+          <select class="form-control" disabled>
+            @if ($search != "")
+              @foreach ($data['patients'] as $patient)
+                <option>{{ $patient->reffered_by }}</option>
+              @endforeach
+            @else
+              <option></option>
+            @endif
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="text-gray-700 font-black">CNIC:</label>
+          <select class="form-control" disabled>
+            @if ($search != "")
+              @foreach ($data['patients'] as $patient)
+                <option>{{ $patient->cnic }}</option>
+              @endforeach
+            @else
+              <option></option>
+            @endif
+          </select>
+        </div>
+
+      </div>
 
       <hr />
 

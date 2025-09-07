@@ -38,7 +38,7 @@
               @foreach($appointments as $appointment)
                 <tr class="text-center text-xs">
                   <td class="px-4 py-2 border">{{ $appointment->id }}</td>
-                  <td class="px-4 py-2 border">{{ $appointment->patient->name ?? 'N/A' }}</td>
+                  <td class="px-4 py-2 border">{{ $appointment->patient_name ?? 'N/A' }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->doctor->name ?? 'N/A' }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->appointment_date }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->appointment_time }}</td>

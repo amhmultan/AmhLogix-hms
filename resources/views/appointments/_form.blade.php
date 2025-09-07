@@ -1,14 +1,16 @@
 <div class="row g-3">
   <div class="col-md-6">
-    <label class="form-label">Patient</label>
-    <select name="patient_id" class="form-select" required>
+    <label class="form-label">Patient Name</label>
+    <input type="text" class="form-control" value="{{ old('patient_name', $appointment->patient_name ?? '') }}" name="patient_name" required>
+    {{-- <select name="patient_id" class="form-select" required>
       <option value="">-- Select Patient --</option>
       @foreach($patients as $patient)
         <option value="{{ $patient->id }}" {{ old('patient_id', $appointment->patient_id ?? '') == $patient->id ? 'selected' : '' }}>
           {{ $patient->name }}
         </option>
       @endforeach
-    </select>
+      >
+    </select> --}}
   </div>
 
   <div class="col-md-6">

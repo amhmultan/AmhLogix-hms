@@ -141,6 +141,39 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Backup delete']);
         $permission = Permission::create(['name' => 'Backup restore']);
 
+        $permission = Permission::create(['name' => 'Ward access']);
+        $permission = Permission::create(['name' => 'Ward create']);
+        $permission = Permission::create(['name' => 'Ward edit']);
+        $permission = Permission::create(['name' => 'Ward delete']);
+
+        $permission = Permission::create(['name' => 'Bed access']);
+        $permission = Permission::create(['name' => 'Bed create']);
+        $permission = Permission::create(['name' => 'Bed edit']);
+        $permission = Permission::create(['name' => 'Bed delete']);
+
+        $permission = Permission::create(['name' => 'IPD_Admission access']);
+        $permission = Permission::create(['name' => 'IPD_Admission create']);
+        $permission = Permission::create(['name' => 'IPD_Admission edit']);
+        $permission = Permission::create(['name' => 'IPD_Admission delete']);
+
+        $permission = Permission::create(['name' => 'IPD_Notes access']);
+        $permission = Permission::create(['name' => 'IPD_Notes create']);
+        $permission = Permission::create(['name' => 'IPD_Notes edit']);
+        $permission = Permission::create(['name' => 'IPD_Notes delete']);
+        
+        // permission for IPD Billing (Like Lab, Radiology, Medicine, Service, Test etc. . .)
+        $permission = Permission::create(['name' => 'IPD_Billing access']);
+        $permission = Permission::create(['name' => 'IPD_Billing create']);
+        $permission = Permission::create(['name' => 'IPD_Billing edit']);
+        $permission = Permission::create(['name' => 'IPD_Billing delete']);
+        
+        $permission = Permission::create(['name' => 'Discharge access']);
+        $permission = Permission::create(['name' => 'Discharge create']);
+        $permission = Permission::create(['name' => 'Discharge edit']);
+        $permission = Permission::create(['name' => 'Discharge delete']);
+
+
+
         $admin->assignRole($admin_role);
         $writer->assignRole($writer_role);
 

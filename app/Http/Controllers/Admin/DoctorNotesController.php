@@ -37,19 +37,38 @@ class DoctorNotesController extends Controller
      */
     public function create(Request $request)
     {
-        $search = $request['search'] ?? "";
+        $search = $request->get('search');  
 
-        $tokens = DB::table('tokens')
-            ->join('patients', 'patients.id', '=', 'tokens.fk_patients_id')
-            ->select('tokens.id', 'tokens.fk_patients_id', 'patients.name', 'tokens.created_at')
-            ->where('tokens.id','LIKE',"%$search%")
-            ->get();
+        $tokens = collect();
+        $token = null;
+        $tokenAlreadySaved = false;
 
-        return view('doctor_notes.new', [
-            'search' => $search,
-            'tokens' => $tokens
-        ]);
+        if (!empty($search)) {
+            $tokens = DB::table('tokens')
+                ->join('patients', 'tokens.fk_patients_id', '=', 'patients.id')
+                ->select(
+                    'tokens.*',
+                    'patients.name',
+                    'patients.reffered_by',
+                    'patients.cnic',
+                    'patients.address as pAddress',
+                    'patients.dob as pAge'
+                )
+                ->where('tokens.id', $search) // search by token no
+                ->get();
+
+            $token = $tokens->first();
+
+            if ($token) {
+                $tokenAlreadySaved = DB::table('doctor_notes')
+                    ->where('fk_token_id', $token->id)
+                    ->exists();
+            }
+        }
+
+        return view('doctor_notes.new', compact('search', 'tokens', 'token', 'tokenAlreadySaved'));
     }
+
 
     /**
      * Store a newly created resource in storage.

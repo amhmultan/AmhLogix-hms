@@ -9,11 +9,11 @@
 
         <!-- Filters -->
         <div class="row mb-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label>From Date</label>
                 <input type="date" id="from_date" class="form-control">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label>To Date</label>
                 <input type="date" id="to_date" class="form-control">
             </div>
@@ -35,21 +35,34 @@
                     @endforeach
                 </select>
             </div>
+            <div class="col-md-2">
+                <label>Panel</label>
+                <select id="panel" class="form-control">
+                    <option value="">All</option>
+                    @php
+                        $panels = \App\Models\Patient::select('reffered_by')->distinct()->pluck('reffered_by');
+                    @endphp
+                    @foreach($panels as $panel)
+                        <option value="{{ $panel }}">{{ $panel }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
 
         <div class="mb-3">
             <button id="filterBtn" class="btn btn-primary me-2">Filter</button>
             <button id="resetBtn" class="btn btn-secondary">Reset</button>
         </div>
-
+        <hr>
         <!-- Table -->
-        <div class="table-responsive">
+        <div class="table-responsive pt-4">
             <table class="table table-bordered text-center" id="report-table" style="width:100%">
                 <thead class="table-light">
                     <tr>
                         <th class="text-uppercase text-center">Token #</th>
                         <th class="text-uppercase text-center">Date</th>
                         <th class="text-uppercase text-center">Patient</th>
+                         <th class="text-uppercase text-center">Panel</th>
                         <th class="text-uppercase text-center">Patient MR #</th>
                         <th class="text-uppercase text-center">Doctor</th>
                         <th class="text-uppercase text-center">Speciality</th>
@@ -58,7 +71,7 @@
                 </thead>
                 <tfoot>
                     <tr>
-                        <th colspan="5" class="text-end">Totals:</th>
+                        <th colspan="6" class="text-end">Totals:</th>
                         <th id="total_tokens" class="text-center"></th>
                         <th id="total_amount" class="text-center"></th>
                     </tr>
@@ -80,120 +93,123 @@
     <script>
         $(document).ready(function () {
             let table = $('#report-table').DataTable({
-                processing: true,
-                serverSide: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    {
-                        extend: 'excel',
-                        title: function () {
-                            let from = $('#from_date').val() || 'Start';
-                            let to = $('#to_date').val() || 'End';
-                            return `OPD Report (${from} to ${to})`;
-                        },
-                        footer: false, // disable default tfoot export
-                        customize: function (xlsx) {
-                            let sheet = xlsx.xl.worksheets['sheet1.xml'];
-                            let lastRow = $('row', sheet).last();
-                            let rowIndex = parseInt(lastRow.attr('r')) + 1;
-                            let totalTokens = $('#total_tokens').text();
-                            let totalAmount = $('#total_amount').text();
+            processing: true,
+            serverSide: true,
+            dom: 'Bfrtip',
+            order: [[1, 'desc']],
+            buttons: [
+                        {
+                            extend: 'excel',
+                            title: function () {
+                                let from = $('#from_date').val() || 'Start';
+                                let to = $('#to_date').val() || 'End';
+                                return `OPD Report (${from} to ${to})`;
+                            },
+                            className: 'btn btn-success btn-sm',
+                            footer: false, // disable default tfoot export
+                            customize: function (xlsx) {
+                                let sheet = xlsx.xl.worksheets['sheet1.xml'];
+                                let lastRow = $('row', sheet).last();
+                                let rowIndex = parseInt(lastRow.attr('r')) + 1;
+                                let totalTokens = $('#total_tokens').text();
+                                let totalAmount = $('#total_amount').text();
 
-                            // Manually add totals row in Excel
-                            let totalsRow = `
-                                <row r="${rowIndex}">
-                                    <c t="inlineStr" r="A${rowIndex}"><is><t></t></is></c>
-                                    <c t="inlineStr" r="B${rowIndex}"><is><t></t></is></c>
-                                    <c t="inlineStr" r="C${rowIndex}"><is><t></t></is></c>
-                                    <c t="inlineStr" r="D${rowIndex}"><is><t></t></is></c>
-                                    <c t="inlineStr" r="E${rowIndex}"><is><t>Totals:</t></is></c>
-                                    <c t="inlineStr" r="F${rowIndex}"><is><t>${totalTokens}</t></is></c>
-                                    <c t="inlineStr" r="G${rowIndex}"><is><t>${totalAmount}</t></is></c>
-                                </row>`;
-                            sheet.childNodes[0].childNodes[1].innerHTML += totalsRow;
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        title: function () {
-                            let from = $('#from_date').val() || 'Start';
-                            let to = $('#to_date').val() || 'End';
-                            return `OPD Report (${from} to ${to})`;
+                                let totalsRow = `
+                                    <row r="${rowIndex}">
+                                        <c t="inlineStr" r="A${rowIndex}"><is><t></t></is></c>
+                                        <c t="inlineStr" r="B${rowIndex}"><is><t></t></is></c>
+                                        <c t="inlineStr" r="C${rowIndex}"><is><t></t></is></c>
+                                        <c t="inlineStr" r="D${rowIndex}"><is><t></t></is></c>
+                                        <c t="inlineStr" r="E${rowIndex}"><is><t>Totals:</t></is></c>
+                                        <c t="inlineStr" r="F${rowIndex}"><is><t>${totalTokens}</t></is></c>
+                                        <c t="inlineStr" r="G${rowIndex}"><is><t>${totalAmount}</t></is></c>
+                                    </row>`;
+                                sheet.childNodes[0].childNodes[1].innerHTML += totalsRow;
+                            }
                         },
-                        footer: false, // disable default footer for PDF
-                        customize: function (doc) {
-                            let totalTokens = $('#total_tokens').text();
-                            let totalAmount = $('#total_amount').text();
+                        {
+                            extend: 'pdfHtml5',
+                            title: function () {
+                                let from = $('#from_date').val() || 'Start';
+                                let to = $('#to_date').val() || 'End';
+                                return `OPD Report (${from} to ${to})`;
+                            },
+                            className: 'btn btn-danger btn-sm',
+                            footer: false,
+                            customize: function (doc) {
+                                let totalTokens = $('#total_tokens').text();
+                                let totalAmount = $('#total_amount').text();
 
-                            // Add totals row manually with correct colspan
-                            doc.content[1].table.body.push([
-                                { text: 'Totals:', colSpan: 5, alignment: 'right', bold: true },
-                                {}, {}, {}, {},
-                                { text: totalTokens, alignment: 'center', bold: true },
-                                { text: totalAmount, alignment: 'center', bold: true }
-                            ]);
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        title: function () {
-                            let from = $('#from_date').val() || 'Start';
-                            let to = $('#to_date').val() || 'End';
-                            return `OPD Report (${from} to ${to})`;
+                                doc.content[1].table.body.push([
+                                    { text: 'Totals:', colSpan: 6, alignment: 'right', bold: true },
+                                    {}, {}, {}, {}, {}, // placeholders for colSpan=6
+                                    { text: totalTokens, alignment: 'center', bold: true },
+                                    { text: totalAmount, alignment: 'center', bold: true }
+                                ]);
+                            }
                         },
-                        footer: false, // disable default tfoot export
-                        customize: function (win) {
-                            let totalTokens = $('#total_tokens').text();
-                            let totalAmount = $('#total_amount').text();
+                        {
+                            extend: 'print',
+                            title: function () {
+                                let from = $('#from_date').val() || 'Start';
+                                let to = $('#to_date').val() || 'End';
+                                return `OPD Report (${from} to ${to})`;
+                            },
+                            className: 'btn btn-info btn-sm',
+                            footer: false,
+                            customize: function (win) {
+                                let totalTokens = $('#total_tokens').text();
+                                let totalAmount = $('#total_amount').text();
 
-                            // Add totals row manually after the table
-                            $(win.document.body).find('table').append(
-                                `<tr>
-                                    <td colspan="5" style="text-align:right;font-weight:bold;">Totals:</td>
-                                    <td style="text-align:center;font-weight:bold;">${totalTokens}</td>
-                                    <td style="text-align:center;font-weight:bold;">${totalAmount}</td>
-                                </tr>`
-                            );
+                                $(win.document.body).find('table').append(
+                                    `<tr>
+                                        <td colspan="6" style="text-align:right;font-weight:bold;">Totals:</td>
+                                        <td style="text-align:center;font-weight:bold;">${totalTokens}</td>
+                                        <td style="text-align:center;font-weight:bold;">${totalAmount}</td>
+                                    </tr>`
+                                );
+                            }
                         }
-                    },
-                ],
-                ajax: {
-                    url: "{{ route('admin.tokens.token_report.data') }}",
-                    data: function (d) {
-                        d.from_date = $('#from_date').val();
-                        d.to_date = $('#to_date').val();
-                        d.doctor_id = $('#doctor_id').val();
-                        d.department_id = $('#department_id').val();
+                    ],
+            ajax: {
+                url: "{{ route('admin.tokens.token_report.data') }}",
+                data: function (d) {
+                    d.from_date = $('#from_date').val();
+                    d.to_date = $('#to_date').val();
+                    d.doctor_id = $('#doctor_id').val();
+                    d.department_id = $('#department_id').val();
+                    d.panel = $('#panel').val();
+                }
+            },
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                {
+                    data: 'created_at',
+                    name: 'created_at',
+                    render: function (data) {
+                        if (!data) return '';
+                        let date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
                     }
                 },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                    {
-                        data: 'created_at',
-                        name: 'created_at',
-                        render: function (data) {
-                            if (!data) return '';
-                            let date = new Date(data);
-                            return date.toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                            });
-                        }
-                    },
-                    { data: 'patient_name', name: 'patient_name' },
-                    { data: 'patient_mr_no', name: 'patient_mr_no' },
-                    { data: 'doctor_name', name: 'doctor_name' },
-                    { data: 'speciality_name', name: 'speciality_name' },
-                    { data: 'amount_formatted', name: 'amount_formatted' }
-                ],
-                drawCallback: function (settings) {
-                    if (settings.json) {
-                        $('#total_tokens').html(settings.json.totalTokens);
-                        $('#total_amount').html(settings.json.totalAmount);
-                    }
+                { data: 'patient_name', name: 'patient_name' },
+                { data: 'panel_name', name: 'panel_name' },
+                { data: 'patient_mr_no', name: 'patient_mr_no' },
+                { data: 'doctor_name', name: 'doctor_name' },
+                { data: 'speciality_name', name: 'speciality_name' },
+                { data: 'amount_formatted', name: 'amount_formatted' }
+            ],
+            drawCallback: function (settings) {
+                if (settings.json) {
+                    $('#total_tokens').html(settings.json.totalTokens);
+                    $('#total_amount').html(settings.json.totalAmount);
                 }
-            });
+            }
+        });
 
             $('#filterBtn').click(function () {
                 table.ajax.reload();

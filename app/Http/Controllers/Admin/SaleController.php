@@ -23,6 +23,7 @@ class SaleController extends Controller
     public function index()
     {
         $sales = SaleInvoice::with('patient')->latest()->paginate(10);
+        
         return view('sale.index', compact('sales'));
     }
 

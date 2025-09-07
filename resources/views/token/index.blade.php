@@ -24,6 +24,7 @@
                       <th class="py-3 px-4 border text-center">PATIENT NAME</th>
                       <th class="py-3 px-4 border text-center">DOCTORS NAME</th>
                       <th class="py-3 px-4 border text-center">SPECIALTY</th>
+                      <th class="py-3 px-4 border text-center">PANEL</th>
                       <th class="py-3 px-4 border text-center">FEES</th>
                       <th class="py-3 px-4 border text-center">PAID</th>
                       <th class="py-3 px-4 border text-center">BALANCE</th>
@@ -46,6 +47,7 @@
                           <td class="px-4 py-2 border">{{ $token->pName }}</td>
                           <td class="px-4 py-2 border">{{ $token->dName }}</td>
                           <td class="px-4 py-2 border">{{ $token->sTitle }}</td>
+                          <td class="px-4 py-2 border">{{ $token->reffered_by }}</td>
                           <td class="px-4 py-2 border">{{ $token->fees }}</td>
                           <td class="px-4 py-2 border">{{ $token->denomination }}</td>
                           <td class="px-4 py-2 border">{{ $token->balance }}</td>

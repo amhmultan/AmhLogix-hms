@@ -220,6 +220,29 @@
         </a>
         @endcanany
 
+        {{-- IPD Menu Start --}}
+        @can('IPD_Admission access')
+            <a class="text-decoration-none flex items-center mt-2 py-2 px-6 fw-bold fs-6 text-white hover:bg-indigo-600 hover:text-white {{ route::currentroutenamed('admin.ipd.index') ? 'active' : '' }}" href="{{ route('admin.ipd.index')}}">
+                <svg width="24px" height="24px" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+
+                <g fill="#62adfc">
+
+                <path d="M22 142.576h10.702M22 114.712h10.702M22 22v148h148M21.995 32.934h10.702m-10.702 27.32h10.702M21.995 87.356h10.702" style="#62adfc:#62adfc;fill-opacity:0;stroke:#62adfc;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;paint-order:stroke fill markers" fill="#62adfc"/>
+
+                <path d="M68.842 128.695a10.782 10.782 0 0 1-10.781 10.781 10.782 10.782 0 0 1-10.782-10.781 10.782 10.782 0 0 1 10.782-10.782 10.782 10.782 0 0 1 10.781 10.782zM95.06 76.358A10.782 10.782 0 0 1 84.277 87.14a10.782 10.782 0 0 1-10.782-10.782 10.782 10.782 0 0 1 10.782-10.782 10.782 10.782 0 0 1 10.781 10.782Zm43.576 36.396a10.782 10.782 0 0 1-10.782 10.781 10.782 10.782 0 0 1-10.781-10.781 10.782 10.782 0 0 1 10.781-10.782 10.782 10.782 0 0 1 10.782 10.782zm21.604-73.396a10.782 10.782 0 0 1-10.782 10.782 10.782 10.782 0 0 1-10.782-10.782 10.782 10.782 0 0 1 10.782-10.781 10.782 10.782 0 0 1 10.781 10.781z" style="fill-opacity:0;stroke:#62adfc;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6;paint-order:stroke fill markers"/>
+
+                <path d="m64.38 118.198 14.117-31.362m15.08-2.424 24.333 21.124m13.668-4.067 15.53-52.393" style="fill:#62adfc;fill-opacity:0;stroke:#62adfc;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;paint-order:stroke fill markers" fill="none"/>
+
+                </g>
+
+                </svg>
+
+                <span class="mx-3">IPD Dashboard</span>
+            </a>            
+        @endcan
+        
+        {{-- IPD Menu End --}}
+
         @canany('TokenReport access','TokenReport add','TokenReport edit','TokenReport delete')
         <a class="text-decoration-none flex items-center mt-2 py-2 px-6 fw-bold fs-6 text-white hover:bg-indigo-600 hover:text-white {{ Route::currentRouteNamed('admin.tokens.token_report') ? 'active' : '' }}"
         href="{{ route('admin.tokens.token_report') }}">
@@ -352,6 +375,9 @@
                 <span class="mx-3">Stock Report</span>
             </a>
         @endcanany
+        {{-- Reports Menu End --}}
+        
+        
     </nav>
 </div>
 

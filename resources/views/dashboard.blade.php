@@ -54,7 +54,7 @@
 
     <div class="container py-4">
         <!-- Hospital Section -->
-        <h2 class="text-center mb-4 text-secondary">Hospital</h2>
+        <h2 class="text-center mb-4 text-secondary">OPD</h2>
         <div class="row gy-4">
             <div class="col-lg-4 col-md-6">
                 <div class="card-box bg-primary">

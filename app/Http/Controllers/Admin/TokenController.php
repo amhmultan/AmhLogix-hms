@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\Token;
 use App\Models\Doctor;
+use App\Models\Speciality;
 
 class TokenController extends Controller
 {
@@ -38,7 +39,7 @@ class TokenController extends Controller
                     ->leftJoin('patients','tokens.fk_patients_id','=','patients.id')
                     ->leftJoin('doctors','tokens.fk_doctors_id','=','doctors.id')
                     ->leftJoin('specialities','tokens.fk_specialty_id','=','specialities.id')
-                    ->select('tokens.id', 'tokens.fk_patients_id', 'patients.name as pName', 'tokens.fk_doctors_id','doctors.name as dName', 'tokens.fk_specialty_id', 'specialities.title as sTitle', 'tokens.fees', 'tokens.denomination', 'tokens.balance', 'tokens.created_at', 'tokens.updated_at')
+                    ->select('tokens.id', 'tokens.fk_patients_id', 'patients.name as pName', 'patients.reffered_by', 'tokens.fk_doctors_id','doctors.name as dName', 'tokens.fk_specialty_id', 'specialities.title as sTitle', 'tokens.fees', 'tokens.denomination', 'tokens.balance', 'tokens.created_at', 'tokens.updated_at')
                     ->get();
                     
         return view('token.index', ['tokens' => $tokens]);
@@ -115,7 +116,8 @@ class TokenController extends Controller
                         'doctors.remarks',
                         'patients.phone as pPhone',
                         'patients.address as pAddress',
-                        'patients.dob as pAge'
+                        'patients.dob as pAge',
+                        'patients.reffered_by'
                     )
                     ->where('tokens.id', $token->id)
                     ->first();
@@ -135,35 +137,19 @@ class TokenController extends Controller
      */
     public function edit(Token $token)
     {
-        
-        $data = [];
-        
-        $id = $token->id;
-        
-        $token = DB::table('tokens')
-                        ->join('patients','tokens.fk_patients_id','=','patients.id')
-                        ->join('doctors','tokens.fk_doctors_id','=','doctors.id')
-                        ->join('specialities','tokens.fk_specialty_id','=','specialities.id')
-                        ->select('tokens.*','patients.name as pName','patients.phone','doctors.name as dName','specialities.title as sTitle')
-                        ->where('tokens.id', '=', $id)
-                        ->get();
-        
-        $doctors = DB::table('doctors')
-                    ->select('doctors.id','doctors.name')
-                    ->get();
+        // Fetch token with relations instead of raw joins
+        $token = Token::with(['patient', 'doctor', 'speciality'])
+            ->where('id', $token->id)
+            ->firstOrFail();
 
-        $specialities = DB::table('specialities')
-                    ->select('specialities.id','specialities.title')
-                    ->get();
+        $doctors = Doctor::select('id', 'name')->get();
+        $specialities = Speciality::select('id', 'title')->get();
 
-        $data = [
-            "tokens" => $token,
-            "doctors" => $doctors,
-            "specialities" => $specialities,
-        ];
-        
-        return view('token.edit',['data' => $data]);
-
+        return view('token.edit', [
+            'token' => $token,
+            'doctors' => $doctors,
+            'specialities' => $specialities,
+        ]);
     }
 
     /**
@@ -173,14 +159,19 @@ class TokenController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Token $token)
     {
-        
-        $token = Token::find($id);
-        $token->update($request->all());
-        return redirect('/admin/tokens')->withSuccess('Patient token updated !!!');
+        // Validate input before updating
+        $validated = $request->validate([
+            'fk_doctors_id'   => 'required|exists:doctors,id',
+            'fk_specialty_id' => 'required|exists:specialities,id',
+        ]);
 
+        $token->update($validated);
+
+        return redirect()->route('admin.tokens.index')->with('success', 'Patient token updated successfully!');
     }
+
 
     /**
      * Remove the specified resource from storage.

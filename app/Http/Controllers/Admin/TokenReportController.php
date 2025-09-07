@@ -23,7 +23,7 @@ class TokenReportController extends Controller
     public function data(Request $request)
     {
         // Base query with relationships
-        $query = Token::with(['patient', 'doctors', 'specialties']);
+        $query = Token::with(['patient', 'doctor', 'speciality']);
 
         // Apply filters
         if ($request->from_date) {
@@ -38,6 +38,11 @@ class TokenReportController extends Controller
         if ($request->department_id) {
             $query->where('fk_specialty_id', $request->department_id);
         }
+        if ($request->panel) { // Assuming 'panel' is a field in the patients table
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('reffered_by', $request->panel);
+            });
+        }
 
         // Get totals before pagination
         $totalAmount = (clone $query)->sum('denomination');
@@ -48,14 +53,15 @@ class TokenReportController extends Controller
             ->addColumn('patient_name', function ($row) {
                 return $row->patient?->name ?? '-';
             })
+            ->addColumn('panel_name', fn($row) => $row->patient?->reffered_by ?? '-')
             ->addColumn('patient_mr_no', function ($row) {
                 return $row->patient?->id ?? '-';
             })
             ->addColumn('doctor_name', function ($row) {
-                return $row->doctors?->name ?? '-';
+                return $row->doctor?->name ?? '-';
             })
             ->addColumn('speciality_name', function ($row) {
-                return $row->specialties?->title ?? '-';
+                return $row->speciality?->title ?? '-';
             })
             ->addColumn('amount_formatted', function ($row) {
                 return number_format($row->denomination ?? 0, 2);
@@ -69,5 +75,6 @@ class TokenReportController extends Controller
             ])
             ->make(true);
     }
+
     
 }

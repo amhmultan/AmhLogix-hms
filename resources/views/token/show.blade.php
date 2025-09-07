@@ -51,27 +51,35 @@
             <table class="table table-bordered w-100">
                 <tbody>
                     <tr>
-                        <th>Token No:</th>
-                        <td class="text-center">{{ $token->id }}</td>
-                        <th>MR No:</th>
-                        <td class="text-center">{{ $token->fk_patients_id }}</td>
-                        <th>Patient:</th>
-                        <td class="text-center">{{ $token->pName }}</td>
+                    <th class="align-middle">Token No:</th>
+                    <td class="text-center align-middle">{{ $token->id }}</td>
+                    <th class="align-middle">MR No:</th>
+                    <td class="text-center align-middle">{{ $token->fk_patients_id }}</td>
+                    <th class="align-middle">Patient Name:</th>
+                    <td class="text-center align-middle">{{ $token->pName }}</td>
+                    <th class="align-middle">Panel:</th>
+                    <td class="text-center align-middle" width="200">{{ $token->reffered_by }}</td>
                     </tr>
                     <tr>
-                        <th>Date of Birth:</th>
-                        <td class="text-center">{{ $token->pAge }}</td>
-                        <th>Age:</th>
-                        <td class="text-center">{{ 
-                            $token->pAge
-                            ? \Carbon\Carbon::parse($token->pAge)->age . ' years, ' . \Carbon\Carbon::parse($token->pAge)->month . ' months, ' . \Carbon\Carbon::parse($token->pAge)->day . ' days'
-                            : 'N/A'}}</td>
-                        <th>Checkup Date:</th>
-                        <td class="text-center">{{ date('d-m-Y', strtotime($token->created_at)) }}</td>
+                    <th class="align-middle">Date of Birth:</th>
+                    <td class="text-center align-middle">{{ $token->pAge }}</td>
+                    <th class="align-middle">Age:</th>
+                    <td class="text-center align-middle">
+                        {{ $token->pAge
+                        ? \Carbon\Carbon::parse($token->pAge)->age . ' years, ' .
+                            \Carbon\Carbon::parse($token->pAge)->month . ' months, ' .
+                            \Carbon\Carbon::parse($token->pAge)->day . ' days'
+                        : 'N/A'
+                        }}
+                    </td>
+                    <th class="align-middle">Checkup Date:</th>
+                    <td colspan="3" class="text-center align-middle">
+                        {{ date('d-m-Y', strtotime($token->created_at)) }}
+                    </td>
                     </tr>
                     <tr>
-                        <th>Address:</th>
-                        <td colspan="5">{{ $token->pAddress }}</td>
+                    <th class="align-middle">Address:</th>
+                    <td colspan="7" class="align-middle">{{ $token->pAddress }}</td>
                     </tr>
                 </tbody>
             </table>

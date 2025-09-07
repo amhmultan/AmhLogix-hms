@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'patient_id'       => 'required|exists:patients,id',
+            'patient_name'       => 'required|string|max:255',
             'doctor_id'        => 'required|exists:doctors,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required',
@@ -59,7 +59,7 @@ class AppointmentController extends Controller
     public function update(Request $request, Appointment $appointment)
     {
         $validated = $request->validate([
-            'patient_id'       => 'required|exists:patients,id',
+            'patient_name'       => 'required|string|max:255',
             'doctor_id'        => 'required|exists:doctors,id',
             'appointment_date' => 'required|date',
             'appointment_time' => 'required',
