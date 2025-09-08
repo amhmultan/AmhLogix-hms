@@ -72,7 +72,7 @@
                     { data: 'actions', orderable: false, searchable: false }
                 ],
                 pageLength: 25,
-                order: [[0, 'desc']]
+                order: [[0, 'asc']]
             });
         });
     </script>

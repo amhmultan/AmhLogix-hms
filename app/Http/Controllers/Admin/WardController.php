@@ -10,7 +10,7 @@ class WardController extends Controller
 {
     function __construct()
     {
-        $this->middleware('role_or_permission:Ward access access|Ward create|Ward edit|Ward delete', ['only' => ['index','show']]);
+        $this->middleware('role_or_permission:Ward access|Ward create|Ward edit|Ward delete', ['only' => ['index','show']]);
         $this->middleware('role_or_permission:Ward create', ['only' => ['create','store']]);
         $this->middleware('role_or_permission:Ward edit', ['only' => ['edit','update']]);
         $this->middleware('role_or_permission:Ward delete', ['only' => ['destroy']]);

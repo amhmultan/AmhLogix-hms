@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
-     *
-     * @return \Illuminate\View\View
+     * Show the login form.
      */
     public function create()
     {
@@ -21,34 +19,27 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
-     *
-     * @param  \App\Http\Requests\Auth\LoginRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Handle login request.
      */
     public function store(LoginRequest $request)
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::ADMIN_HOME);
     }
 
     /**
-     * Destroy an authenticated session.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Log the user out.
      */
     public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        // ✅ Redirect user back to correct login screen
+        return redirect()->route('admin.login');
     }
 }

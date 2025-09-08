@@ -55,14 +55,14 @@
         </div>
         <hr>
         <!-- Table -->
-        <div class="table-responsive pt-4">
+        <div class="table-responsive pt-4 ">
             <table class="table table-bordered text-center" id="report-table" style="width:100%">
-                <thead class="table-light">
+                <thead>
                     <tr>
                         <th class="text-uppercase text-center">Token #</th>
                         <th class="text-uppercase text-center">Date</th>
                         <th class="text-uppercase text-center">Patient</th>
-                         <th class="text-uppercase text-center">Panel</th>
+                        <th class="text-uppercase text-center">Panel</th>
                         <th class="text-uppercase text-center">Patient MR #</th>
                         <th class="text-uppercase text-center">Doctor</th>
                         <th class="text-uppercase text-center">Speciality</th>

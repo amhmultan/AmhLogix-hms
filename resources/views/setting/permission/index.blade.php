@@ -54,7 +54,7 @@
   $(document).ready( function () {
     $('#permissionsTable').DataTable(
     {
-      order: [[0, 'asc']],
+      order: [[1, 'desc']],
     });
 } );
 </script>

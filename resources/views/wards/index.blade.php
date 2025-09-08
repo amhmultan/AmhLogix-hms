@@ -7,12 +7,12 @@
         </p>
         <hr />
       </div>
-      
       <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="{{ route('admin.ipd.index') }}" class="btn btn-secondary mb-3">Back to IPD Dashboard</a>
-        <a href="{{ route('admin.wards.create') }}" class="btn btn-success">+ Add Ward</a>
-      </div>        
-
+        @can('Ward create')
+          <a href="{{ route('admin.wards.create') }}" class="btn btn-success">+ Add Ward</a>
+        @endcan
+      </div>
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -29,12 +29,16 @@
             <td>{{ $ward->name }}</td>
             <td>{{ $ward->type }}</td>
             <td>
-              <a href="{{ route('admin.wards.edit', $ward->id) }}" class="btn btn-warning btn-sm">Edit</a>
-              <form action="{{ route('admin.wards.destroy', $ward->id) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this ward?')">Delete</button>
-              </form>
+              @can('Ward edit')
+                <a href="{{ route('admin.wards.edit', $ward->id) }}" class="btn btn-warning btn-sm">Edit</a>
+              @endcan
+              @can('Ward delete')
+                <form action="{{ route('admin.wards.destroy', $ward->id) }}" method="POST" style="display:inline;">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this ward?')">Delete</button>
+                </form>
+              @endcan
             </td>
           </tr>
           @endforeach

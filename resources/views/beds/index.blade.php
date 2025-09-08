@@ -10,9 +10,10 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         {{-- Back to IPD Dashboard --}}
         <a href="{{ route('admin.ipd.index') }}" class="btn btn-secondary mb-3">Back to IPD Dashboard</a>
-        <a href="{{ route('admin.beds.create') }}" class="btn btn-success mb-3"> + Add Bed</a>
+        @can('Bed create')
+          <a href="{{ route('admin.beds.create') }}" class="btn btn-success mb-3"> + Add Bed</a>
+        @endcan
       </div>
-      
       <table class="table table-bordered">
         <thead>
           <tr>
@@ -37,12 +38,16 @@
               </span>
             </td>
             <td>
-              <a href="{{ route('admin.beds.edit', $bed->id) }}" class="btn btn-warning btn-sm">Edit</a>
-              <form action="{{ route('admin.beds.destroy', $bed->id) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this bed?')">Delete</button>
-              </form>
+              @can('Bed edit')
+                <a href="{{ route('admin.beds.edit', $bed->id) }}" class="btn btn-warning btn-sm">Edit</a>
+              @endcan
+              @can('Bed delete')
+                <form action="{{ route('admin.beds.destroy', $bed->id) }}" method="POST" style="display:inline;">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this bed?')">Delete</button>
+                </form>
+              @endcan
             </td>
           </tr>
           @endforeach

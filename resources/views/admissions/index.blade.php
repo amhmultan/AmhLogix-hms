@@ -15,10 +15,10 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <a href="{{ route('admin.ipd.index') }}" class="btn btn-secondary mb-3">Back to IPD Dashboard</a>
-    <a href="{{ route('admin.admissions.create') }}" 
-         class="btn btn-lg btn-gradient bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold shadow hover:from-purple-700 hover:to-indigo-600 transition-all">
-         Admit New Patient
-      </a>
+    @can('IPD_Admission create')
+      <a href="{{ route('admin.admissions.create') }}" 
+        class="btn btn-lg btn-gradient bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold shadow hover:from-purple-700 hover:to-indigo-600 transition-all">Admit New Patient</a>
+    @endcan
   </div>
   <table class="table table-bordered table-striped">
     <thead class="bg-indigo-600 text-white">
@@ -54,23 +54,26 @@
 
         <td class="space-x-1">
           {{-- Edit --}}
+          @can('IPD_Admission edit')
           <a href="{{ route('admin.admissions.edit', $admission->id) }}" 
              class="btn btn-sm btn-info mb-1">Edit</a>
+          @endcan
 
-          {{-- Admission Slip (Admitted Only) --}}
           @if($admission->status == 'admitted')
-            <a href="{{ route('admin.admissions.print', $admission->id) }}" 
-               class="btn btn-sm btn-primary mb-1">Admission Slip</a>
-
+            {{-- Admission Slip (Admitted Only) --}}
+            @can('IPD_Admission access')
+              <a href="{{ route('admin.admissions.print', $admission->id) }}" class="btn btn-sm btn-primary mb-1">Admission Slip</a>
+            @endcan
             {{-- Discharge button --}}
-            <a href="{{ route('admin.admissions.discharge', $admission->id) }}" 
-               class="btn btn-sm btn-warning mb-1">Discharge</a>
+            @can('Discharge access')
+              <a href="{{ route('admin.admissions.discharge', $admission->id) }}" class="btn btn-sm btn-warning mb-1">Discharge</a>
+            @endcan
           @endif
-
-          {{-- Discharge Slip (Discharged Only) --}}
-          @if($admission->status == 'discharged')
-            <a href="{{ route('admin.admissions.discharge-slip', $admission->id) }}" 
-               class="btn btn-sm btn-success mb-1">Discharge Slip</a>
+            {{-- Discharge Slip (Discharged Only) --}}
+            @if($admission->status == 'discharged')
+              @can('Discharge access')
+                <a href="{{ route('admin.admissions.discharge-slip', $admission->id) }}" class="btn btn-sm btn-success mb-1">Discharge Slip</a>
+              @endcan
           @endif
         </td>
       </tr>

@@ -126,8 +126,9 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Sale add']);
         $permission = Permission::create(['name' => 'Sale edit']);
         $permission = Permission::create(['name' => 'Sale delete']);
+        
         // Stock Report permissions
-        $permission = Permission::create(['name' => 'Report access']);
+        $permission = Permission::create(['name' => 'Stock_Report access']);
 
         // Token Report permissions
         $permission = Permission::create(['name' => 'TokenReport access']);
@@ -151,6 +152,9 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Bed edit']);
         $permission = Permission::create(['name' => 'Bed delete']);
 
+        // IPD Menu permission
+        $permission = Permission::create(['name' => 'IPD access']);
+        
         $permission = Permission::create(['name' => 'IPD_Admission access']);
         $permission = Permission::create(['name' => 'IPD_Admission create']);
         $permission = Permission::create(['name' => 'IPD_Admission edit']);
@@ -161,7 +165,6 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'IPD_Notes edit']);
         $permission = Permission::create(['name' => 'IPD_Notes delete']);
         
-        // permission for IPD Billing (Like Lab, Radiology, Medicine, Service, Test etc. . .)
         $permission = Permission::create(['name' => 'IPD_Billing access']);
         $permission = Permission::create(['name' => 'IPD_Billing create']);
         $permission = Permission::create(['name' => 'IPD_Billing edit']);
@@ -171,7 +174,9 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Discharge create']);
         $permission = Permission::create(['name' => 'Discharge edit']);
         $permission = Permission::create(['name' => 'Discharge delete']);
-
+        
+        // IPD Reports permission
+        $permission = Permission::create(['name' => 'IPD_Reports access']);
 
 
         $admin->assignRole($admin_role);

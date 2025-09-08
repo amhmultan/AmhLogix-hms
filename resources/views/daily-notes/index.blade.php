@@ -13,9 +13,11 @@
 
             {{-- Add Daily Note dropdown --}}
             <div class="dropdown d-inline">
-                <button class="btn btn-primary dropdown-toggle mb-1" type="button" id="addDailyNoteBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                    Add Daily Note
-                </button>
+                @can('IPD_Notes create')
+                    <button class="btn btn-primary dropdown-toggle mb-1" type="button" id="addDailyNoteBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        Add Daily Note
+                    </button>
+                @endcan
                 <ul class="dropdown-menu" aria-labelledby="addDailyNoteBtn">
                     @foreach($admissions as $admission)
                         <li>
@@ -65,12 +67,16 @@
                 </td>
                 <td>{{ $note->created_at->format('d-m-Y H:i') }}</td>
                 <td>
-                    <a href="{{ route('admin.daily-notes.edit', $note->id) }}" class="btn btn-sm btn-warning mb-1">Edit</a>
-                    <form action="{{ route('admin.daily-notes.destroy', $note->id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-sm btn-danger mb-1">Delete</button>
-                    </form>
+                    @can('IPD_Notes edit')
+                        <a href="{{ route('admin.daily-notes.edit', $note->id) }}" class="btn btn-sm btn-warning mb-1">Edit</a>
+                    @endcan
+                    @can('IPD_Notes delete')
+                        <form action="{{ route('admin.daily-notes.destroy', $note->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger mb-1">Delete</button>
+                        </form>
+                    @endcan
                 </td>
             </tr>
             @endforeach

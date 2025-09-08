@@ -8,7 +8,9 @@
     </div>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="{{ route('admin.ipd.index') }}" class="btn btn-secondary">Back to IPD Dashboard</a>
-        <a href="{{ route('admin.charges.create') }}" class="btn btn-primary">Add Charges</a>
+        @can('IPD_Billing create')
+            <a href="{{ route('admin.charges.create') }}" class="btn btn-primary">Add Charges</a>
+        @endcan
     </div>
 
     @if(session('success'))
@@ -37,12 +39,16 @@
                 <td>{{ $charge->description }}</td>
                 <td>{{ number_format($charge->amount,2) }}</td>
                 <td>
-                    <a href="{{ route('admin.charges.edit', $charge->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <form action="{{ route('admin.charges.destroy', $charge->id) }}" method="POST" style="display:inline-block;">
-                        @csrf
-                        @method('delete')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this charge?')">Delete</button>
-                    </form>
+                    @can('IPD_Billing edit')
+                        <a href="{{ route('admin.charges.edit', $charge->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                    @endcan
+                    @can('IPD_Billing delete')
+                        <form action="{{ route('admin.charges.destroy', $charge->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('delete')
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this charge?')">Delete</button>
+                        </form>
+                    @endcan
                 </td>
             </tr>
             @endforeach

@@ -15,6 +15,8 @@ class IPDReportController extends Controller
             ->leftJoin('patients', 'admissions.patient_id', '=', 'patients.id')
             ->leftJoin('doctors', 'admissions.doctor_id', '=', 'doctors.id')
             ->leftJoin('beds', 'admissions.bed_id', '=', 'beds.id')
+            ->leftJoin('specialities', 'doctors.speciality_id', '=', 'specialities.id')
+            ->leftJoin('wards', 'beds.ward_id', '=', 'wards.id')
             ->select(
                 'admissions.id as admission_id',
                 'admissions.patient_id as mr_number',
@@ -22,8 +24,10 @@ class IPDReportController extends Controller
                 'admissions.discharge_date',
                 'beds.bed_number as bed_name',
                 'doctors.name as doctor_name',
+                'specialities.title as speciality',
                 'patients.reffered_by as panel_name',
-                'patients.name as patient_name'
+                'patients.name as patient_name',
+                'wards.name as ward_name'
             );
 
         // Filters
@@ -53,12 +57,22 @@ class IPDReportController extends Controller
 
         $admissions = $query->get();
 
+        $doctors = DB::table('doctors')
+            ->leftJoin('specialities', 'doctors.speciality_id', '=', 'specialities.id')
+            ->select('doctors.id', 'doctors.name', 'specialities.title as speciality_title')
+            ->get();
+
+        $beds = DB::table('beds')
+            ->leftJoin('wards', 'beds.ward_id', '=', 'wards.id')
+            ->select('beds.id', 'beds.bed_number', 'wards.name as ward_name')
+            ->get();
+
         // PDF download
         if ($request->has('pdf')) {
             $pdf = Pdf::loadView('ipd.ipd_reports.pdf', compact('admissions'));
-            return $pdf->stream('ipd_report.pdf');
+            return $pdf->stream('ipd_reports.pdf');
         }
 
-        return view('ipd.ipd_reports.index', compact('admissions'));
+        return view('ipd.ipd_reports.index', compact('admissions', 'doctors', 'beds'));
     }
 }

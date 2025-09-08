@@ -221,7 +221,7 @@
         @endcanany
 
         {{-- IPD Menu Start --}}
-        @can('IPD_Admission access')
+        @can('IPD access')
             <a class="text-decoration-none flex items-center mt-2 py-2 px-6 fw-bold fs-6 text-white hover:bg-indigo-600 hover:text-white {{ route::currentroutenamed('admin.ipd.index') ? 'active' : '' }}" href="{{ route('admin.ipd.index')}}">
                 <svg width="24px" height="24px" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
 
@@ -356,7 +356,7 @@
         {{-- Pharmacy Menu End --}}
         
         {{-- Reports Menu Start --}}
-        @canany('Report access')
+        @canany('Stock_Report access')
             <a class="text-decoration-none flex items-center mt-2 py-2 px-6 fw-bold fs-6 text-white hover:bg-indigo-600 hover:text-white {{ route::currentroutenamed('admin.reports.index') ? 'active' : '' }}" href="{{ route('admin.reports.index')}}">
                 <svg width="24px" height="24px" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
 
