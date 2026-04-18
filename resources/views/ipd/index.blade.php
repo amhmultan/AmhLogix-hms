@@ -58,10 +58,10 @@
                 <a href="{{ route('admin.daily-notes.index') }}"
                 class="no-underline hover:no-underline group block bg-gradient-to-r from-blue-500 to-indigo-400 text-white font-extrabold text-2xl py-8 rounded-2xl shadow-xl hover:from-blue-600 hover:to-indigo-500 transition-all text-center relative"
                 accesskey="d"
-                title="{{ $dailyNotesCount ?? 0 }} notes today">
+                title="{{ $notesCount ?? 0 }} notes today">
                     <i class="fas fa-notes-medical fa-3x mb-2"></i>
                     <div>Daily Notes</div>
-                    <span class="absolute top-2 right-4 bg-white text-blue-700 font-bold text-sm px-2 py-1 rounded-full">{{ $dailyNotesCount ?? 0 }}</span>
+                    <span class="absolute top-2 right-4 bg-white text-blue-700 font-bold text-sm px-2 py-1 rounded-full">{{ $notesCount ?? 0 }}</span>
                 </a>
                 @endcan
                 {{-- IPD Reports --}}

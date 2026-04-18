@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\DailyNote;
 use App\Models\Admission;
+
 use Illuminate\Http\Request;
 
 class NoteController extends Controller

@@ -7,6 +7,10 @@ use App\Models\Admission;
 use App\Models\Patient;
 use App\Models\Doctor;
 use App\Models\Bed;
+use App\Models\DailyNote;
+use App\Models\Charge;
+use App\Models\Ward;
+
 use Illuminate\Http\Request;
 
 class AdmissionController extends Controller
@@ -171,13 +175,13 @@ class AdmissionController extends Controller
     /** IPD Dashboard */
     public function ipdDashboard()
     {
-        $wardsCount = \App\Models\Ward::count();
-        $availableBeds = \App\Models\Bed::where('status', 'available')->count();
-        $admissionsCount = \App\Models\Admission::where('status', 'admitted')->count();
-        $chargesCount = \App\Models\Charge::count();
-        $notesCount = \App\Models\DailyNote::count();
-        $dischargedCount = \App\Models\Admission::where('status', 'discharged')->count();
-        $reports = 5; // Placeholder for reports count or data
+        $wardsCount = Ward::count();
+        $availableBeds = Bed::where('status', 'available')->count();
+        $admissionsCount = Admission::where('status', 'admitted')->count();
+        $chargesCount = Charge::count();
+        $notesCount = DailyNote::count();
+        $dischargedCount = Admission::where('status', 'discharged')->count();
+        $reports = 1; // Placeholder for reports count or data
 
         return view('ipd.index', compact(
             'wardsCount',

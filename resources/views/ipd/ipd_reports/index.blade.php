@@ -56,8 +56,9 @@
                     <option value="Discharged" {{ request('status')=='Discharged'?'selected':'' }}>Discharged</option>
                 </select>
             </div>
-            <div class="col-md-2 my-4 mx-1">
+            <div class="col-md-4 my-4 mx-1">
                 <button type="submit" class="btn btn-warning">Filter</button>
+                <a href="{{ route('admin.ipd.ipd_reports.index') }}" class="btn btn-secondary">Reset</a>
                 <button type="submit" name="pdf" value="1" class="btn btn-danger">Download PDF</button>
             </div>
         </div>

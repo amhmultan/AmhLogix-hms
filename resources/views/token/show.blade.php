@@ -26,23 +26,26 @@
 
             {{-- Hospital Header --}}
             @if($hospital)
-            <div class="row">
-                <div class="col-sm-2 text-center">
-                    <img src="{{ asset('img/' . $hospital->logo) }}" 
-                         style="border: 5px solid black; width:150px; height:150px; padding: 5px;" 
-                         alt="{{ $hospital->title }} Logo">
+                <div style="width:100%; display:flex; align-items:center; border-bottom:1px solid #000; padding-bottom:10px; margin-bottom:20px;">
+                    <div style="width:120px; text-align:center;">
+                        <img src="{{ public_path('img/' . $hospital->logo) }}" 
+                            style="border: 2px solid black; width:100px; height:100px; padding:5px;" 
+                            alt="{{ $hospital->title }} Logo">
+                    </div>
+                    <div style="flex:1; text-align:center;">
+                        <h2 style="margin:0; font-size:20px; font-weight:bold; text-transform:uppercase;">
+                            {{ $hospital->title }}
+                        </h2>
+                        <p style="margin:2px 0;">{{ $hospital->address }}</p>
+                        <p style="margin:2px 0;">
+                            <strong>Contact:</strong> {{ $hospital->contact }} | 
+                            <strong>Email:</strong> {{ $hospital->email }} | 
+                            <strong>Website:</strong> {{ $hospital->website }}
+                        </p>
+                    </div>
                 </div>
-                <div class="col-sm-10 text-center">
-                    <h2 class="display-5 fw-bold text-uppercase">{{ $hospital->title }}</h2>
-                    <p>{{ $hospital->address }}</p>
-                    <p>
-                        <strong>Contact:</strong> {{ $hospital->contact }} |
-                        <strong>Email:</strong> {{ $hospital->email }} |
-                        <strong>Website:</strong> {{ $hospital->website }}
-                    </p>
-                </div>
-            </div>
             @endif
+
 
             <hr>
 

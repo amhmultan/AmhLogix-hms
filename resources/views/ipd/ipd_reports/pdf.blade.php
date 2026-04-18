@@ -1,9 +1,166 @@
-<x-app-layout>
-    <main class="py-6">
-        <div class="container">
-            <h1>IPD Report PDF</h1>
-            <!-- Add your PDF report content here -->
-            PDF
-        </div>
-    </main>
-</x-app-layout>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>IPD Report PDF</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background: #f2f2f2;
+        }
+        td, th {
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .header-table {
+            width: 100%;
+            border: none;
+            margin-bottom: 15px;
+        }
+        .header-table td {
+            border: none;
+            vertical-align: middle;
+        }
+        .filters {
+            margin: 10px 0;
+            font-size: 11px;
+            padding: 6px;
+        }
+        .footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            font-size: 10px;
+            text-align: right;
+        }
+        .pagenum:before {
+            content: counter(page);
+        }
+    </style>
+</head>
+<body>
+    {{-- Hospital Header --}}
+    @if($hospital)
+    <table class="header-table">
+        <tr>
+            <td width="20%" style="text-align:center;">
+                <img src="{{ public_path('img/' . $hospital->logo) }}" 
+                     style="border: 2px solid black; width:100px; height:100px; padding:5px;" 
+                     alt="{{ $hospital->title }} Logo">
+            </td>
+            <td width="80%" style="text-align:left; vertical-align: top;">
+                <h2 style="margin:0; text-transform:uppercase; font-size: 30px;">{{ $hospital->title }}</h2>
+                <p style="margin:2px 0;">{{ $hospital->address }}</p>
+                <p style="margin:2px 0;">
+                    <strong>Contact:</strong> {{ $hospital->contact }} |
+                    <strong>Email:</strong> {{ $hospital->email }} |
+                    <strong>Website:</strong> {{ $hospital->website }}
+                </p>
+            </td>
+        </tr>
+    </table>
+    @endif
+
+    <h2 style="text-align: center; margin-bottom: 10px; text-decoration: underline;">IPD Report</h2>
+
+    {{-- Filters Applied --}}
+    <div class="filters">
+        @if(request('from_date') && request('to_date'))
+            <strong>Date: </strong>{{ request('from_date') }} to {{ request('to_date') }} <br>
+        @endif
+        @if(request('doctor_id'))
+            @php
+                $doc = $doctors->firstWhere('id', request('doctor_id'));
+            @endphp
+            <strong>Doctor: </strong>{{ $doc ? $doc->name . ' (' . $doc->speciality_title . ')' : 'N/A' }} <br>
+        @endif
+        @if(request('panel_name'))
+            <strong>Panel: </strong>{{ request('panel_name') }} <br>
+        @endif
+        @if(request('bed_id'))
+            @php
+                $bed = $beds->firstWhere('id', request('bed_id'));
+            @endphp
+            <strong>Ward / Bed:</strong> {{ $bed ? $bed->ward_name . ' / ' . $bed->bed_number : 'N/A' }} <br>
+        @endif
+        @if(request('status'))
+            <strong>Status: </strong>{{ request('status') }} <br>
+        @endif
+        @if(!request('from_date') && !request('to_date') && !request('doctor_id') && !request('panel_name') && !request('bed_id') && !request('status'))
+            <strong>Filters:</strong> None
+        @endif
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Sr. No.</th>
+                <th>MR Number</th>
+                <th>Patient Name</th>
+                <th>Panel</th>
+                <th>Admission ID</th>
+                <th>Admission Date & Time</th>
+                <th>Discharge Date & Time</th>
+                <th>Doctor / Speciality</th>
+                <th>Ward / Bed</th>
+                <th>Total Bill</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($admissions as $key => $admission)
+                <tr>
+                    <td>{{ $key+1 }}</td>
+                    <td>{{ $admission->mr_number }}</td>
+                    <td>{{ $admission->patient_name }}</td>
+                    <td>{{ $admission->panel_name }}</td>
+                    <td>{{ $admission->admission_id }}</td>
+                    <td>{{ $admission->admission_date }}</td>
+                    <td>{{ $admission->discharge_date }}</td>
+                    <td>{{ $admission->doctor_name }} / {{ $admission->speciality }}</td>
+                    <td>{{ $admission->ward_name }} / {{ $admission->bed_name }}</td>
+                    <td> 0 </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    {{-- Footer --}}
+    <div class="footer">
+        Report generated by: {{ auth()->user()->name ?? 'System' }} on {{ now()->format('d M Y, h:i A') }} | Page <span class="pagenum"></span>
+    </div>
+
+    <script type="text/php">
+        if (isset($pdf)) {
+            $pdf->page_script('
+                $font = $fontMetrics->get_font("DejaVu Sans", "normal");
+                $size = 9;
+
+                // Left side footer: generated by + date
+                $text_left = "Report generated by: ' . (auth()->user()->name ?? 'System') . '";
+                $date_text = "Generated on: ' . now()->format("d M Y, h:i A") . '";
+                $pdf->text(35, 820, $text_left, $font, $size);
+                $pdf->text(35, 835, $date_text, $font, $size);
+
+                // Right side footer: page numbers
+                $pageText = "Page " . $PAGE_NUM . " of " . $PAGE_COUNT;
+                $pdf->text(720, 835, $pageText, $font, $size);
+            ');
+        }
+    </script>
+</body>
+</html>

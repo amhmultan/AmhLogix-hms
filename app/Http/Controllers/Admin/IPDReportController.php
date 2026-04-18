@@ -32,7 +32,10 @@ class IPDReportController extends Controller
 
         // Filters
         if ($request->from_date && $request->to_date) {
-            $query->whereBetween('admissions.admission_date', [$request->from_date, $request->to_date]);
+            $query->whereBetween('admissions.admission_date', [
+                $request->from_date . " 00:00:00",
+                $request->to_date . " 23:59:59"
+            ]);
         }
 
         if ($request->doctor_id) {
@@ -67,9 +70,12 @@ class IPDReportController extends Controller
             ->select('beds.id', 'beds.bed_number', 'wards.name as ward_name')
             ->get();
 
+        $hospital = DB::table('hospitals')->first();
+
         // PDF download
         if ($request->has('pdf')) {
-            $pdf = Pdf::loadView('ipd.ipd_reports.pdf', compact('admissions'));
+            $pdf = Pdf::loadView('ipd.ipd_reports.pdf', compact('admissions', 'hospital', 'doctors', 'beds'))
+                ->setPaper('a4', 'landscape');
             return $pdf->stream('ipd_reports.pdf');
         }
 
