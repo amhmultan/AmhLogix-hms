@@ -174,6 +174,12 @@ pre{
 
 .section-block{
     margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.section-detail{
+    margin-bottom: 40px;
+    display: block;
 }
 
 .line-space{
@@ -375,18 +381,19 @@ pre{
         <div class="opd-col left-col">
             <div class="section-block">
                 <strong>C/O:</strong><br>
-                <strong class="ml-3">-VA</strong><br>
-                <strong class="ml-3">-AT</strong><br>
-                <strong class="ml-3">-mmHg</strong><br>
+                <strong class="section-detail ml-3">-VAく</strong><br>
+                <strong class="section-detail ml-3">-ATく</strong><br>
+                <strong class="section-detail ml-3">-mmHgく</strong><br>
             </div>
 
             <div class="section-block">
                 <strong>O/E:</strong><br>
-                <strong class="ml-3">-Lids</strong><br>
-                <strong class="ml-3">-Cornea</strong><br>
-                <strong class="ml-3">-A/C</strong><br>
-                <strong class="ml-3">-Lens</strong><br>
-                <strong class="ml-3">-Fundus</strong>
+                <strong class="section-detail ml-3">-Lids</strong><br>
+                <strong class="section-detail ml-3">-Conjunctiva</strong><br>
+                <strong class="section-detail ml-3">-Cornea</strong><br>
+                <strong class="section-detail ml-3">-A/C</strong><br>
+                <strong class="section-detail ml-3">-Lens</strong><br>
+                <strong class="section-detail ml-3">-Fundus</strong>
             </div>
         </div>
 
@@ -407,7 +414,7 @@ pre{
         <!-- RIGHT -->
         <div class="opd-col right-col">
 
-            <div class="col-title">History</div>
+            <div class="h6 col-title">History</div>
 
             <div class="section-block">
                 <strong>DM:</strong>
@@ -439,7 +446,7 @@ pre{
                     <span class="footer-urdu-remarks">ٹائم لینے کے لئے صبح 9 بجے اس نمبر پر رابطہ کریں:</span> {{ $hospital->contact }}
                 </div>
                 <div class="col-sm-6 text-right">
-                    <span class="footer-urdu-remarks">(بروز جمعہ المبارک کلینک بند رہے گا)</span>
+                    <span class="footer-urdu-remarks">(بروزجمعۃالمبارک کلینک بندرہےگا)</span>
                 </div>
             </div>
             <span class="footer-urdu-remarks-again">{{ $doctors->remarks }}</span>

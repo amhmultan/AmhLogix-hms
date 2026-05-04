@@ -8,6 +8,7 @@ use App\Models\Token;
 use App\Models\Doctor;
 use App\Models\Speciality;
 use Yajra\DataTables\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TokenReportController extends Controller
 {
@@ -75,6 +76,46 @@ class TokenReportController extends Controller
             ])
             ->make(true);
     }
+    // ✅ NEW PDF FUNCTION
+    public function reportPdf(Request $request)
+    {
+        $query = Token::with(['patient', 'doctor', 'speciality']);
 
+        if ($request->from_date) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        if ($request->doctor_id) {
+            $query->where('fk_doctors_id', $request->doctor_id);
+        }
+
+        if ($request->department_id) {
+            $query->where('fk_specialty_id', $request->department_id);
+        }
+
+        if ($request->panel) {
+            $query->whereHas('patient', function ($q) use ($request) {
+                $q->where('reffered_by', $request->panel);
+            });
+        }
+
+        $records = $query->latest()->get();
+
+        $totalAmount = $records->sum('denomination');
+        $totalTokens = $records->count();
+
+        $pdf = Pdf::loadView('token.token_report_pdf', compact(
+            'records',
+            'totalAmount',
+            'totalTokens',
+            'request'
+        ))->setPaper('A4', 'landscape');
+
+        return $pdf->stream('token.token_report_pdf.pdf');
+    }
     
 }

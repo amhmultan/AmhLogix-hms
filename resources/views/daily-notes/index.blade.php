@@ -65,7 +65,7 @@
                         N/A
                     @endif
                 </td>
-                <td>{{ $note->created_at->format('d-m-Y H:i') }}</td>
+                <td>{{ \Carbon\Carbon::parse($note->created_at)->format('d-m-Y h:i A') }}</td>
                 <td>
                     @can('IPD_Notes edit')
                         <a href="{{ route('admin.daily-notes.edit', $note->id) }}" class="btn btn-sm btn-warning mb-1">Edit</a>

@@ -32,7 +32,7 @@
                     <th class="px-4 py-2 text-center">TOKEN NO.</th>
                     <th class="px-4 py-2 text-center">PATIENT NAME</th>
                     <th class="px-4 py-2 text-center">PRESCRIPTION</th>
-                    <th class="px-4 py-2 text-center">CHECKUP DATE</th>
+                    <th class="px-4 py-2 text-center">CHECKUP ON</th>
                     <th class="px-4 py-2 text-center">UPDATED ON</th>
                     <th class="px-4 py-2 text-center">ACTIONS</th>
                 </tr>
@@ -83,9 +83,11 @@
                   </td>
 
                     {{-- TOKEN DATE (SAFE LEFT JOIN) --}}
-                    <td>{{ $note->token_date ?? 'No Visit' }}</td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($note->token_date)->format('d-m-Y h:i A') ?? 'No Visit' }}
+                    </td>
 
-                    <td>{{ $note->updated_at }}</td>
+                    <td>{{ \Carbon\Carbon::parse($note->updated_at)->format('d-m-Y h:i A') }}</td>
 
                     {{-- ACTIONS --}}
                     <td>

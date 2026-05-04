@@ -49,8 +49,8 @@
             <span class="badge bg-secondary">Discharged</span>
           @endif
         </td>
-        <td>{{ $admission->admission_date->format('d-m-Y H:i') }}</td>
-        <td>{{ $admission->discharge_date ? $admission->discharge_date->format('d-m-Y H:i') : '-' }}</td>
+        <td>{{ \Carbon\Carbon::parse($admission->admission_date)->format('d-m-Y h:i A') }}</td>
+        <td>{{ $admission->discharge_date ? \Carbon\Carbon::parse($admission->discharge_date)->format('d-m-Y h:i A') : '-' }}</td>
 
         <td class="space-x-1">
           {{-- Edit --}}

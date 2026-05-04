@@ -36,7 +36,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <label>Panel</label>
+                <label>Reffered By</label>
                 <select id="panel" class="form-control">
                     <option value="">All</option>
                     @php
@@ -62,7 +62,7 @@
                         <th class="text-uppercase text-center">Token #</th>
                         <th class="text-uppercase text-center">Date</th>
                         <th class="text-uppercase text-center">Patient</th>
-                        <th class="text-uppercase text-center">Panel</th>
+                        <th class="text-uppercase text-center">Reffered By</th>
                         <th class="text-uppercase text-center">Patient MR #</th>
                         <th class="text-uppercase text-center">Doctor</th>
                         <th class="text-uppercase text-center">Speciality</th>
@@ -128,24 +128,19 @@
                             }
                         },
                         {
-                            extend: 'pdfHtml5',
-                            title: function () {
-                                let from = $('#from_date').val() || 'Start';
-                                let to = $('#to_date').val() || 'End';
-                                return `OPD Report (${from} to ${to})`;
-                            },
+                            text: 'PDF',
                             className: 'btn btn-danger btn-sm',
-                            footer: false,
-                            customize: function (doc) {
-                                let totalTokens = $('#total_tokens').text();
-                                let totalAmount = $('#total_amount').text();
+                            action: function () {
 
-                                doc.content[1].table.body.push([
-                                    { text: 'Totals:', colSpan: 6, alignment: 'right', bold: true },
-                                    {}, {}, {}, {}, {}, // placeholders for colSpan=6
-                                    { text: totalTokens, alignment: 'center', bold: true },
-                                    { text: totalAmount, alignment: 'center', bold: true }
-                                ]);
+                                let params = $.param({
+                                    from_date: $('#from_date').val(),
+                                    to_date: $('#to_date').val(),
+                                    doctor_id: $('#doctor_id').val(),
+                                    department_id: $('#department_id').val(),
+                                    panel: $('#panel').val()
+                                });
+
+                                window.open("{{ route('admin.tokens.token_report.pdf') }}?" + params, '_blank');
                             }
                         },
                         {

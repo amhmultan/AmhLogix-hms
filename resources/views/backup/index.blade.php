@@ -26,27 +26,27 @@
 
             {{-- Backup Files Table --}}
             <table class="w-full border border-gray-300 table-auto border-collapse">
-                            <thead class="bg-gray-100">
+                            <thead class="bg-gray-100 text-gray-700 font-semibold uppercase">
                                 <tr>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Backup File</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-right">Size (MB)</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Created At</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Backup File</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Size (MB)</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Created At</th>
                                     <th class="border border-gray-300 px-4 py-2 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($backupFiles as $backup)
-                <tr>
+                <tr class="hover:bg-gray-50 text-center">
                     <td class="border border-gray-300 px-4 py-2">{{ $backup['name'] }}</td>
-                    <td class="border border-gray-300 px-4 py-2 text-right">
+                    <td class="border border-gray-300 px-4 py-2">
                         {{ number_format($backup['size'] / 1024 / 1024, 2) }} MB
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                        {{ date('Y-m-d H:i:s', $backup['last_modified']) }}
+                        {{ date('d-m-Y h:i A', $backup['last_modified']) }}
                     </td>
                     <td class="border border-gray-300 px-4 py-2 text-center space-x-2 flex justify-center">
                         <a href="{{ route('admin.backups.download', $backup['name']) }}"
-                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
+                        class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-decoration-none">
                         Download
                         </a>
 

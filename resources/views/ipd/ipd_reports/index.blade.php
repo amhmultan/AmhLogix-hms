@@ -89,8 +89,8 @@
                     <td>{{ $admission->patient_name }}</td>
                     <td>{{ $admission->panel_name }}</td>
                     <td>{{ $admission->admission_id }}</td>
-                    <td>{{ $admission->admission_date }}</td>
-                    <td>{{ $admission->discharge_date }}</td>
+                    <td>{{ \Carbon\Carbon::parse($admission->admission_date)->format('d-m-Y h:i A') }}</td>
+                    <td>{{ $admission->discharge_date ? \Carbon\Carbon::parse($admission->discharge_date)->format('d-m-Y h:i A') : '-' }}</td>
                     <td>{{ $admission->doctor_name }} / {{ $admission->speciality }}</td>
                     <td>{{ $admission->ward_name }} / {{ $admission->bed_name }} </td>
                     <td> 0 </td>

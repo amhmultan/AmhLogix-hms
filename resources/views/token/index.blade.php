@@ -51,10 +51,9 @@
                           <td class="px-4 py-2 border">{{ $token->fees }}</td>
                           <td class="px-4 py-2 border">{{ $token->denomination }}</td>
                           <td class="px-4 py-2 border">{{ $token->balance }}</td>
-                          <td class="px-4 py-2 border">{{ $token->created_at }}</td>
-                          <td class="px-4 py-2 border">{{ $token->updated_at }}</td>
-                          
-                          
+                          <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($token->created_at)->format('d-m-Y h:i A') }}</td>
+                          <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($token->updated_at)->format('d-m-Y h:i A') }}</td>
+
                           <td class="px-4 py-2 border">
                             
                             @can('Token edit')

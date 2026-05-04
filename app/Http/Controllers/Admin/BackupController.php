@@ -83,70 +83,66 @@ class BackupController extends Controller
 
     public function restore($fileName)
     {
-        $filePath = 'AmhLogix/' . $fileName;
+        $backupFolder = 'AmhLogix';
+
+        $fileName = basename($fileName);
+        $filePath = $backupFolder . '/' . $fileName;
 
         if (!Storage::disk('local')->exists($filePath)) {
-            return redirect()->route('admin.backups.index')->with('error', 'Backup file not found!');
+            return redirect()->route('admin.backups.index')
+                ->with('error', 'Backup file not found!');
         }
 
         $fullPath = storage_path('app/' . $filePath);
 
         $zip = new \ZipArchive;
-        if ($zip->open($fullPath) === TRUE) {
-            $extractPath = storage_path('app/backup-temp');
 
-            // Clean up old extraction folder if exists
-            if (is_dir($extractPath)) {
-                $this->deleteDirectory($extractPath);
-            }
-
-            mkdir($extractPath, 0755, true);
-
-            $zip->extractTo($extractPath);
-            $zip->close();
-        } else {
-            return redirect()->route('admin.backups.index')->with('error', 'Failed to open backup file.');
+        if ($zip->open($fullPath) !== true) {
+            return redirect()->route('admin.backups.index')
+                ->with('error', 'Failed to open backup file.');
         }
 
-        // Recursive search for .sql file inside extracted folder
+        $extractPath = storage_path('app/backup-temp');
+
+        if (is_dir($extractPath)) {
+            $this->deleteDirectory($extractPath);
+        }
+
+        mkdir($extractPath, 0755, true);
+
+        $zip->extractTo($extractPath);
+        $zip->close();
+
         $sqlFile = $this->findSqlFile($extractPath);
 
-        if (!$sqlFile) {
-            // Clean up extracted files
+        if (!$sqlFile || !file_exists($sqlFile)) {
             $this->deleteDirectory($extractPath);
 
-            return redirect()->route('admin.backups.index')->with('error', 'No SQL dump file found in backup.');
+            return redirect()->route('admin.backups.index')
+                ->with('error', 'SQL file not found in backup.');
         }
 
-        // DB credentials
-        $dbHost = config('database.connections.mysql.host');
-        $dbPort = config('database.connections.mysql.port');
-        $dbName = config('database.connections.mysql.database');
-        $dbUser = config('database.connections.mysql.username');
-        $dbPass = config('database.connections.mysql.password');
+        // 🔥 SAFE RESTORE (NO MYSQL CLI)
+        try {
+            $sql = file_get_contents($sqlFile);
 
-        // Build mysql command (use double quotes for Windows)
-        $command = sprintf(
-            'mysql -h%s -P%s -u%s --password=%s %s < "%s"',
-            escapeshellarg($dbHost),
-            escapeshellarg($dbPort),
-            escapeshellarg($dbUser),
-            escapeshellarg($dbPass),
-            escapeshellarg($dbName),
-            $sqlFile
-        );
+            if (!$sql) {
+                throw new \Exception("SQL file is empty");
+            }
 
-        // Run the command
-        exec($command, $output, $returnVar);
+            \DB::unprepared($sql);
 
-        // Clean up extracted files
+        } catch (\Exception $e) {
+            $this->deleteDirectory($extractPath);
+
+            return redirect()->route('admin.backups.index')
+                ->with('error', 'Restore failed: ' . $e->getMessage());
+        }
+
         $this->deleteDirectory($extractPath);
 
-        if ($returnVar !== 0) {
-            return redirect()->route('admin.backups.index')->with('error', 'Database restore failed.');
-        }
-
-        return redirect()->route('admin.backups.index')->with('success', 'Database restored successfully!');
+        return redirect()->route('admin.backups.index')
+            ->with('success', 'Database restored successfully!');
     }
 
     // Recursive function to find .sql file

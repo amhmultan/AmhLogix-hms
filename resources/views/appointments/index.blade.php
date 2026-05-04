@@ -22,16 +22,16 @@
           <table id="appointmentTable" class="table w-100 border-collapse">
             <thead>
               <tr class="bg-indigo-500 text-white text-sm text-center">
-                <th class="py-3 px-4 border">ID</th>
-                <th class="py-3 px-4 border">Patient</th>
-                <th class="py-3 px-4 border">Doctor</th>
-                <th class="py-3 px-4 border">Date</th>
-                <th class="py-3 px-4 border">Time</th>
-                <th class="py-3 px-4 border">Status</th>
-                <th class="py-3 px-4 border">Notes</th>
-                <th class="py-3 px-4 border">Created At</th>
-                <th class="py-3 px-4 border">Updated At</th>
-                <th class="py-3 px-4 border">Actions</th>
+                <th class="py-3 px-4 border text-center">ID</th>
+                <th class="py-3 px-4 border text-center">Patient</th>
+                <th class="py-3 px-4 border text-center">Doctor</th>
+                <th class="py-3 px-4 border text-center">Date</th>
+                <th class="py-3 px-4 border text-center">Time</th>
+                <th class="py-3 px-4 border text-center">Status</th>
+                <th class="py-3 px-4 border text-center">Notes</th>
+                <th class="py-3 px-4 border text-center">Created At</th>
+                <th class="py-3 px-4 border text-center">Updated At</th>
+                <th class="py-3 px-4 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -44,8 +44,8 @@
                   <td class="px-4 py-2 border">{{ $appointment->appointment_time }}</td>
                   <td class="px-4 py-2 border">{{ ucfirst($appointment->status) }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->notes ?? '—' }}</td>
-                  <td class="px-4 py-2 border">{{ $appointment->created_at }}</td>
-                  <td class="px-4 py-2 border">{{ $appointment->updated_at }}</td>
+                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->created_at)->format('d-m-Y h:i A') }}</td>
+                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->updated_at)->format('d-m-Y h:i A') }}</td>
                   <td class="px-3 py-2 border">
                     @can('Appointment view')
                       <a href="{{ route('admin.appointments.show', $appointment->id) }}"

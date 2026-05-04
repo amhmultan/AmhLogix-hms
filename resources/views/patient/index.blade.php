@@ -54,10 +54,9 @@
                     <td class="px-4 py-2 border">{{ $patient->email }}</td>
                     <td class="px-4 py-2 border">{{ $patient->cnic }}</td>
                     <td class="px-4 py-2 border">{{ $patient->address }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->created_at }}</td>
+                    <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($patient->created_at)->format('d-m-Y h:i A') }}</td>
                     <td class="px-4 py-2 border">{{ $patient->usersName }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->updated_at }}</td>
-                    
+                    <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($patient->updated_at)->format('d-m-Y h:i A') }}</td>
                     <td class="px-4 py-2 border">
                       @can('Patient access')
                         <a href="{{route('admin.patients.show',$patient->id)}}" class="btn btn-sm btn-primary mb-1">Show</a>
