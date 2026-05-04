@@ -1,118 +1,465 @@
 <x-app-layout>
 
-    <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
-        @can('Patient access')
+@push('styles')
+<style>
 
-            <div class="container" id="printableArea">
-                
-                @foreach ($hospitals as $hospital)
-                <div class="row">
+/* =========================
+   FONTS
+========================= */
+@font-face {
+    font-family: 'JameelNoori';
+    src: url('/fonts/JameelNooriNastaleeq.woff2') format('woff2'),
+         url('/fonts/JameelNooriNastaleeq.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
-                    <div class="col-sm-2">
-                        <img src="{{ asset('img/'.$hospital->logo) }}" width="100px" class="border border-dark border-4 p-2">
-                    </div>
+.urdu-text {
+    font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    font-size: 40px;
+    line-height: 1.6;
+    margin-top: 10px;
+    color: rgb(77, 6, 192);
+}
 
-                    <div class="col-sm-10">
-                        <h1 class="display-3 text-primary text-uppercase font-weight-bold">{{ $hospital->title }}</h1>
-                    </div>
+.footer-urdu-remarks {
+    font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    font-size: 18px;
+    line-height: 1.4;
+    color: rgb(0, 0, 0);
+}
 
-                </div>
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <h1 class="h3 text-uppercase font-weight-bold">{{ $hospital->address }}</h1>
-                        <p class="h4 font-weight-bold"> {{ $hospital->contact }} </p>
-                        <a class="text-sm text-primary text-decoration-underline" href="{{ $hospital->website }}">{{ $hospital->website }}</a>
-                    </div>
-                </div>
-                @endforeach
+.footer-urdu-remarks-again {
+    font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    font-size: 18px;
+    line-height: 1.4;
+    color: rgb(77, 6, 192);
+}
 
-            <div class="row mx-auto mt-3">
-                <div class="col-sm-12">
-                    <div class="card border-dark mb-3">
-                        <div class="card-header text-center"><h5 class="card-title font-weight-bold">Patient Information</h5></div>
-                            <div class="card-body text-dark">
-                            <p class="card-text">
+pre{
+    font-family: 'Noto Nastaliq Urdu', serif;
+    direction: rtl;
+    font-size: 18px;
+    line-height: 2.2;
+    margin: 0;
+    overflow: hidden;
+    margin-top: 10px;
+    border: 0;
+}
 
-                                <table class="table table-bordered">
-                                    <tbody>
+/* =========================
+   A4 PAGE WRAPPER
+========================= */
+.opd-page{
+    position: relative;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 6mm;
+    padding-bottom: 30mm; /* ✅ reserve footer space */
+    background: #fff;
+    box-sizing: border-box;
+}
 
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">MR Number:</h6><span> {{ $patient->id }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient Name:</h6><span> {{ $patient->name }} </span></td>
-                                            <td><h6 class="font-weight-bold">Father Name:</h6><span> {{ $patient->fname }} </span></td>
-                                        </tr>
-                                        
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">Patient Gender:</h6><span> {{ $patient->gender }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient Marital Status:</h6><span> {{ $patient->marital_status }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient Phone:</h6><span> {{ $patient->phone }} </span></td>
-                                        </tr>
+/* =========================
+   HEADER STRIP
+========================= */
+.opd-strip{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 10px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    background: #fff;
+    margin-top: 10px;
+}
 
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">Patient Email:</h6><span> {{ $patient->email }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient CNIC:</h6><span> {{ $patient->cnic }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient DOB:</h6><span> {{ $patient->dob }} </span></td>
-                                        </tr>
+.opd-block{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-right: 1px solid #ddd;
+    padding-right: 10px;
+}
 
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">Patient Address:</h6><span> {{ $patient->address }} </span></td>
-                                            <td><h6 class="font-weight-bold">Patient History:</h6><span> {{ $patient->history }} </span></td>
-                                            <td><h6 class="font-weight-bold">Emergency Person:</h6><span> {{ $patient->emr_name }} </span></td>
-                                        </tr>
+.opd-block:last-child{
+    border-right: none;
+}
 
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">Relation:</h6><span> {{ $patient->relationship }} </span></td>
-                                            <td><h6 class="font-weight-bold">Emergency Number:</h6><span> {{ $patient->emr_phone }} </span></td>
-                                            <td><h6 class="font-weight-bold">Reffered By:</h6><span> {{ $patient->reffered_by }} </span></td>
-                                        </tr>
+.opd-item{
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+}
 
-                                        <tr>
-                                            <td><h6 class="font-weight-bold">Created At:</h6><span> {{ $patient->created_at }} </span></td>
-                                            <td colspan="2"><h6 class="font-weight-bold">Updated At:</h6><span> {{ $patient->updated_at }} </span></td>
-                                        </tr>
+.opd-item strong{
+    min-width: 70px;
+    font-weight: 800;
+    color: #222;
+}
 
-                                    </tbody>
-                                </table>
-                                
-                            </p>
-                        </div>
-                    </div>
-                </div>
+/* =========================
+   WRITING AREA
+========================= */
+.opd-writing-area{
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+
+    /* ✅ FIXED HEIGHT (balanced) */
+    min-height: 180mm;
+}
+
+/* Base columns */
+.opd-col{
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* LEFT + RIGHT */
+.left-col,
+.right-col{
+    width: 20%;
+    border-radius: 4px;
+    border: 2px solid #000000;
+}
+
+/* MIDDLE RX */
+.middle-col{
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    min-height: 258mm;
+}
+
+/* RX */
+.rx-header{
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.rx-space{
+    flex: 1;
+}
+
+.rx-footer{
+    margin-top: auto;
+    padding-top: 5px;
+    text-align: right;
+}
+
+.signature-line{
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* SIDE CONTENT */
+.col-title{
+    font-weight: 900;
+    text-decoration: underline;
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+}
+
+.section-block{
+    margin-bottom: 8px;
+}
+
+.line-space{
+    border-bottom: 1px dotted #bbb;
+    height: 18px;
+    margin-top: 2px;
+}
+
+/* HEADER */
+.header-item {
+    margin-bottom: 10px;
+    font-size: 36px;
+}
+
+.header-item-details {
+    font-size: 36px;
+    line-height: 1.4;
+}
+
+.header-wrap {
+    font-size: 14px;
+}
+
+/* =========================
+   FOOTER (FIXED & SAFE)
+========================= */
+.footer {
+    position: absolute;
+    bottom: 10mm;
+    left: 6mm;
+    right: 6mm;
+    font-size: 14px;
+    border-top: 1px solid #000;
+    padding-top: 6px;
+    text-align: center;
+}
+
+/* =========================
+   PRINT SETTINGS
+========================= */
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    html, body{
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+    }
+
+    body{
+        font-size: 18px;
+        line-height: 1.4;
+    }
+
+    .header-wrap {
+        font-size: 18px;
+    }
+
+    .opd-page{
+        width: 100%;
+        min-height: 100%;
+        padding: 0;
+        padding-bottom: 30mm; /* ✅ keep footer space */
+    }
+
+    .opd-strip{
+        font-size: 14px;
+        padding: 6px 8px;
+        margin-top: 12px;
+    }
+
+    .opd-col{
+        font-size: 18px;
+    }
+
+    .rx-header{
+        font-size: 34px;
+    }
+
+    .line-space{
+        height: 16px;
+    }
+
+    /* ✅ IMPORTANT FIX */
+    .opd-writing-area{
+        min-height: 190mm;
+    }
+
+    .opd-col{
+        page-break-inside: avoid;
+    }
+}
+
+</style>
+@endpush
+
+<!-- ACTION BUTTONS -->
+<div class="container mt-3 text-center">
+
+    <a href="{{ route('admin.patients.index') }}" class="btn btn-info text-light">Back</a>
+
+    <input class="btn btn-success text-light"
+           type="button"
+           onclick="printDiv('printableArea')"
+           value="Print" />
+
+    @can('Patient edit')
+    <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-warning">
+        Edit
+    </a>
+    @endcan
+
+</div>
+<div class="container bg-white shadow-sm rounded mb-5 my-2 pb-3">
+
+@can('Patient access')
+
+<!-- A4 WRAPPER -->
+<div id="printableArea" class="opd-page">
+
+    @foreach ($hospitals as $hospital)
+
+    <!-- HEADER -->
+    <div class="row header-wrap align-items-center">
+
+        <div class="col-sm-4 text-left">
+            <h2 class="text-uppercase font-weight-bold mt-2" style="font-family: Arial Black;">
+                {{ $hospital->title }}
+            </h2>
+        <div>
+                {{ $hospital->address }} <br/>
+                PHC REG. No. {{ $hospital->phc_no }}
+        </div>
+        </div>
+
+        <div class="col-sm-4 text-center">
+            <span class="footer-urdu-remarks-again">ھوالشافی</span><br/>
+            <img src="{{ asset('img/'.$hospital->logo) }}" width="250px" alt="Hospital Logo" class="rounded mx-auto d-block"/>
+        </div>
+
+        <div class="col-sm-4 text-right">
+            <p class="urdu-text">
+                {{ $doctors->name }}
+            </p>
+            <div>
+                <pre>{{ $doctors->schedule }}</pre>
+                <span style="margin-top: 5px; display: block;">PMDC No. {{ $doctors->pmdc }}</span>
             </div>
         </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <a href="{{ route('admin.patients.index')}}" accesskey="b" class="btn btn-info text-light"><u>B</u>ack</a>
-                        <input class="btn btn-success text-light" accesskey="p" type="button" onclick="printDiv('printableArea')" value="Print" />
-                        @can('Patient edit')
-                          <a href="{{route('admin.patients.edit',$patient->id)}}" accesskey="e" class="btn btn-warning"><u>E</u>dit</a>
-                          @endcan
-                          @can('Patient delete')
-                          <form action="{{ route('admin.patients.destroy', $patient->id) }}" accesskey="d" method="POST" class="inline">
-                              @csrf
-                              @method('delete')
-                              <button class="btn btn-danger"><u>D</u>elete</button>
-                          </form>
-                          @endcan
-                    </div>
-                </div>
-            </div>
-        @endcan
+
     </div>
 
-    
+    @endforeach
+
+    <div class="text-right mx-3 mb-2 mt-3">
+        <strong>VCO Taken:</strong> ☐
+    </div>
+
+    <!-- PATIENT STRIP -->
+    <div class="opd-strip">
+
+        <div class="opd-block">
+            <div class="opd-item"><strong>MR#</strong> {{ $patient->id }}</div>
+            <div class="opd-item"><strong>Name</strong> {{ $patient->name }}</div>
+            <div class="opd-item"><strong>Guardian</strong> {{ $patient->fname }}</div>
+            <div class="opd-item"><strong>Gender</strong> {{ $patient->gender }}</div>
+        </div>
+
+        <div class="opd-block">
+            <div class="opd-item"><strong>Age</strong> {{ $patient->age_detailed }}</div>
+            <div class="opd-item"><strong>Marital</strong> {{ $patient->marital_status }}</div>
+            <div class="opd-item"><strong>Phone</strong> {{ $patient->phone }}</div>
+            <div class="opd-item"><strong>CNIC</strong> {{ $patient->cnic }}</div>
+        </div>
+
+        <div class="opd-block">
+            <div class="opd-item">
+                <strong>Address</strong>
+                <span style="white-space: normal;">{{ $patient->address }}</span>
+            </div>
+            <div class="opd-item">
+                <strong>Date</strong>
+                {{ optional($patient->created_at)->format('d-m-Y h:i A') }}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- WRITING AREA -->
+    <div class="opd-writing-area">
+
+        <!-- LEFT -->
+        <div class="opd-col left-col">
+            <div class="section-block">
+                <strong>C/O:</strong><br>
+                <strong class="ml-3">-VA</strong><br>
+                <strong class="ml-3">-AT</strong><br>
+                <strong class="ml-3">-mmHg</strong><br>
+            </div>
+
+            <div class="section-block">
+                <strong>O/E:</strong><br>
+                <strong class="ml-3">-Lids</strong><br>
+                <strong class="ml-3">-Cornea</strong><br>
+                <strong class="ml-3">-A/C</strong><br>
+                <strong class="ml-3">-Lens</strong><br>
+                <strong class="ml-3">-Fundus</strong>
+            </div>
+        </div>
+
+        <!-- MIDDLE RX -->
+        <div class="middle-col">
+
+            <div class="rx-header">℞</div>
+
+            <div class="rx-space"></div>
+
+            <!-- DOCTOR SIGNATURE INSIDE RX -->
+            <div class="rx-footer">
+                <div class="signature-line">----------------------<br/>Doctor's Signature</div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="opd-col right-col">
+
+            <div class="col-title">History</div>
+
+            <div class="section-block">
+                <strong>DM:</strong>
+                <div class="line-space"></div>
+            </div>
+
+            <div class="section-block">
+                <strong>HTN:</strong>
+                <div class="line-space"></div>
+            </div>
+
+            <div class="section-block">
+                <strong>IHD:</strong>
+                <div class="line-space"></div>
+            </div>
+
+            <div class="section-block">
+                <strong>Asthma:</strong>
+                <div class="line-space"></div>
+            </div>
+
+        </div>
         
+    </div>
+        <!-- MAIN FOOTER  -->
+        <div class="footer">
+            <div class="row">
+                <div class="col-sm-6 text-left">
+                    <strong>For Appointments:</strong> {{ $hospital->contact }}
+                </div>
+                <div class="col-sm-6 text-right">
+                    <span class="footer-urdu-remarks">(بروز جمعہ المبارک کلینک بند رہے گا)</span>
+                </div>
+            </div>
+            <span class="footer-urdu-remarks-again">{{ $doctors->remarks }}</span>
+        </div>
+</div>
+
+@endcan
+</div>
+
+<!-- PRINT SCRIPT -->
 <script>
-    function printDiv(divName) {
-     var printContents = document.getElementById(divName).innerHTML;
-     var originalContents = document.body.innerHTML;
+function printDiv(divName) {
+    let printContents = document.getElementById(divName).innerHTML;
+    let originalContents = document.body.innerHTML;
 
-     document.body.innerHTML = printContents;
-
-     window.print();
-
-     document.body.innerHTML = originalContents;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload();
 }
 </script>
+
 </x-app-layout>

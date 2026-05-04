@@ -30,7 +30,7 @@
                 <th class="py-3 px-4 border text-center">Address</th>
                 <th class="py-3 px-4 border text-center">Date of Birth</th>
                 <th class="py-3 px-4 border text-center">Specialty</th>
-                <th class="py-3 px-4 border text-center">Schedule</th>
+                <th class="py-3 px-4 border text-center">Qualification</th>
                 <th class="py-3 px-4 border text-center">CNIC No.</th>
                 <th class="py-3 px-4 border text-center">PMDC No.</th>
                 <th class="py-3 px-4 border text-center">Remarks</th>

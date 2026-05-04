@@ -17,7 +17,7 @@
                      <input id="title" type="text" name="title" value="{{ old('title',$hospital->title) }}" class="form-control" />
                    </div>
                    <div class="col-md-3">
-                     <label for="phc_no" class="text-gray-700 font-black">PHC Regd. No:</label>
+                     <label for="phc_no" class="text-gray-700 font-black">PHC Reg. No:</label>
                      <input id="phc_no" type="text" name="phc_no" value="{{ old('phc_no',$hospital->phc_no) }}" class="form-control" />
                    </div>
                    <div class="col-md-3">

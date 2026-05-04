@@ -92,14 +92,14 @@
           <div class="col-md-6">
             <label class="text-gray-700 font-black">Doctor:</label>
             <select id="doctorSelect" class="form-control" name="fk_doctors_id" required>
-              <option value="">-- Select Doctor --</option>
-              @foreach ($data['doctors'] as $doctor)
-                <option value="{{ $doctor->id }}"
-                        data-specialty-id="{{ $doctor->specialty->id ?? '' }}"
-                        data-specialty="{{ $doctor->specialty->title ?? 'N/A' }}">
-                  {{ $doctor->name }}
-                </option>
-              @endforeach
+                @foreach ($data['doctors'] as $doctor)
+                    <option value="{{ $doctor->id }}"
+                            data-specialty-id="{{ $doctor->specialty->id ?? '' }}"
+                            data-specialty="{{ $doctor->specialty->title ?? 'N/A' }}"
+                            {{ $loop->first ? 'selected' : '' }}>
+                        {{ $doctor->name }}
+                    </option>
+                @endforeach
             </select>
           </div>
 
@@ -151,16 +151,36 @@
         const doctorSelect = document.getElementById('doctorSelect');
         const specialtyTitle = document.getElementById('specialtyTitle');
         const specialtyInput = document.getElementById('fk_specialty_id');
-
-        doctorSelect.addEventListener('change', function () {
-          const selected = this.options[this.selectedIndex];
-          const specialtyText = selected.getAttribute('data-specialty') || '--';
-          const specialtyId = selected.getAttribute('data-specialty-id') || '';
-
-          specialtyTitle.textContent = specialtyText;
-          specialtyInput.value = specialtyId;
-        });
       });
+      
+      document.addEventListener('DOMContentLoaded', function () {
+
+        const doctorSelect = document.getElementById('doctorSelect');
+        const specialtyTitle = document.getElementById('specialtyTitle');
+        const specialtyInput = document.getElementById('fk_specialty_id');
+
+        function updateSpecialty() {
+            const selected = doctorSelect.options[doctorSelect.selectedIndex];
+
+            const specialtyText = selected.getAttribute('data-specialty') || '--';
+            const specialtyId = selected.getAttribute('data-specialty-id') || '';
+
+            specialtyTitle.textContent = specialtyText;
+            specialtyInput.value = specialtyId;
+        }
+
+        // 🔁 Your existing logic (unchanged, just wrapped)
+        doctorSelect.addEventListener('change', updateSpecialty);
+
+        // 🔥 AUTO SELECT FIRST DOCTOR (if placeholder exists)
+        if (doctorSelect.selectedIndex === 0 && doctorSelect.options.length > 1) {
+            doctorSelect.selectedIndex = 1;
+        }
+
+        // 🔥 IMPORTANT: trigger on page load
+        updateSpecialty();
+
+    });
     </script>
   @endpush
 

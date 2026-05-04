@@ -8,7 +8,7 @@
             <button class="btn btn-success text-light" onclick="printDiv('printableArea')" accesskey="p">Print</button>
         </div>
     </div>
-    
+    <hr />
     <div class="container" id="printableArea">
 
         {{-- Hospital Header --}}
@@ -30,11 +30,9 @@
             </div>
         </div>
         @endif
-
-        <hr style="margin:5px 0;">
-
+        
         {{-- ADMISSION SLIP Subheading --}}
-        <div class="text-center fw-bold mb-2" style="font-size:14px;">ADMISSION SLIP</div>
+        <div class="card text-center fw-bold mb-2" style="font-size:30px; font-family: Arial Black;">ADMISSION SLIP</div>
 
         {{-- Patient Info --}}
         <div class="fw-bold mb-1" style="font-size:13px;">Patient Information</div>

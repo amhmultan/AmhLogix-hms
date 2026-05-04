@@ -93,6 +93,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/tokens/token-report', [App\Http\Controllers\Admin\TokenReportController::class, 'index'])->name('tokens.token_report');
     Route::get('/tokens/token-report/data', [App\Http\Controllers\Admin\TokenReportController::class, 'data'])->name('tokens.token_report.data');
     
+    // Print view for doctor notes
+    Route::get('doctor_notes/print-view', [App\Http\Controllers\Admin\DoctorNotesController::class, 'printView'])
+    ->name('doctor_notes.print.view');
+    
     // Resources
     Route::resource('purchases', App\Http\Controllers\Admin\PurchaseInvoiceController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
@@ -116,6 +120,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('purchases/{purchase}/print', [App\Http\Controllers\Admin\PurchaseInvoiceController::class, 'print'])->name('purchases.print');
     Route::get('sales/{sale}/print', [App\Http\Controllers\Admin\SaleController::class, 'print'])->name('sales.print');
     Route::get('doctor_notes/{id}/print', [App\Http\Controllers\Admin\DoctorNotesController::class, 'print'])->name('doctor_notes.print');
+    
 
     // Stock reports
     Route::get('reports', [App\Http\Controllers\Admin\StockReportController::class, 'index'])->name('reports.index');
@@ -130,6 +135,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     // AJAX routes for products
     Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
+    Route::get('/doctor-notes/products/search', [App\Http\Controllers\Admin\DoctorNotesController::class, 'searchProducts'])
+    ->name('doctor_notes.products.search');
 
     // IPD Dashboard
     Route::get('ipd', [App\Http\Controllers\Admin\AdmissionController::class, 'ipdDashboard'])->name('ipd.index');

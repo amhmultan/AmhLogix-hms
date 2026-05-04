@@ -76,10 +76,14 @@ class PatientController extends Controller
     public function show(Patient $patient)
     {
         $title = DB::table('hospitals')
-                    ->select('hospitals.title', 'hospitals.logo', 'hospitals.address', 'hospitals.website', 'hospitals.contact')
+                    ->select('hospitals.title', 'hospitals.logo', 'hospitals.address', 'hospitals.website', 'hospitals.contact', 'hospitals.phc_no')
                     ->get();
-                
-        return view('patient.show',['patient' => $patient], ['hospitals' => $title]);
+        
+        $doctor = DB::table('doctors')
+                    ->select('doctors.*')
+                    ->first();
+    
+        return view('patient.show',['patient' => $patient, 'hospitals' => $title, 'doctors' => $doctor]);
     }
 
     /**

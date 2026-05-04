@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\Token;
 use App\Models\Doctor;
+use App\Models\Patient;
 use App\Models\Speciality;
 
 class TokenController extends Controller
@@ -98,34 +99,12 @@ class TokenController extends Controller
      */
    public function show(Token $token)
     {
-        // Get hospital info (only first row)
         $hospital = DB::table('hospitals')->first();
 
-        // Get full token info including doctor, patient, and specialty
-        $tokenInfo = DB::table('tokens')
-                    ->join('patients', 'tokens.fk_patients_id', '=', 'patients.id')
-                    ->join('doctors', 'tokens.fk_doctors_id', '=', 'doctors.id')
-                    ->join('specialities', 'tokens.fk_specialty_id', '=', 'specialities.id')
-                    ->select(
-                        'tokens.*',
-                        'patients.name as pName',
-                        'patients.fname as fName',
-                        'doctors.name as dName',
-                        'specialities.title as sTitle',
-                        'doctors.pmdc',
-                        'doctors.remarks',
-                        'patients.phone as pPhone',
-                        'patients.address as pAddress',
-                        'patients.dob as pAge',
-                        'patients.reffered_by'
-                    )
-                    ->where('tokens.id', $token->id)
-                    ->first();
+        $patient = Patient::find($token->fk_patients_id);
+        $doctor = Doctor::find($token->fk_doctors_id);
 
-        return view('token.show', [
-            'token' => $tokenInfo,
-            'hospital' => $hospital,
-        ]);
+        return view('token.show', compact('hospital', 'doctor', 'patient', 'token'));
     }
 
 
@@ -167,7 +146,13 @@ class TokenController extends Controller
             'fk_specialty_id' => 'required|exists:specialities,id',
         ]);
 
-        $token->update($validated);
+        $token->update([
+            'fk_doctors_id' => $request->fk_doctors_id,
+            'fk_specialty_id' => $request->fk_specialty_id,
+            'fees' => $request->fees,
+            'denomination' => $request->denomination,
+            'balance' => $request->balance,
+        ]);
 
         return redirect()->route('admin.tokens.index')->with('success', 'Patient token updated successfully!');
     }

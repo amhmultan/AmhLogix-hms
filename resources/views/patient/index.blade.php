@@ -60,17 +60,17 @@
                     
                     <td class="px-4 py-2 border">
                       @can('Patient access')
-                        <a href="{{route('admin.patients.show',$patient->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-green-400">Show</a>
+                        <a href="{{route('admin.patients.show',$patient->id)}}" class="btn btn-sm btn-primary mb-1">Show</a>
                       @endcan
                       @can('Patient edit')
-                      <a href="{{route('admin.patients.edit',$patient->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-blue-400">Edit</a>
+                      <a href="{{route('admin.patients.edit',$patient->id)}}" class="btn btn-sm btn-warning mb-1">Edit</a>
                       @endcan
   
                       @can('Patient delete')
                       <form action="{{ route('admin.patients.destroy', $patient->id) }}" method="POST" class="inline">
                           @csrf
                           @method('delete')
-                          <button class="text-decoration-none text-grey-lighter font-bold py-1 px-1 rounded text-xs bg-blue hover:bg-blue-dark text-red-400">Delete</button>
+                          <button class="btn btn-sm btn-danger mb-1">Delete</button>
                       </form>
                       @endcan
                     </td>

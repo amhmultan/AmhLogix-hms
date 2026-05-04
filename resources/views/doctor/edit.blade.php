@@ -54,8 +54,9 @@
 
             <div class="row mt-4">
                 <div class="col-md-9">
-                    <label class="text-gray-700 font-black">Schedule:</label>
-                    <input type="text" name="schedule" value="{{ old('schedule', $doctor->schedule) }}" class="form-control">
+                    <label class="text-gray-700 font-black">Qualification:</label>
+                    <textarea name="schedule" class="form-control" rows="3">{{ old('schedule', $doctor->schedule) }}</textarea>
+                    <!-- <input type="text" name="schedule" value="{{ old('schedule', $doctor->schedule) }}" class="form-control"> -->
                 </div>
 
                 <div class="col-md-3">

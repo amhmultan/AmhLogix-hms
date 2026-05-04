@@ -17,7 +17,7 @@ class CreateDoctorNotesTable extends Migration
 
             $table->id();
             $table->unsignedBigInteger('fk_patient_id');
-            $table->unsignedBigInteger('fk_token_id');
+            $table->unsignedBigInteger('fk_token_id')->nullable();
             $table->string('prescription', 255)->nullable();
             $table->string('mode')->default('upload'); // 'upload' or 'manual'
             $table->text('complaints')->nullable();

@@ -108,6 +108,7 @@
               class="form-control" readonly>
           </div>
         </div>
+        <input type="hidden" name="balance" id="balance_hidden">
 
         <div class="row mt-5">
           <div class="col-md-12 text-center">
@@ -121,14 +122,32 @@
     </div>
   </main>
 
-  @section('script')
-    <script type="text/javascript">
-      function calculateBalance() {
-          let fees = parseFloat(document.getElementById('fees').value) || 0;
-          let denomination = parseFloat(document.getElementById('denomination').value) || 0;
-          let balance = fees - denomination;
-          document.getElementById('balance').value = balance.toFixed(2);
-      }
-    </script>
-  @endsection
+ @push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const feesInput = document.getElementById('fees');
+    const denominationInput = document.getElementById('denomination');
+    const balanceInput = document.getElementById('balance');
+    const balanceHidden = document.getElementById('balance_hidden');
+
+    function calculateBalance() {
+        let fees = parseFloat(feesInput.value) || 0;
+        let denomination = parseFloat(denominationInput.value) || 0;
+
+        let balance = fees - denomination;
+
+        balanceInput.value = balance.toFixed(2);
+        balanceHidden.value = balance.toFixed(2);
+    }
+
+    // Live calculation
+    feesInput.addEventListener('input', calculateBalance);
+    denominationInput.addEventListener('input', calculateBalance);
+
+    calculateBalance();
+
+});
+</script>
+@endpush
 </x-app-layout>

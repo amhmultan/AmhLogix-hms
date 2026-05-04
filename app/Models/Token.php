@@ -18,13 +18,17 @@ class Token extends Model
         'balance'
     ];
 
-    public function patient() {
-    return $this->belongsTo(Patient::class, 'fk_patients_id');
-    }
-    public function doctor() {
+    public function doctor()
+    {
         return $this->belongsTo(Doctor::class, 'fk_doctors_id');
     }
-    public function speciality() {
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'fk_patients_id');
+    }
+    public function speciality() 
+    {
         return $this->belongsTo(Speciality::class, 'fk_specialty_id');
     }
     public function doctor_notes()

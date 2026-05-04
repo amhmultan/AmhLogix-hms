@@ -21,7 +21,7 @@
                 <th class="py-3 px-1 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">ID</th>
                 <th class="py-3 px-1 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">TITLE</th>
                 <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">LOGO</th>
-                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">PHC REGD. NO</th>
+                <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">PHC REG. NO</th>
                 <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">CONTACT NO</th>
                 <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">EMAIL</th>
                 <th class="py-3 px-2 bg-indigo-500 font-bold text-sm text-white text-center border border-grey-light">WEBSITE</th>
@@ -78,6 +78,29 @@
         
         @endif
 
+      </div>
+
+      <div class="container py-4 px-5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {{-- Specialities --}}
+            @can('Speciality access')
+                <a href="{{ route('admin.specialities.index') }}"
+                  class="no-underline hover:no-underline group block bg-gradient-to-r from-gray-700 to-gray-900 text-white font-extrabold text-2xl py-8 rounded-2xl shadow-xl hover:from-gray-800 hover:to-gray-950 transition-all text-center relative"
+                  accesskey="s">
+                  <i class="fas fa-user-md fa-3x mb-2"></i>
+                  <div>Specialities</div>
+                </a>
+            @endcan
+            {{-- Doctors --}}
+            @can('Doctor access')
+                <a href="{{ route('admin.doctors.index') }}"
+                  class="no-underline hover:no-underline group block bg-gradient-to-r from-red-500 to-pink-500 text-white font-extrabold text-2xl py-8 rounded-2xl shadow-xl hover:from-red-600 hover:to-pink-600 transition-all text-center relative"
+                  accesskey="o">
+                  <i class="fas fa-user-md fa-3x mb-2"></i>
+                  <div>Doctors</div>
+                </a>
+            @endcan               
+        </div>
       </div>
   </main>
 </div>

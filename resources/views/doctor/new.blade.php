@@ -54,7 +54,7 @@
 
         <div class="row mt-4">
           <div class="col-md-9">
-            <label class="text-gray-700 font-black">Schedule:</label>
+            <label class="text-gray-700 font-black">Qualification:</label>
             <input type="text" name="schedule" value="{{ old('schedule') }}" class="form-control">
           </div>
 

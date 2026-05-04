@@ -18,7 +18,7 @@
                     
                     
                     <div class="col-md-3">
-                      <label for="phc_no" class="text-gray-700 font-black">PHC No:</label>
+                      <label for="phc_no" class="text-gray-700 font-black">PHC Reg. No:</label>
                       <input id="phc_no" type="text" name="phc_no" value="{{ old('phc_no') }}" class="form-control" />
                     </div>
                     

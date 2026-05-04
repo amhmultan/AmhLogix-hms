@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +9,7 @@ use App\Models\DoctorNotes;
 
 class DoctorNotesController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
         $this->middleware('role_or_permission:DoctorNotes access|DoctorNotes add|DoctorNotes edit|DoctorNotes delete', ['only' => ['index','show']]);
         $this->middleware('role_or_permission:DoctorNotes add', ['only' => ['create','store']]);
@@ -19,204 +18,262 @@ class DoctorNotesController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * INDEX
      */
     public function index()
     {
         $doctor_notes = DB::table('doctor_notes')
-            ->join('patients', 'patients.id','fk_patient_id')
-            ->join('tokens', 'tokens.id', 'fk_token_id')
-            ->select('doctor_notes.*','patients.name', 'tokens.created_at')
+            ->join('patients', 'patients.id', '=', 'doctor_notes.fk_patient_id')
+
+            // 🔥 IMPORTANT FIX (LEFT JOIN)
+            ->leftJoin('tokens', 'tokens.id', '=', 'doctor_notes.fk_token_id')
+
+            ->select(
+                'doctor_notes.*',
+                'patients.name as patient_name',
+                'tokens.created_at as token_date'
+            )
+            ->orderByDesc('doctor_notes.id')
             ->get();
 
-        return view('doctor_notes.index', ['doctor_notes' => $doctor_notes]);
+        return view('doctor_notes.index', compact('doctor_notes'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * CREATE (SEARCH)
      */
     public function create(Request $request)
-    {
-        $search = $request->get('search');  
 
-        $tokens = collect();
+    {
+        $search = trim($request->get('search'));
+        $searchType = strtolower(trim($request->get('search_type', 'token')));
+
+        $patient = null;
         $token = null;
         $tokenAlreadySaved = false;
 
-        if (!empty($search)) {
-            $tokens = DB::table('tokens')
-                ->join('patients', 'tokens.fk_patients_id', '=', 'patients.id')
-                ->select(
-                    'tokens.*',
-                    'patients.name',
-                    'patients.reffered_by',
-                    'patients.cnic',
-                    'patients.address as pAddress',
-                    'patients.dob as pAge'
-                )
-                ->where('tokens.id', $search) // search by token no
-                ->get();
+        if ($search !== '') {
 
-            $token = $tokens->first();
+            // =========================
+            // MR SEARCH (PATIENT ONLY)
+            // =========================
+            if ($searchType === 'mr') {
 
-            if ($token) {
-                $tokenAlreadySaved = DB::table('doctor_notes')
-                    ->where('fk_token_id', $token->id)
-                    ->exists();
+                $patient = DB::table('patients')
+                    ->where('id', (int) $search)
+                    ->first();
+
+                if ($patient) {
+
+                    $token = DB::table('tokens')
+                        ->where('fk_patients_id', $patient->id)
+                        ->orderByDesc('id')
+                        ->first();
+
+                    // 🔥 NORMALIZE TOKEN (IMPORTANT FIX)
+                    if ($patient && !$token) {
+                        $token = (object)[
+                            'id' => null,
+                            'token_id' => null,
+                            'mr_no' => $patient->id,
+                            'name' => $patient->name,
+                            'pAddress' => $patient->address,
+                            'pAge' => $patient->dob,
+                            'reffered_by' => $patient->reffered_by,
+                            'created_at' => null
+                        ];
+                    }
+                }
+            }
+
+            // =========================
+            // TOKEN SEARCH
+            // =========================
+            if ($searchType === 'token') {
+
+                $token = DB::table('tokens')
+                    ->join('patients', 'tokens.fk_patients_id', '=', 'patients.id')
+                    ->select(
+                        'tokens.id as token_id',
+                        'tokens.created_at',
+                        'patients.id as mr_no',
+                        'patients.name',
+                        'patients.address as pAddress',
+                        'patients.dob as pAge',
+                        'patients.reffered_by'
+                    )
+                    ->where('tokens.id', (int) $search)
+                    ->first();
+
+                if ($token) {
+                    $patient = DB::table('patients')
+                        ->where('id', $token->mr_no)
+                        ->first();
+
+                    $tokenAlreadySaved = DB::table('doctor_notes')
+                        ->where('fk_token_id', $token->token_id)
+                        ->exists();
+                }
             }
         }
 
-        return view('doctor_notes.new', compact('search', 'tokens', 'token', 'tokenAlreadySaved'));
+        return view('doctor_notes.new', compact(
+            'search',
+            'searchType',
+            'patient',
+            'token',
+            'tokenAlreadySaved'
+        ));
     }
 
-
     /**
-     * Store a newly created resource in storage.
+     * STORE
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'fk_patient_id' => 'required',
+            'mode' => 'required|in:upload,manual',
+            'fk_token_id' => 'nullable'
+        ]);
+
         $data = new DoctorNotes();
 
         $data->fk_patient_id = $request->fk_patient_id;
-        $data->fk_token_id = $request->fk_token_id;
+
+        // FIX: convert 0 → null
+        $data->fk_token_id = ($request->fk_token_id == 0 || $request->fk_token_id == '')
+            ? null
+            : $request->fk_token_id;
+
         $data->mode = $request->mode;
 
         if ($request->mode === 'upload') {
-            // Handle file upload
+
             if ($request->hasFile('prescription')) {
-                $prescription = $request->file('prescription');
-                $prescriptionName = time().'.'.$prescription->getClientOriginalExtension();
-                $prescription->move('assets', $prescriptionName);
-                $data->prescription = $prescriptionName;
+
+                $file = $request->file('prescription');
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                $file->move(public_path('assets/doctor_notes'), $fileName);
+
+                $data->prescription = $fileName;
             }
+
+            $data->complaints = null;
+            $data->history = null;
+            $data->investigations = null;
+            $data->prescription_text = null;
+            $data->remarks = null;
+
         } else {
-            // Manual entry fields
+
             $data->complaints = $request->complaints;
             $data->history = $request->history;
             $data->investigations = $request->investigations;
             $data->prescription_text = $request->prescription_text;
             $data->remarks = $request->remarks;
+
+            $data->prescription = null;
         }
 
         $data->save();
 
-        return redirect('/admin/doctor_notes')->withSuccess('Notes saved!');
+        return redirect()->route('admin.doctor_notes.index')
+            ->with('success', 'Doctor Notes saved successfully!');
     }
 
     /**
-     * Display the specified resource.
+     * SHOW
      */
     public function show($id)
     {
-        $doctor_notes = DoctorNotes::findOrFail($id);
-
-        $hospital = null;
-        $token = null;
-
-        // Only fetch extra details when mode = manual
-        if ($doctor_notes->mode === 'manual') {
-            // Get hospital information (adjust table/fields if needed)
-            $hospital = DB::table('hospitals')->first();
-
-            // Fetch token with patient details
-            $token = DB::table('tokens')
-                ->join('patients', 'patients.id', '=', 'tokens.fk_patients_id')
-                ->select(
-                    'tokens.*',
-                    'patients.name as pName',
-                    'patients.fname as fName',
-                    'patients.dob as pAge',
-                    'patients.address as pAddress',
-                    'patients.phone as pPhone',
-                )
-                ->where('tokens.id', $doctor_notes->fk_token_id)
-                ->first();
-        }
-
-        return view('doctor_notes.show', compact('doctor_notes', 'hospital', 'token'));
+        //
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * EDIT
      */
     public function edit($id)
     {
-        $doctor_notes = DoctorNotes::find($id);
-        return view('doctor_notes.edit',['doctor_notes' => $doctor_notes]);
+        $doctor_notes = DoctorNotes::findOrFail($id);
+
+        return view('doctor_notes.edit', compact('doctor_notes'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * UPDATE
      */
     public function update(Request $request, $id)
     {
-        $doctor_notes = DoctorNotes::find($id);
+        $note = DoctorNotes::findOrFail($id);
 
-        $doctor_notes->mode = $request->mode;
+        $note->mode = $request->mode;
 
         if ($request->mode === 'upload') {
+
             if ($request->hasFile('prescription')) {
-                $prescription = $request->file('prescription');
-                $prescriptionName = time().'.'.$prescription->getClientOriginalExtension();
-                $prescription->move('assets', $prescriptionName);
-                $doctor_notes->prescription = $prescriptionName;
+                $file = $request->file('prescription');
+                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('assets'), $fileName);
+
+                $note->prescription = $fileName;
             }
-            // Clear manual fields when switching to upload mode
-            $doctor_notes->complaints = null;
-            $doctor_notes->history = null;
-            $doctor_notes->investigations = null;
-            $doctor_notes->prescription_text = null;
-            $doctor_notes->remarks = null;
+
+            $note->complaints = null;
+            $note->history = null;
+            $note->investigations = null;
+            $note->prescription_text = null;
+            $note->remarks = null;
+
         } else {
-            // Update manual fields
-            $doctor_notes->complaints = $request->complaints;
-            $doctor_notes->history = $request->history;
-            $doctor_notes->investigations = $request->investigations;
-            $doctor_notes->prescription_text = $request->prescription_text;
-            $doctor_notes->remarks = $request->remarks;
-            // Clear file if switching to manual
-            $doctor_notes->prescription = null;
+
+            $note->complaints = $request->complaints;
+            $note->history = $request->history;
+            $note->investigations = $request->investigations;
+            $note->prescription_text = $request->prescription_text;
+            $note->remarks = $request->remarks;
+
+            $note->prescription = null;
         }
 
-        $doctor_notes->update();
+        $note->save();
 
-        return redirect('/admin/doctor_notes')->withSuccess('Doctor Notes updated!');
+        return redirect('/admin/doctor_notes')
+            ->with('success', 'Doctor Notes updated successfully!');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * DELETE
      */
     public function destroy($id)
     {
-        $doctor_notes = DoctorNotes::find($id);
-        $doctor_notes->delete();
-        return redirect('/admin/doctor_notes')->withSuccess('Doctor Notes deleted!');
+        $note = DoctorNotes::findOrFail($id);
+        $note->delete();
+
+        return redirect('/admin/doctor_notes')
+            ->with('success', 'Doctor Notes deleted!');
     }
 
+    /**
+     * PRINT
+     */
     public function print($id)
     {
         $doctor_notes = DoctorNotes::findOrFail($id);
 
-        // Fetch hospital and token data if manual mode
-        $hospital = null;
-        $token = null;
+        $token = DB::table('tokens')
+            ->join('patients', 'patients.id', '=', 'tokens.fk_patients_id')
+            ->select(
+                'tokens.*',
+                'patients.name as pName',
+                'patients.fname as fName'
+            )
+            ->where('tokens.id', $doctor_notes->fk_token_id)
+            ->first();
 
-        if ($doctor_notes->mode === 'manual') {
-            $token = DB::table('tokens')
-                ->join('patients', 'patients.id', '=', 'tokens.fk_patients_id')
-                ->select(
-                    'tokens.*',
-                    'patients.name as pName',
-                    'patients.fname as fName'
-                )
-                ->where('tokens.id', $doctor_notes->fk_token_id)
-                ->first();
-
-            // If you have hospital settings table
-            $hospital = DB::table('hospitals')->first();
-        }
+        $hospital = DB::table('hospitals')->first();
 
         return view('doctor_notes.print', compact('doctor_notes', 'hospital', 'token'));
     }
-
 }
