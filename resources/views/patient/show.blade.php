@@ -26,7 +26,7 @@
 .footer-urdu-remarks {
     font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
     direction: rtl;
-    font-size: 18px;
+    font-size: 12px;
     line-height: 1.4;
     color: rgb(0, 0, 0);
 }
@@ -436,7 +436,7 @@ pre{
         <div class="footer">
             <div class="row">
                 <div class="col-sm-6 text-left">
-                    <strong>For Appointments:</strong> {{ $hospital->contact }}
+                    <span class="footer-urdu-remarks">ٹائم لینے کے لئے صبح 9 بجے اس نمبر پر رابطہ کریں:</span> {{ $hospital->contact }}
                 </div>
                 <div class="col-sm-6 text-right">
                     <span class="footer-urdu-remarks">(بروز جمعہ المبارک کلینک بند رہے گا)</span>
