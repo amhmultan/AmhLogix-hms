@@ -16,22 +16,27 @@
                 <input type="text"
                        name="search"
                        value="{{ $search ?? '' }}"
-                       class="form-control"
-                       placeholder="Enter Token No or MR No">
+                       class="form-control auto-focus"
+                       placeholder="Enter Token No or MR No"
+                       required>
             </div>
 
             <div class="col-md-4">
 
-                <label>
-                    <input type="radio" name="search_type" value="token"
-                        {{ ($searchType ?? 'token') == 'token' ? 'checked' : '' }}>
-                    Token No
+                <label class="ml-3 my-1">
+                    <input type="radio" 
+                        name="search_type" 
+                        value="mr"
+                        {{ ($searchType ?? 'mr') == 'mr' ? 'checked' : '' }}>
+                    MR No
                 </label>
 
-                <label class="ml-3">
-                    <input type="radio" name="search_type" value="mr"
-                        {{ ($searchType ?? '') == 'mr' ? 'checked' : '' }}>
-                    MR No
+                <label class="ml-3 my-1">
+                    <input type="radio" 
+                        name="search_type" 
+                        value="token"
+                        {{ ($searchType ?? '') == 'token' ? 'checked' : '' }}>
+                    Token No
                 </label>
 
             </div>
@@ -156,15 +161,45 @@
 </main>
 
 <script>
-document.querySelectorAll('input[name="mode"]').forEach(radio => {
-    radio.addEventListener('change', function () {
-        document.getElementById('uploadSection').style.display =
-            this.value === 'upload' ? 'block' : 'none';
+    document.addEventListener('DOMContentLoaded', function () {
 
-        document.getElementById('manualSection').style.display =
-            this.value === 'manual' ? 'block' : 'none';
+        // AUTO FOCUS
+        setTimeout(function () {
+            let input = document.querySelector('.auto-focus');
+
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }, 500);
+
+        // MODE TOGGLE
+        let radios = document.querySelectorAll('input[name="mode"]');
+
+        if (radios.length > 0) {
+
+            radios.forEach(radio => {
+
+                radio.addEventListener('change', function () {
+
+                    let uploadSection = document.getElementById('uploadSection');
+                    let manualSection = document.getElementById('manualSection');
+
+                    if (uploadSection && manualSection) {
+
+                        uploadSection.style.display =
+                            this.value === 'upload' ? 'block' : 'none';
+
+                        manualSection.style.display =
+                            this.value === 'manual' ? 'block' : 'none';
+                    }
+                });
+
+            });
+
+        }
+
     });
-});
 </script>
 
 </x-app-layout>

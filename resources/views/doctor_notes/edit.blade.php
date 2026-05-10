@@ -46,7 +46,7 @@
                         @if($doctor_notes->prescription)
                             <p>
                                 Current file:
-                                <a href="{{ asset('assets/'.$doctor_notes->prescription) }}" target="_blank">View</a>
+                                <a href="{{ asset('assets/doctor_notes/'.$doctor_notes->prescription) }}" target="_blank">View</a>
                             </p>
                         @endif
                         <label for="prescription" class="font-black">Upload New Prescription:</label>

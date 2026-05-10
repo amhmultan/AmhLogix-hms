@@ -46,7 +46,7 @@ class DoctorNotesController extends Controller
 
     {
         $search = trim($request->get('search'));
-        $searchType = strtolower(trim($request->get('search_type', 'token')));
+        $searchType = strtolower(trim($request->get('search_type', 'mr')));
 
         $patient = null;
         $token = null;
@@ -215,7 +215,7 @@ class DoctorNotesController extends Controller
             if ($request->hasFile('prescription')) {
                 $file = $request->file('prescription');
                 $fileName = time() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('assets'), $fileName);
+                $file->move(public_path('assets/doctor_notes'), $fileName);
 
                 $note->prescription = $fileName;
             }

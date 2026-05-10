@@ -118,7 +118,7 @@ pre{
 
 /* Base columns */
 .opd-col{
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     padding: 8px;
     font-size: 14px;
     display: flex;
@@ -129,8 +129,8 @@ pre{
 .left-col,
 .right-col{
     width: 20%;
-    border-radius: 4px;
-    border: 2px solid #000000;
+    /* border-radius: 4px;
+    border: 2px solid #000000; */
 }
 
 /* MIDDLE RX */
@@ -369,27 +369,26 @@ pre{
         <!-- LEFT -->
         <div class="opd-col left-col">
             <div class="section-block">
-                <strong>C/O:</strong><br>
-                <strong class="section-detail ml-3">-VA</strong><br>
-                <strong class="section-detail ml-3">-AT</strong><br>
-                <strong class="section-detail ml-3">-mmHg</strong><br>
+                <strong class="section-detail">C/O:</strong><br>
+                <strong class="section-detail">O/E:</strong><br>
+                <strong class="section-detail">VAく</strong><br>
+                <strong class="section-detail">ATく</strong><br>
             </div>
 
             <div class="section-block">
-                <strong>O/E:</strong><br>
-                <strong class="section-detail ml-3">-Lids</strong><br>
-                <strong class="section-detail ml-3">-Conjunctiva</strong><br>
-                <strong class="section-detail ml-3">-Cornea</strong><br>
-                <strong class="section-detail ml-3">-A/C</strong><br>
-                <strong class="section-detail ml-3">-Lens</strong><br>
-                <strong class="section-detail ml-3">-Fundus</strong>
+                <strong class="section-detail">Lids</strong><br>
+                <strong class="section-detail">Conjunctiva</strong><br>
+                <strong class="section-detail">Cornea</strong><br>
+                <strong class="section-detail">A/C</strong><br>
+                <strong class="section-detail">Lens</strong><br>
+                <strong class="section-detail">Fundus</strong>
             </div>
         </div>
 
         <!-- MIDDLE -->
         <div class="middle-col">
 
-            <div class="rx-header">℞</div>
+            <!-- <div class="rx-header">℞</div> -->
 
             <div class="rx-space"></div>
 

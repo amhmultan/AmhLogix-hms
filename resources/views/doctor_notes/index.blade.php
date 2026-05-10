@@ -52,7 +52,7 @@
                     <td>{{ $note->fk_patient_id ?? 'N/A' }}</td>
 
                     {{-- TOKEN NO (SAFE LEFT JOIN) --}}
-                    <td>{{ $note->fk_token_id ?? 'N/A' }}</td>
+                    <td>{{ $note->fk_token_id ?? 'Not Assigned' }}</td>
 
                     {{-- FIXED FIELD NAME --}}
                     <td>{{ $note->patient_name ?? 'Walk-in Patient' }}</td>

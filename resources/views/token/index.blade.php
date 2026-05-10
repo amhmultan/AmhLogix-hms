@@ -24,7 +24,7 @@
                       <th class="py-3 px-4 border text-center">PATIENT NAME</th>
                       <th class="py-3 px-4 border text-center">DOCTORS NAME</th>
                       <th class="py-3 px-4 border text-center">SPECIALTY</th>
-                      <th class="py-3 px-4 border text-center">PANEL</th>
+                      <th class="py-3 px-4 border text-center">REFFERED BY</th>
                       <th class="py-3 px-4 border text-center">FEES</th>
                       <th class="py-3 px-4 border text-center">PAID</th>
                       <th class="py-3 px-4 border text-center">BALANCE</th>

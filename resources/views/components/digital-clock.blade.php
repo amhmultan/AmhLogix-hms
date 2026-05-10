@@ -1,4 +1,4 @@
-<div>
+<div class="text-sm sm:text-base md:text-lg lg:text-xl font-semibold">
     <div id="clock2" class="h3 text-xl font-mono font-bold" style="color:SlateBlue"></div>
     <div id="date2" class="text-xl font-mono font-bold" style="color:Violet"></div>
 </div>
