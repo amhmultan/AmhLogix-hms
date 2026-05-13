@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\Patient;
+use Carbon\Carbon;
 
 class PatientController extends Controller
 {
@@ -30,14 +32,7 @@ class PatientController extends Controller
      */
     public function index()
     {
-        
-        $patients = DB::table('patients')
-                        ->join('users', 'users.id','fk_user_id')
-                        ->select('patients.*', 'users.name as usersName')
-                        ->get();
-
-        return view('patient.index', ['patients' => $patients]);
-        
+        return view('patient.index');
     }
 
     /**
@@ -58,13 +53,21 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $data= $request->all();
-        $data['fk_user_id'] = Auth::user()->id;
-        $Patient = Patient::create($data);
+        $request->validate([
+            'name' => 'required',
+            'age' => 'required|integer|min:0|max:120',
+        ]);
 
-        return redirect('/admin/patients')->withSuccess('Patient created !!!');
-        
+        $data = $request->all();
+
+        $data['fk_user_id'] = Auth::id();
+
+        // Convert age to DOB
+        $data['dob'] = Carbon::now()->subYears($request->age)->format('Y-m-d');
+
+        Patient::create($data);
+
+        return redirect('/admin/patients')->withSuccess('Patient register successfully !!!');
     }
 
     /**
@@ -104,22 +107,72 @@ class PatientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Patient $patient)
+    public function update(Request $request, $id)
     {
-        $patient->update($request->all());
-        return redirect('/admin/patients')->withSuccess('Patient updated !!!');
-    }
+        $request->validate([
+            'name' => 'required',
+            'age' => 'required|integer|min:0|max:120',
+        ]);
 
+        $patient = Patient::findOrFail($id);
+
+        // Convert age → DOB
+        $dob = Carbon::now()->subYears($request->age)->format('Y-m-d');
+
+        $patient->name = $request->name;
+        $patient->dob = $dob;
+        $patient->fk_user_id = Auth::id(); // optional: or keep created_by separate
+        $patient->save();
+
+        return redirect('/admin/patients')->withSuccess('Patient updated successfully !!!');
+    }
+        
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    *
+    * @param  int  $id
+    * @return \Illuminate\Http\Response
+    */
     public function destroy(Patient $patient)
     {
         $patient->delete();
-        return redirect('/admin/patients')->withSuccess('Patient deleted !!!');
+        return redirect('/admin/patients')->withSuccess('Patient deleted successfully !!!');
     }
 
+    public function getData(Request $request)
+{
+    $query = DB::table('patients')
+        ->join('users', 'users.id', '=', 'patients.fk_user_id')
+        ->select('patients.*', 'users.name as usersName');
+
+    // 🔥 SMART SEARCH LOGIC
+    if (!empty($request->smart_search)) {
+
+        $search = $request->smart_search;
+
+        $query->where(function ($q) use ($search) {
+
+            $q->where('patients.id', 'like', "%$search%")
+              ->orWhere('patients.cnic', 'like', "%$search%")
+              ->orWhere('patients.phone', 'like', "%$search%");
+
+        });
+    }
+
+    return datatables()
+        ->of($query)
+        ->addColumn('age', function ($patient) {
+            return $patient->dob
+                ? \Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years')
+                : '';
+        })
+        ->addColumn('registered_on', fn($p) => \Carbon\Carbon::parse($p->created_at)->format('d-m-Y h:i A'))
+        ->addColumn('updated_on', fn($p) => \Carbon\Carbon::parse($p->updated_at)->format('d-m-Y h:i A'))
+        ->addColumn('action', function ($patient) {
+            return view('patient.partials.actions', compact('patient'))->render();
+        })
+        ->rawColumns(['action'])
+        ->make(true);
+}
+    
 }

@@ -329,8 +329,8 @@ pre{
 
     </div>
 
-    <div class="text-right mx-3 mb-2 mt-3">
-        <strong>VCO Taken:</strong> ☐
+    <div class="text-right my-2">
+        <strong class="">VCO Taken:</strong> <span class="h2 align-middle mx-2">☐</span>
     </div>
 
     <!-- PATIENT STRIP -->

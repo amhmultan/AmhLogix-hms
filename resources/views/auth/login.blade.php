@@ -25,10 +25,10 @@
                 <input type="password" name="password" id="password" class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow" placeholder="Password" required autocomplete="current-password"/>
               </div>
 
-              <div class="relative">
-                <input type="checkbox" name="remember" id="remember_me" checked class="inline-block align-middle" />
+              <!-- <div class="relative">
+                <input type="checkbox" name="remember" id="remember_me" class="inline-block align-middle" />
                 <label class="inline-block align-middle" for="remember_me">Remember me</label>
-              </div>
+              </div> -->
 
               <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center">
                 @if (Route::has('password.request'))

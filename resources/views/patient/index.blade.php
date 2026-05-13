@@ -1,140 +1,340 @@
-<x-app-layout>
-  @push('styles')
-  <style>
-    table.dataTable td {
-    white-space: normal !important;
-    word-break: break-word;
-    vertical-align: middle;
-    }
+<x-app-layout> 
+@push('styles') 
+    <style> 
+/* ========================= GLOBAL OVERFLOW FIX ========================= */ 
+html, body{ overflow-x: hidden !important; } 
 
-    table.dataTable th {
-        white-space: nowrap;
-    }
+/* ========================= CONTAINER FIX ========================= */ 
+.container-fluid{ max-width: 99%; overflow-x: hidden; } 
 
-    .dataTables_wrapper {
-        width: 100%;
-    }
-  </style>
-  @endpush
-  <main>
-      <div class="container-fluid py-4 px-5">
+/* ========================= STICKY SEARCH ========================= */ 
+.sticky-search{ position: sticky; top: 0; z-index: 999; background: #fff; padding: 12px 0; border-bottom: 1px solid #ddd; width: 100%; } 
 
-            <div class="row mb-5">
-              <div class="col-sm-6">
-                <p class="h3 text-danger"><strong><em>Patients <span class="text-success">Dashboard</span></em></strong></p>
-              </div>
-              <div class="col-sm-6 text-right">
-                @can('Patient create')
-                  <a href="{{route('admin.patients.create')}}" class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-500 transition-colors" accesskey="n"><u>N</u>ew Patient</a>
-                @endcan
-              </div>
-            </div>
-          
-          @if (!$patients->isEmpty())
-          <div class="bg-white shadow-md rounded p-3 overflow-hidden">
-          <table id="patientTable" class="table table-bordered table-striped nowrap w-100">
-            <thead>
-            <tr class="bg-indigo-500 text-white">
-                <th>MR No.</th>
-                <th>PATIENT NAME</th>
-                <th>FATHERS NAME</th>
-                <th>AGE</th>
-                <th>GENDER</th>
-                <th>MARITAL STATUS</th>
-                <th>PHONE</th>
-                <th>EMAIL</th>
-                <th>CNIC #</th>
-                <th>ADDRESS</th>
-                <th>REGISTERED ON</th>
-                <th>REGISTERED BY</th>
-                <th>UPDATED ON</th>
-                <th>ACTIONS</th>
-            </tr>
-            </thead>
-            <tbody>
-              @can('Patient access')
-                @foreach($patients as $patient)
-                  <tr class="text-center">
-                    <td class="px-4 py-2 border">{{ $patient->id }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->name }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->fname }}</td>
-                    <td class="px-4 py-2 border">
-                      @if($patient->dob == null)
-                        {{ '' }}
-                      @else
-                        {{\Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years, %m months and %d days');}}
-                      @endif
-                    </td>
-                    <td class="px-4 py-2 border">{{ $patient->gender }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->marital_status }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->phone }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->email }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->cnic }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->address }}</td>
-                    <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($patient->created_at)->format('d-m-Y h:i A') }}</td>
-                    <td class="px-4 py-2 border">{{ $patient->usersName }}</td>
-                    <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($patient->updated_at)->format('d-m-Y h:i A') }}</td>
-                    <td class="px-4 py-2 border">
-                      @can('Patient access')
-                        <a href="{{route('admin.patients.show',$patient->id)}}" class="btn btn-sm btn-primary mb-1">Show</a>
-                      @endcan
-                      @can('Patient edit')
-                      <a href="{{route('admin.patients.edit',$patient->id)}}" class="btn btn-sm btn-warning mb-1">Edit</a>
-                      @endcan
-  
-                      @can('Patient delete')
-                      <form action="{{ route('admin.patients.destroy', $patient->id) }}" method="POST" class="inline">
-                          @csrf
-                          @method('delete')
-                          <button class="btn btn-sm btn-danger mb-1">Delete</button>
-                      </form>
-                      @endcan
-                    </td>
-                  </tr>
-                @endforeach
-                @endcan
-            </tbody>
-          </table>
-          </div>
-        @else
+/* ========================= SEARCH INPUT FIX ========================= */ 
+.input-group{ width: 100%; } 
+#smartSearch{ min-width: 0 !important; } 
 
-          <div class="row flex text-center mt-5 pt-5">
-            <div class="col-sm-12">
-              <h1 class="h4 italic text-danger">NO RECORD FOUND</h1>
-            </div>
-          </div>
-        
-        @endif
+/* ========================= TABLE RESPONSIVE FIX ========================= */ 
+.table-responsive{ width: 100%; overflow-x: auto; overflow-y: hidden; } 
 
-      </div>
-  </main>
-</div>
-@push('scripts')
+/* IMPORTANT */ 
+#patientTable{ width: 100% !important; max-width: 100% !important; } 
 
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+/* IMPORTANT */ 
+.dataTables_wrapper{ width: 100% !important; max-width: 100% !important; overflow-x: auto; } 
 
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+/* IMPORTANT */ 
+.dataTables_scroll{ width: 100% !important; } 
 
-  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+/* IMPORTANT */ 
+table.dataTable{ width: 100% !important; max-width: 100% !important; table-layout: auto; } 
 
-  <script>
-  $(document).ready(function () {
+/* ========================= TABLE CELL FIX ========================= */ 
+table.dataTable th, table.dataTable td{ 
+    vertical-align: middle !important; 
+    text-align: center !important; 
+    white-space: nowrap; 
+} 
 
-      $('#patientTable').DataTable({
-          responsive: true,
-          autoWidth: false,
-          pageLength: 10,
-          order: [[0, 'desc']],
-          columnDefs: [
-              { responsivePriority: 1, targets: 0 },   // MR No
-              { responsivePriority: 2, targets: 1 },   // Patient Name
-              { responsivePriority: 3, targets: 13 },  // Actions
-              { responsivePriority: 4, targets: 6 },   // Phone
-          ]
-      });
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before { 
+    margin-right: 8px; 
+} 
 
-  });
-  </script>
+/* ========================= CARD STYLING ========================= */ 
+.patient-card{ 
+    background: #fff; 
+    border-radius: 14px; 
+    padding: 16px; 
+    margin-bottom: 16px; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08); 
+    border-left: 5px solid #0d6efd; 
+} 
 
-@endpush
+.patient-card h5{ 
+    margin-bottom: 14px; 
+    font-weight: bold; 
+    word-break: break-word; 
+} 
+
+.patient-info-row{ 
+    display: flex; 
+    justify-content: space-between; 
+    gap: 12px; 
+    margin-bottom: 10px; 
+    border-bottom: 1px dashed #eee; 
+    padding-bottom: 6px; 
+} 
+
+.patient-info-label{ 
+    font-weight: 600; 
+    color: #666; 
+    min-width: 110px; 
+} 
+
+.patient-info-value{ 
+    text-align: right; 
+    word-break: break-word; 
+} 
+
+.patient-actions{ 
+    margin-top: 15px; 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+} 
+
+/* ========================= MOBILE FIX ========================= */ 
+@media(max-width:767px){ 
+    .container-fluid{ 
+        padding-left: 10px !important; 
+        padding-right: 10px !important; 
+    } 
+} 
+
+</style> 
+@endpush 
+
+
+<main> 
+<div class="container-fluid py-4 px-2 px-md-3"> 
+
+    {{-- HEADER --}} 
+    <div class="row mb-4 align-items-center"> 
+
+        <div class="col-md-6 col-12 mb-3 mb-md-0"> 
+            <p class="h3 text-danger m-0"> 
+                <strong><em>Patients <span class="text-success">Dashboard</span></em></strong> 
+            </p> 
+        </div> 
+
+        <div class="col-md-6 col-12 text-md-end"> 
+            @can('Patient create') 
+                <a href="{{ route('admin.patients.create') }}" 
+                   class="btn btn-dark shadow-sm" 
+                   accesskey="n"> 
+                    <u>N</u>ew Patient 
+                </a> 
+            @endcan 
+        </div> 
+
+    </div> 
+
+    {{-- STICKY SEARCH --}} 
+    <div class="sticky-search mb-4"> 
+        <div class="row justify-content-center"> 
+            <div class="col-lg-5 col-md-7 col-12"> 
+                <div class="input-group shadow-sm"> 
+                    <span class="input-group-text bg-primary text-white"> 
+                        <i class="fa fa-search"></i> 
+                    </span> 
+
+                    <input type="text" id="smartSearch" class="form-control" 
+                           placeholder="Search MR No / CNIC / Phone..."> 
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+
+    {{-- DESKTOP TABLE --}} 
+    <div id="desktopTableWrapper" class="d-none d-md-block"> 
+
+        <div class="card shadow-sm border-0"> 
+            <div class="card-body"> 
+
+                <div class="table-responsive"> 
+                    <table id="patientTable" class="table table-bordered table-striped align-middle"> 
+                        <thead class="table-primary"> 
+                        <tr> 
+                            <th>MR No.</th> 
+                            <th>PATIENT NAME</th> 
+                            <th>FATHERS NAME</th> 
+                            <th>AGE (Years)</th>
+                            <th>GENDER</th> 
+                            <th>MARITAL STATUS</th> 
+                            <th>PHONE</th> 
+                            <th>EMAIL</th> 
+                            <th>CNIC #</th> 
+                            <th>ADDRESS</th> 
+                            <th>REGISTERED ON</th> 
+                            <th>REGISTERED BY</th> 
+                            <th>UPDATED ON</th> 
+                            <th>ACTIONS</th> 
+                        </tr> 
+                        </thead> 
+                        <tbody></tbody> 
+                    </table> 
+                </div> 
+
+            </div> 
+        </div> 
+
+    </div> 
+
+    {{-- MOBILE CARDS --}} 
+    <div id="mobileCardsWrapper" class="d-md-none"> 
+        <div id="patientCardsContainer"></div> 
+    </div> 
+
+</div> 
+</main> 
+
+
+@push('scripts') 
+<script> 
+
+$(document).ready(function () { 
+
+    let table = $('#patientTable').DataTable({ 
+
+        processing: true, 
+        serverSide: true, 
+
+        responsive: { 
+            details: { type: 'inline' } 
+        }, 
+
+        autoWidth: false, 
+        scrollX: false, 
+
+        ajax: { 
+            url: "{{ route('admin.patients.data') }}", 
+            data: function (d) { 
+                d.smart_search = $('#smartSearch').val(); 
+            } 
+        }, 
+
+        pageLength: 10, 
+        searching: false, 
+        order: [[0, 'desc']], 
+
+        columns: [ 
+            { data: 'id', responsivePriority: 1 }, 
+            { data: 'name', responsivePriority: 1 }, 
+            { data: 'fname', responsivePriority: 3 }, 
+            { data: 'age', responsivePriority: 2 }, 
+            { data: 'gender', responsivePriority: 7 }, 
+            { data: 'marital_status', responsivePriority: 8 }, 
+            { data: 'phone', responsivePriority: 2 }, 
+            { data: 'email', responsivePriority: 9 }, 
+            { data: 'cnic', responsivePriority: 3 }, 
+            { data: 'address', responsivePriority: 7 }, 
+            { data: 'registered_on', responsivePriority: 5 }, 
+            { data: 'usersName', responsivePriority: 6 }, 
+            { data: 'updated_on', responsivePriority: 11 }, 
+            { data: 'action', orderable: false, searchable: false, responsivePriority: 1 } 
+        ], 
+
+        drawCallback: function () { 
+            table.columns.adjust().responsive.recalc(); 
+        } 
+
+    }); 
+
+
+    function loadMobileCards() { 
+
+        $.ajax({ 
+            url: "{{ route('admin.patients.data') }}", 
+            data: { smart_search: $('#smartSearch').val(), length: 10 }, 
+            success: function(response) { 
+
+                let html = ''; 
+
+                if(response.data.length === 0){ 
+
+                    html = `<div class="alert alert-warning text-center">No Patients Found</div>`; 
+
+                } else { 
+
+                    response.data.forEach(function(patient) { 
+
+                        html += ` 
+                        <div class="patient-card"> 
+                            <h5 class="text-primary">MR-${patient.id} : ${patient.name}</h5> 
+                            ${createRow('Father Name', patient.fname)} 
+                            ${createRow('Age', patient.age)} 
+                            ${createRow('Gender', patient.gender)} 
+                            ${createRow('Marital Status', patient.marital_status)}
+                            ${createRow('Phone', patient.phone)} 
+                            ${createRow('Email', patient.email)} 
+                            ${createRow('CNIC', patient.cnic)} 
+                            ${createRow('Address', patient.address)} 
+                            ${createRow('Registered On', patient.registered_on)} 
+                            ${createRow('Registered By', patient.usersName)} 
+                            ${createRow('Updated On', patient.updated_on)} 
+                            <div class="patient-actions">${patient.action}</div> 
+                        </div>`; 
+
+                    }); 
+
+                } 
+
+                $('#patientCardsContainer').html(html); 
+            } 
+        }); 
+    } 
+
+
+    function createRow(label, value){ 
+        return ` 
+        <div class="patient-info-row"> 
+            <span class="patient-info-label">${label}</span> 
+            <span class="patient-info-value">${value ?? '-'}</span> 
+        </div>`; 
+    } 
+
+
+    function checkViewMode(){ 
+
+        if(window.innerWidth < 768){ 
+            $('#desktopTableWrapper').hide(); 
+            $('#mobileCardsWrapper').show(); 
+            loadMobileCards(); 
+        } else { 
+            $('#mobileCardsWrapper').hide(); 
+            $('#desktopTableWrapper').show(); 
+            table.columns.adjust().responsive.recalc(); 
+        } 
+
+    } 
+
+    checkViewMode(); 
+
+
+    let timer; 
+    $('#smartSearch').on('keyup', function(){ 
+
+        clearTimeout(timer); 
+
+        timer = setTimeout(function(){ 
+            if(window.innerWidth < 768){ 
+                loadMobileCards(); 
+            } else { 
+                table.draw(); 
+            } 
+        }, 400); 
+
+    }); 
+
+
+    function forceTableResize() { 
+        if ($.fn.dataTable.isDataTable('#patientTable')) { 
+            $('#patientTable').DataTable().columns.adjust().responsive.recalc(); 
+        } 
+    } 
+
+    $(window).on('resize', function () { 
+        checkViewMode(); 
+        forceTableResize(); 
+    }); 
+
+    setInterval(function () { 
+        forceTableResize(); 
+    }, 1500); 
+
+}); 
+
+</script> 
+@endpush 
+
 </x-app-layout>

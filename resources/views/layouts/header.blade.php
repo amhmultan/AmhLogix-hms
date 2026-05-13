@@ -2,6 +2,15 @@
     <div class="flex justify-between items-center w-full">
         
         <!-- Left Side -->
+        
+        <button
+            type="button"
+            @click="sidebarOpen = !sidebarOpen"
+            class="lg:hidden text-xl p-2"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+
         <div class="w-1/3 text-left">
             <h3 class="text-blue-700 text-base font-semibold">
                 Welcome: {{ auth()->user()->name }}

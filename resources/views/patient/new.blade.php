@@ -16,9 +16,13 @@
             <input id="fname" type="text" name="fname" value="{{ old('fname') }}" class="form-control" />
           </div>
           <div class="col-md-2">
+            <label for="age" class="text-gray-700 font-black">Age (Years)</label>
+            <input type="number" name="age" class="form-control" min="0" required>
+        </div>
+          <!-- <div class="col-md-2">
             <label for="name" class="text-gray-700 font-black">Date Of Birth:</label>
             <input id="dob" type="date" name="dob" value="{{ old('dob') }}" class="form-control" />
-          </div>
+          </div> -->
           <div class="col-md-2">
             <label for="gender" class="text-gray-700 font-black">Gender:</label>
             <select class="form-control" name="gender">

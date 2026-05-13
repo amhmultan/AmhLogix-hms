@@ -26,10 +26,15 @@
                      <label for="name" class="text-gray-700 font-black">Fathers Name:</label>
                      <input id="fname" type="text" name="fname" value="{{ old('fname',$patient->fname) }}" class="form-control" />
                    </div>
+
                    <div class="col-md-2">
+                      <label for="age" class="text-gray-700 font-black">Age (Years)</label>
+                      <input type="number" name="age" class="form-control" value="{{ old('age', \Carbon\Carbon::parse($patient->dob)->age) }}" min="0" max="120" required>
+                  </div>
+                   <!-- <div class="col-md-2">
                      <label for="dob" class="text-gray-700 font-black">Date Of Birth:</label>
                      <input id="dob" type="date" name="dob" value="{{ old('dob', $patient->dob) }}" class="form-control" />
-                   </div>
+                   </div> -->
 
                  </div>
                 

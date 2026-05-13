@@ -4,6 +4,7 @@
 use App\Http\Controllers\Admin\PurchaseInvoiceController;
 use App\Http\Controllers\Admin\SaleController;
 use App\Http\Controllers\Admin\NoteController;
+use App\Http\Controllers\Admin\PatientController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,7 +80,7 @@ require __DIR__.'/front_auth.php';
 
 Route::get('/admin/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth'])->name('admin.dashboard');
+    })->middleware(['auth'])->name('admin.dashboard');
 
 require __DIR__.'/auth.php';
 
@@ -88,6 +89,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // AJAX routes for Select2 product search
     Route::get('/products/ajax', [PurchaseInvoiceController::class, 'getProductsAjax'])->name('products.ajax');
     Route::get('/products/ajax', [SaleController::class, 'getProductsAjax'])->name('products.ajax');
+    
+    // AJAX routes for products
+    Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
+
+    Route::get('/doctor-notes/products/search', [App\Http\Controllers\Admin\DoctorNotesController::class, 'searchProducts'])
+        ->name('doctor_notes.products.search');
+
+    // AJAX route for patients
+    Route::get('patients/data', [PatientController::class, 'getData'])->name('patients.data');
 
     // Token reports
     Route::get('/tokens/token-report', [App\Http\Controllers\Admin\TokenReportController::class, 'index'])->name('tokens.token_report');
@@ -133,11 +143,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('backups/download/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('backups.download');
     Route::delete('backups/delete/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'delete'])->name('backups.delete');
     Route::post('backups/restore/{fileName}', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('backups.restore');
-
-    // AJAX routes for products
-    Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
-    Route::get('/doctor-notes/products/search', [App\Http\Controllers\Admin\DoctorNotesController::class, 'searchProducts'])
-    ->name('doctor_notes.products.search');
 
     // IPD Dashboard
     Route::get('ipd', [App\Http\Controllers\Admin\AdmissionController::class, 'ipdDashboard'])->name('ipd.index');
