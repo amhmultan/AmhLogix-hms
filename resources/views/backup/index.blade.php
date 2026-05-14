@@ -42,7 +42,7 @@
                         {{ number_format($backup['size'] / 1024 / 1024, 2) }} MB
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                        {{ date('d-m-Y h:i A', $backup['last_modified']) }}
+                        {{ date('d-m-y h:i A', $backup['last_modified']) }}
                     </td>
                     <td class="border border-gray-300 px-4 py-2 text-center space-x-2 flex justify-center">
                         <a href="{{ route('admin.backups.download', $backup['name']) }}"

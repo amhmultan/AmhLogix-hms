@@ -44,8 +44,8 @@
                   <td class="px-4 py-2 border">{{ $appointment->appointment_time }}</td>
                   <td class="px-4 py-2 border">{{ ucfirst($appointment->status) }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->notes ?? '—' }}</td>
-                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->created_at)->format('d-m-Y h:i A') }}</td>
-                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->updated_at)->format('d-m-Y h:i A') }}</td>
+                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->created_at)->format('d-m-y h:i A') }}</td>
+                  <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->updated_at)->format('d-m-y h:i A') }}</td>
                   <td class="px-3 py-2 border">
                     @can('Appointment view')
                       <a href="{{ route('admin.appointments.show', $appointment->id) }}"

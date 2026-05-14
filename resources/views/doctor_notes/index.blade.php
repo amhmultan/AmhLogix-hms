@@ -84,10 +84,10 @@
 
                     {{-- TOKEN DATE (SAFE LEFT JOIN) --}}
                     <td>
-                        {{ \Carbon\Carbon::parse($note->token_date)->format('d-m-Y h:i A') ?? 'No Visit' }}
+                        {{ \Carbon\Carbon::parse($note->token_date)->format('d-m-y h:i A') ?? 'No Visit' }}
                     </td>
-
-                    <td>{{ \Carbon\Carbon::parse($note->updated_at)->format('d-m-Y h:i A') }}</td>
+    
+                    <td>{{ \Carbon\Carbon::parse($note->updated_at)->format('d-m-y h:i A') }}</td>
 
                     {{-- ACTIONS --}}
                     <td>
