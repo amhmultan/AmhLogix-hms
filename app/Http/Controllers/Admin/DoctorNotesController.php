@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Hospital;
 use App\Models\DoctorNotes;
+use App\Models\Doctor;
 
 class DoctorNotesController extends Controller
 {
@@ -22,25 +24,16 @@ class DoctorNotesController extends Controller
      */
     public function index()
     {
-        $doctor_notes = DB::table('doctor_notes')
-            ->join('patients', 'patients.id', '=', 'doctor_notes.fk_patient_id')
-
-            // 🔥 IMPORTANT FIX (LEFT JOIN)
-            ->leftJoin('tokens', 'tokens.id', '=', 'doctor_notes.fk_token_id')
-
-            ->select(
-                'doctor_notes.*',
-                'patients.name as patient_name',
-                'tokens.created_at as token_date'
-            )
-            ->orderByDesc('doctor_notes.id')
+        $doctor_notes = DoctorNotes::with('patient', 'token')
+            ->select('doctor_notes.*')
+            ->orderByDesc('id')
             ->get();
 
         return view('doctor_notes.index', compact('doctor_notes'));
     }
 
     /**
-     * CREATE (SEARCH)
+     * CREATE
      */
     public function create(Request $request)
 
@@ -127,8 +120,8 @@ class DoctorNotesController extends Controller
     }
 
     /**
-     * STORE
-     */
+    * STORE  
+    */
     public function store(Request $request)
     {
         $request->validate([
@@ -141,45 +134,73 @@ class DoctorNotesController extends Controller
 
         $data->fk_patient_id = $request->fk_patient_id;
 
-        // FIX: convert 0 → null
         $data->fk_token_id = ($request->fk_token_id == 0 || $request->fk_token_id == '')
             ? null
             : $request->fk_token_id;
 
         $data->mode = $request->mode;
 
+        /* =======================
+        UPLOAD MODE (UNCHANGED)
+        ======================= */
         if ($request->mode === 'upload') {
 
             if ($request->hasFile('prescription')) {
 
                 $file = $request->file('prescription');
-                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
 
                 $file->move(public_path('assets/doctor_notes'), $fileName);
 
                 $data->prescription = $fileName;
             }
 
-            $data->complaints = null;
-            $data->history = null;
-            $data->investigations = null;
-            $data->prescription_text = null;
-            $data->remarks = null;
+            // NEW OPD FIELDS
+            $data->c_o = null;
+            $data->o_e = null;
+            $data->va = null;
+            $data->at = null;
+            $data->lids = null;
+            $data->conjunctiva = null;
+            $data->cornea = null;
+            $data->ac = null;
+            $data->lens = null;
+            $data->fundus = null;
+            $data->dm = null;
+            $data->htn = null;
+            $data->ihd = null;
+            $data->asthma = null;
+        }
 
-        } else {
+        /* =======================
+        MANUAL MODE (OPD)
+        ======================= */
+        else {
 
-            $data->complaints = $request->complaints;
-            $data->history = $request->history;
-            $data->investigations = $request->investigations;
+            // NEW OPD FIELDS
+            $data->c_o = $request->c_o;
+            $data->o_e = $request->o_e;
+            $data->va = $request->va;
+            $data->at = $request->at;
+            $data->lids = $request->lids;
+            $data->conjunctiva = $request->conjunctiva;
+            $data->cornea = $request->cornea;
+            $data->ac = $request->ac;
+            $data->lens = $request->lens;
+            $data->fundus = $request->fundus;
             $data->prescription_text = $request->prescription_text;
-            $data->remarks = $request->remarks;
+            $data->dm = $request->dm;
+            $data->htn = $request->htn;
+            $data->ihd = $request->ihd;
+            $data->asthma = $request->asthma;
 
             $data->prescription = null;
         }
 
         $data->save();
 
-        return redirect()->route('admin.doctor_notes.index')
+        return redirect()
+            ->route('admin.doctor_notes.index')
             ->with('success', 'Doctor Notes saved successfully!');
     }
 
@@ -210,29 +231,59 @@ class DoctorNotesController extends Controller
 
         $note->mode = $request->mode;
 
+        /* =========================
+        UPLOAD MODE
+        ========================= */
         if ($request->mode === 'upload') {
 
             if ($request->hasFile('prescription')) {
+
                 $file = $request->file('prescription');
-                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
                 $file->move(public_path('assets/doctor_notes'), $fileName);
 
                 $note->prescription = $fileName;
             }
 
-            $note->complaints = null;
-            $note->history = null;
-            $note->investigations = null;
+            // clear all manual fields
+            $note->c_o = null;
+            $note->o_e = null;
+            $note->va = null;
+            $note->at = null;
+            $note->lids = null;
+            $note->conjunctiva = null;
+            $note->cornea = null;
+            $note->ac = null;
+            $note->lens = null;
+            $note->fundus = null;
             $note->prescription_text = null;
-            $note->remarks = null;
+            $note->dm = null;
+            $note->htn = null;
+            $note->ihd = null;
+            $note->asthma = null;
+        }
 
-        } else {
+        /* =========================
+        MANUAL OPD MODE
+        ========================= */
+        else {
 
-            $note->complaints = $request->complaints;
-            $note->history = $request->history;
-            $note->investigations = $request->investigations;
+            $note->c_o = $request->c_o;
+            $note->o_e = $request->o_e;
+            $note->va = $request->va;
+            $note->at = $request->at;
+            $note->lids = $request->lids;
+            $note->conjunctiva = $request->conjunctiva;
+            $note->cornea = $request->cornea;
+            $note->ac = $request->ac;
+            $note->lens = $request->lens;
+            $note->fundus = $request->fundus;
             $note->prescription_text = $request->prescription_text;
-            $note->remarks = $request->remarks;
+            $note->dm = $request->dm;
+            $note->htn = $request->htn;
+            $note->ihd = $request->ihd;
+            $note->asthma = $request->asthma;
 
             $note->prescription = null;
         }
@@ -260,20 +311,28 @@ class DoctorNotesController extends Controller
      */
     public function print($id)
     {
-        $doctor_notes = DoctorNotes::findOrFail($id);
+        $note = DoctorNotes::with(['patient', 'token.doctor'])
+                ->findOrFail($id);
 
-        $token = DB::table('tokens')
-            ->join('patients', 'patients.id', '=', 'tokens.fk_patients_id')
-            ->select(
-                'tokens.*',
-                'patients.name as pName',
-                'patients.fname as fName'
-            )
-            ->where('tokens.id', $doctor_notes->fk_token_id)
-            ->first();
+        $patient = $note->patient;
 
-        $hospital = DB::table('hospitals')->first();
+        // Try token doctor first
+        $doctor = $note->token?->doctor;
 
-        return view('doctor_notes.print', compact('doctor_notes', 'hospital', 'token'));
+        // If token doctor not available, fallback to first doctor
+        if (!$doctor) {
+            $doctor = Doctor::first();
+        }
+
+        $hospital = Hospital::first();
+
+        $note->prescription_text = ltrim($note->prescription_text);
+
+        return view('doctor_notes.print', compact(
+            'note',
+            'patient',
+            'doctor',
+            'hospital'
+        ));
     }
 }

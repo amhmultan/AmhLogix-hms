@@ -103,11 +103,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/tokens/token-report', [App\Http\Controllers\Admin\TokenReportController::class, 'index'])->name('tokens.token_report');
     Route::get('/tokens/token-report/data', [App\Http\Controllers\Admin\TokenReportController::class, 'data'])->name('tokens.token_report.data');
     Route::get('/tokens/token-report/pdf', [App\Http\Controllers\Admin\TokenReportController::class, 'reportPdf'])->name('tokens.token_report.pdf');
-    
-    // Print view for doctor notes
-    Route::get('doctor_notes/print-view', [App\Http\Controllers\Admin\DoctorNotesController::class, 'printView'])
-    ->name('doctor_notes.print.view');
-    
+        
     // Resources
     Route::resource('purchases', App\Http\Controllers\Admin\PurchaseInvoiceController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);

@@ -1,6 +1,6 @@
 <x-app-layout>
   <main>
-    <div class="container-fluid py-4 px-5">
+    <div class="container-fluid py-4">
 
       <div class="row mb-5">
         <div class="col-sm-6">
@@ -22,47 +22,47 @@
           <table id="doctorTable" class="table w-100 border-collapse">
             <thead>
               <tr class="bg-indigo-500 text-white">
-                <th class="py-3 px-4 border text-center">ID</th>
-                <th class="py-3 px-4 border text-center">Picture</th>
-                <th class="py-3 px-4 border text-center">Name</th>
-                <th class="py-3 px-4 border text-center">Contact</th>
-                <th class="py-3 px-4 border text-center">Email</th>
-                <th class="py-3 px-4 border text-center">Address</th>
-                <th class="py-3 px-4 border text-center">Date of Birth</th>
-                <th class="py-3 px-4 border text-center">Specialty</th>
-                <th class="py-3 px-4 border text-center">Qualification</th>
-                <th class="py-3 px-4 border text-center">CNIC No.</th>
-                <th class="py-3 px-4 border text-center">PMDC No.</th>
-                <th class="py-3 px-4 border text-center">Remarks</th>
-                <th class="py-3 px-4 border text-center">Created On</th>
-                <th class="py-3 px-4 border text-center">Updated On</th>
-                <th class="py-3 px-4 border text-center">Actions</th>
+                <th class="py-3 px-2 border text-center">ID</th>
+                <th class="py-3 px-2 border text-center">Picture</th>
+                <th class="py-3 px-2 border text-center">Name</th>
+                <th class="py-3 px-2 border text-center">Contact</th>
+                <th class="py-3 px-2 border text-center">Email</th>
+                <th class="py-3 px-2 border text-center">Address</th>
+                <th class="py-3 px-2 border text-center">Date of Birth</th>
+                <th class="py-3 px-2 border text-center">Specialty</th>
+                <th class="py-3 px-2 border text-center">Qualification</th>
+                <th class="py-3 px-2 border text-center">CNIC No.</th>
+                <th class="py-3 px-2 border text-center">PMDC No.</th>
+                <th class="py-3 px-2 border text-center">Remarks</th>
+                <th class="py-3 px-2 border text-center">Created On</th>
+                <th class="py-3 px-2 border text-center">Updated On</th>
+                <th class="py-3 px-2 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               @foreach($doctors as $doctor)
                 <tr class="text-center">
-                  <td class="px-4 py-2 border">{{ $doctor->id }}</td>
-                  <td class="px-4 py-2 border">
+                  <td class="px-2 py-2 border">{{ $doctor->id }}</td>
+                  <td class="px-2 py-2 border">
                     @if($doctor->pic)
                       <img src="{{ asset('uploads/' . ($doctor->pic ?? 'default.png')) }}" style="width:50px;height:auto;">
                     @else
                       N/A
                     @endif
                   </td>
-                  <td class="px-4 py-2 border">{{ $doctor->name }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->contact }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->email }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->address }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->dob }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->sTitle }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->schedule }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->cnic }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->pmdc }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->remarks }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->created_at }}</td>
-                  <td class="px-4 py-2 border">{{ $doctor->updated_at }}</td>
-                  <td class="px-3 py-2 border">
+                  <td class="px-2 py-3 border">{{ $doctor->name }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->contact }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->email }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->address }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->dob }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->sTitle }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->schedule }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->cnic }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->pmdc }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->remarks }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->created_at }}</td>
+                  <td class="px-2 py-3 border">{{ $doctor->updated_at }}</td>
+                  <td class="px-2 py-3 border">
                     @can('Doctor edit')
                       <a href="{{ route('admin.doctors.edit', $doctor->id) }}"
                          class="btn btn-sm btn-warning mb-1">Edit</a>

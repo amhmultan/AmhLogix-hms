@@ -51,58 +51,63 @@
                     {{-- MR NO --}}
                     <td>{{ $note->fk_patient_id ?? 'N/A' }}</td>
 
-                    {{-- TOKEN NO (SAFE LEFT JOIN) --}}
+                    {{-- TOKEN NO --}}
                     <td>{{ $note->fk_token_id ?? 'Not Assigned' }}</td>
 
-                    {{-- FIXED FIELD NAME --}}
-                    <td>{{ $note->patient_name ?? 'Walk-in Patient' }}</td>
+                    {{-- PATIENT NAME --}}
+                    <td>{{ $note->patient->name ?? 'Walk-in Patient' }}</td>
 
-                    {{-- PRESCRIPTION VIEW --}}
+                    {{-- PRESCRIPTION --}}
                     <td>
-                      @if($note->mode === 'upload' && !empty($note->prescription))
+                        @if($note->mode === 'upload' && !empty($note->prescription))
 
-                          @php
-                              $filePath = public_path('assets/doctor_notes/'.$note->prescription);
-                          @endphp
+                            @php
+                                $filePath = public_path('assets/doctor_notes/'.$note->prescription);
+                            @endphp
 
-                          @if(file_exists($filePath))
-                              <a href="{{ asset('assets/doctor_notes/'.$note->prescription) }}"
+                            @if(file_exists($filePath))
+                                <a href="{{ asset('assets/doctor_notes/'.$note->prescription) }}"
                                 target="_blank"
                                 class="btn btn-sm btn-primary">
-                                  View Prescription
-                              </a>
-                          @else
-                              <span class="text-danger">File Missing</span>
-                          @endif
+                                    Uploaded Prescription
+                                </a>
+                            @else
+                                <span class="text-danger">File Missing</span>
+                            @endif
 
-                      @else
-                          <a href="#" class="btn btn-sm btn-info">
-                              Manual (Working)
-                          </a>
-                      @endif
-                  </td>
+                        @else
 
-                    {{-- TOKEN DATE (SAFE LEFT JOIN) --}}
-                    <td>
-                        {{ \Carbon\Carbon::parse($note->token_date)->format('d-m-y h:i A') ?? 'No Visit' }}
+                            <a href="{{ route('admin.doctor_notes.print', $note->id) }}" target="_blank" class="btn btn-sm btn-info">
+                                Manual Prescription
+                            </a>
+
+                        @endif
                     </td>
-    
-                    <td>{{ \Carbon\Carbon::parse($note->updated_at)->format('d-m-y h:i A') }}</td>
+
+                    {{-- TOKEN DATE --}}
+                    <td>
+                        {{ $note->created_at ? \Carbon\Carbon::parse($note->created_at)->format('d-m-y h:i A') : 'No Visit' }}
+                    </td>
+
+                    {{-- UPDATED --}}
+                    <td>
+                        {{ \Carbon\Carbon::parse($note->updated_at)->format('d-m-y h:i A') }}
+                    </td>
 
                     {{-- ACTIONS --}}
                     <td>
 
                         @can('DoctorNotes edit')
-                            <a href="{{ route('admin.doctor_notes.edit', $note->id) }}"
-                               class="btn btn-warning btn-sm mr-2">
-                                Edit
-                            </a>
+                        <a href="{{ route('admin.doctor_notes.edit', $note->id) }}"
+                        class="btn btn-warning btn-sm mr-2">
+                            Edit
+                        </a>
                         @endcan
 
                         @can('DoctorNotes delete')
                         <form action="{{ route('admin.doctor_notes.destroy', $note->id) }}"
-                              method="POST"
-                              class="inline">
+                            method="POST"
+                            class="inline">
                             @csrf
                             @method('DELETE')
 

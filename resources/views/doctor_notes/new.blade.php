@@ -141,11 +141,7 @@
 
         <div id="manualSection" style="display:none;">
 
-            <textarea name="complaints" class="form-control mb-2" placeholder="Complaints"></textarea>
-            <textarea name="history" class="form-control mb-2" placeholder="History"></textarea>
-            <textarea name="investigations" class="form-control mb-2" placeholder="Investigations"></textarea>
-            <textarea name="prescription_text" class="form-control mb-2" placeholder="Prescription"></textarea>
-            <textarea name="remarks" class="form-control mb-2" placeholder="Remarks"></textarea>
+            @include('doctor_notes.partials.manual_prescription')
 
         </div>
 

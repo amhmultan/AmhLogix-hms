@@ -4,53 +4,103 @@
     <meta charset="utf-8">
     <title>IPD Report PDF</title>
     <style>
+
+        @page {
+            margin: 35px 45px 35px 45px;
+        }
+
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
+            font-size: 9px;
+            color: #000;
         }
+
+        h2 {
+            margin: 5px 0;
+        }
+
+        /* =========================
+        HEADER
+        ========================= */
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        .header-table td {
+            border: none;
+            vertical-align: top;
+        }
+
+        /* =========================
+        FILTERS
+        ========================= */
+
+        .filters {
+            margin: 8px 0 12px;
+            font-size: 9px;
+            padding: 5px;
+            /* border: 1px solid #ccc; */
+        }
+
+        /* =========================
+        MAIN TABLE
+        ========================= */
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            table-layout: fixed;
         }
-        table, th, td {
-            border: 1px solid black;
-            padding: 6px;
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 3px;
             text-align: center;
-        }
-        th {
-            background: #f2f2f2;
-        }
-        td, th {
-            font-size: 11px;
-            white-space: nowrap;
-        }
-        .header-table {
-            width: 100%;
-            border: none;
-            margin-bottom: 15px;
-        }
-        .header-table td {
-            border: none;
             vertical-align: middle;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            font-size: 10px;
         }
-        .filters {
-            margin: 10px 0;
-            font-size: 11px;
-            padding: 6px;
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
         }
+
+        /* =========================
+        COLUMN WIDTHS
+        ========================= */
+
+        .col-sr       { width: 4%; }
+        .col-mr       { width: 7%; }
+        .col-patient  { width: 12%; }
+        .col-panel    { width: 10%; }
+        .col-adm      { width: 7%; }
+        .col-date     { width: 14%; }
+        .col-dis      { width: 14%; }
+        .col-doc      { width: 14%; }
+        .col-ward     { width: 10%; }
+        .col-bill     { width: 8%; }
+
+        /* =========================
+        FOOTER
+        ========================= */
+
         .footer {
             position: fixed;
-            bottom: -20px;
+            bottom: -18px;
             left: 0;
             right: 0;
-            height: 40px;
-            font-size: 10px;
-            text-align: right;
+            height: 30px;
+            font-size: 8px;
+            text-align: center;
         }
-        .pagenum:before {
-            content: counter(page);
-        }
+
     </style>
 </head>
 <body>
@@ -60,11 +110,11 @@
         <tr>
             <td width="20%" style="text-align:center;">
                 <img src="{{ public_path('img/' . $hospital->logo) }}" 
-                     style="border: 2px solid black; width:100px; height:100px; padding:5px;" 
+                     style="border: 2px solid black; width:100px; height:80px; padding:5px;" 
                      alt="{{ $hospital->title }} Logo">
             </td>
             <td width="80%" style="text-align:left; vertical-align: top;">
-                <h2 style="margin:0; text-transform:uppercase; font-size: 30px;">{{ $hospital->title }}</h2>
+                <h2 style="margin:0; text-transform:uppercase; font-size: 22px;">{{ $hospital->title }}</h2>
                 <p style="margin:2px 0;">{{ $hospital->address }}</p>
                 <p style="margin:2px 0;">
                     <strong>Contact:</strong> {{ $hospital->contact }} |
@@ -76,7 +126,7 @@
     </table>
     @endif
 
-    <h2 style="text-align: center; margin-bottom: 10px; text-decoration: underline;">IPD Report</h2>
+    <h1 style="text-align: center; margin-bottom: 10px; text-decoration: underline;">IPD Report</h1>
 
     {{-- Filters Applied --}}
     <div class="filters">
@@ -87,7 +137,7 @@
             @php
                 $doc = $doctors->firstWhere('id', request('doctor_id'));
             @endphp
-            <strong>Doctor: </strong>{{ $doc ? $doc->name . ' (' . $doc->speciality_title . ')' : 'N/A' }} <br>
+            <strong>Doctor: </strong>{{ $doc ? $doc->name . ' (' . $doc->speciality->title . ')' : 'N/A' }} <br>
         @endif
         @if(request('panel_name'))
             <strong>Panel: </strong>{{ request('panel_name') }} <br>
@@ -109,33 +159,96 @@
     <table>
         <thead>
             <tr>
-                <th>Sr. No.</th>
-                <th>MR Number</th>
-                <th>Patient Name</th>
-                <th>Panel</th>
-                <th>Admission ID</th>
-                <th>Admission Date & Time</th>
-                <th>Discharge Date & Time</th>
-                <th>Doctor / Speciality</th>
-                <th>Ward / Bed</th>
-                <th>Total Bill</th>
+                <th class="col-sr">No.</th>
+                <th class="col-mr">MR#</th>
+                <th class="col-patient">Patient Name</th>
+                <th class="col-panel">Referred By</th>
+                <th class="col-adm">Admission ID</th>
+                <th class="col-date">Admission Date</th>
+                <th class="col-dis">Discharge Date</th>
+                <th class="col-doc">Doctor / Speciality</th>
+                <th class="col-ward">Ward / Bed</th>
+                <th class="col-bill">Bill</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($admissions as $key => $admission)
-                <tr>
-                    <td>{{ $key+1 }}</td>
-                    <td>{{ $admission->mr_number }}</td>
-                    <td>{{ $admission->patient_name }}</td>
-                    <td>{{ $admission->panel_name }}</td>
-                    <td>{{ $admission->admission_id }}</td>
-                    <td>{{ $admission->admission_date }}</td>
-                    <td>{{ $admission->discharge_date }}</td>
-                    <td>{{ $admission->doctor_name }} / {{ $admission->speciality }}</td>
-                    <td>{{ $admission->ward_name }} / {{ $admission->bed_name }}</td>
-                    <td> 0 </td>
-                </tr>
-            @endforeach
+
+        @foreach($admissions as $key => $admission)
+
+            @php
+
+                $admissionDate = \Carbon\Carbon::parse($admission->admission_date);
+
+                $dischargeDate = $admission->discharge_date
+                    ? \Carbon\Carbon::parse($admission->discharge_date)
+                    : now();
+
+                $days = max(1, $admissionDate->diffInDays($dischargeDate));
+
+                $bedCharges = $admission->bed->rate_per_day ?? 0;
+
+                $roomAmount = $days * $bedCharges;
+
+                $otherCharges = $admission->charges->sum('amount');
+
+                $totalBill =
+                    ($admission->admission_fees ?? 0)
+                    + $roomAmount
+                    + $otherCharges;
+
+            @endphp
+
+            <tr>
+
+                <td>{{ $key + 1 }}</td>
+
+                <td>
+                    {{ $admission->patient->id ?? '-' }}
+                </td>
+
+                <td>
+                    {{ $admission->patient->name ?? '-' }}
+                </td>
+
+                <td>
+                    {{ $admission->patient->reffered_by ?? '-' }}
+                </td>
+
+                <td>
+                    {{ $admission->id }}
+                </td>
+
+                <td>
+                    {{ optional($admission->admission_date)->format('d/m/y h:i A') }}
+                </td>
+
+                <td>
+                    {{ $admission->discharge_date
+                        ? \Carbon\Carbon::parse($admission->discharge_date)->format('d/m/y h:i A')
+                        : 'Admitted'
+                    }}
+                </td>
+
+                <td>
+                    {{ $admission->doctor->name ?? '-' }}
+                    /
+                    {{ $admission->doctor->speciality->title ?? '-' }}
+                </td>
+
+                <td>
+                    {{ $admission->bed->ward->name ?? '-' }}
+                    /
+                    {{ $admission->bed->bed_number ?? '-' }}
+                </td>
+
+                <td>
+                    {{ number_format($totalBill, 2) }}
+                </td>
+
+            </tr>
+
+        @endforeach
+
         </tbody>
     </table>
 

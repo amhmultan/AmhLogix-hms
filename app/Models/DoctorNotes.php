@@ -12,25 +12,40 @@ class DoctorNotes extends Model
     protected $fillable = [
     'fk_patient_id',
     'fk_token_id',
-    'fk_patient_name',
-    'fk_token_created_at',
     'prescription',
     'mode',
-    'complaints',
-    'history',
-    'investigations',
+    'c_o',
+    'o_e',
+    'va',
+    'at',
+    'lids',
+    'conjunctiva',
+    'cornea',
+    'ac',
+    'lens',
+    'fundus',
     'prescription_text',
-    'remarks'
+    'dm',
+    'htn',
+    'ihd',
+    'asthma',
 ];
 
 
-    public function patient()
-    {
-      return $this->belongsTo(Patient::class);
-    }
+  public function patient()
+  {
+    return $this->belongsTo(Patient::class, 'fk_patient_id');
+  }
+
+  public function token()
+  {
+    return $this->belongsTo(Token::class, 'fk_token_id');
+  }
     
-    public function token()
-    {
-      return $this->belongsTo(Token::class);
-    }
+  public function doctorName()
+  {
+    return $this->token?->doctor?->name
+      ?? $this->doctor_name
+      ?? 'Walk-in / Manual';
+  }
 }

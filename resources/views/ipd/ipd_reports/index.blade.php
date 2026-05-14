@@ -21,19 +21,19 @@
                 <span class="font-weight-bold">To Date:</span>
                 <input type="date" name="to_date" class="form-control" value="{{ request('to_date') }}">
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <span class="font-weight-bold">Doctor / Speciality:</span>
                 <select name="doctor_id" class="form-control">
                     <option value="">Select Doctor</option>
                     @foreach($doctors as $doctor)
-                        <option value="{{ $doctor->id }}" {{ request('doctor_id')==$doctor->id?'selected':'' }}>{{ $doctor->name }} ({{ $doctor->speciality_title }})</option>
+                        <option value="{{ $doctor->id }}" {{ request('doctor_id')==$doctor->id?'selected':'' }}>{{ $doctor->name }} ({{ $doctor->speciality->title ?? 'N/A' }})</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-2">
-                <span class="font-weight-bold">Panel:</span>
+                <span class="font-weight-bold">Referred By:</span>
                 <select name="panel_name" class="form-control">
-                    <option value="">Select Panel</option>
+                    <option value="">Select Referred By</option>
                     @foreach(DB::table('patients')->distinct()->pluck('reffered_by') as $panel)
                         <option value="{{ $panel }}" {{ request('panel_name')==$panel?'selected':'' }}>{{ $panel }}</option>
                     @endforeach
@@ -44,11 +44,11 @@
                 <select name="bed_id" class="form-control">
                     <option value="">Select Bed</option>
                     @foreach($beds as $bed)
-                        <option value="{{ $bed->id }}" {{ request('bed_id')==$bed->id?'selected':'' }}>{{ $bed->ward_name }} / {{ $bed->bed_number }}</option>
+                        <option value="{{ $bed->id }}" {{ request('bed_id')==$bed->id?'selected':'' }}>{{ $bed->ward->name ?? 'N/A' }} / {{ $bed->bed_number }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <span class="font-weight-bold">Status:</span>
                 <select name="status" class="form-control">
                     <option value="">Select Status</option>
@@ -72,7 +72,7 @@
                     <th class="text-uppercase">Sr. No.</th>
                     <th class="text-uppercase">MR Number</th>
                     <th class="text-uppercase">Patient Name</th>
-                    <th class="text-uppercase">Panel</th>
+                    <th class="text-uppercase">Reffered By</th>
                     <th class="text-uppercase">Admission ID</th>
                     <th class="text-uppercase">Admission Date & Time</th>
                     <th class="text-uppercase">Discharge Date & Time</th>
@@ -85,15 +85,41 @@
                 @foreach($admissions as $key => $admission)
                 <tr class="border border-dark hover:bg-gray-50 odd:bg-white even:bg-gray-50">
                     <td>{{ $key+1 }}</td>
-                    <td>{{ $admission->mr_number }}</td>
-                    <td>{{ $admission->patient_name }}</td>
-                    <td>{{ $admission->panel_name }}</td>
-                    <td>{{ $admission->admission_id }}</td>
+                    <td>{{ $admission->patient->id ?? '-' }}</td>
+                    <td>{{ $admission->patient->name ?? '-' }}</td>
+                    <td>{{ $admission->patient->reffered_by ?? '-' }}</td>
+                    <td>{{ $admission->id }}</td>
                     <td>{{ \Carbon\Carbon::parse($admission->admission_date)->format('d-m-Y h:i A') }}</td>
                     <td>{{ $admission->discharge_date ? \Carbon\Carbon::parse($admission->discharge_date)->format('d-m-Y h:i A') : '-' }}</td>
-                    <td>{{ $admission->doctor_name }} / {{ $admission->speciality }}</td>
-                    <td>{{ $admission->ward_name }} / {{ $admission->bed_name }} </td>
-                    <td> 0 </td>
+                    <td>{{ $admission->doctor->name ?? '-' }} / {{ $admission->doctor->speciality->title ?? '-' }}</td>
+                    <td>{{ $admission->bed->ward->name ?? '-' }} / {{ $admission->bed->bed_number ?? '-' }} </td>
+                    
+                    @php
+
+                        $admissionDate = \Carbon\Carbon::parse($admission->admission_date);
+
+                        $dischargeDate = $admission->discharge_date
+                            ? \Carbon\Carbon::parse($admission->discharge_date)
+                            : now();
+
+                        $days = max(1, $admissionDate->diffInDays($dischargeDate));
+
+                        $bedCharges = $admission->bed->rate_per_day ?? 0;
+
+                        $roomAmount = $days * $bedCharges;
+
+                        $otherCharges = $admission->charges->sum('amount');
+
+                        $totalCharges =
+                            ($admission->admission_fees ?? 0)
+                            + $roomAmount
+                            + $otherCharges;
+
+                    @endphp
+
+                    <td>
+                        {{ number_format($totalCharges, 2) }}
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

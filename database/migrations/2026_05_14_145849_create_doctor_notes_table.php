@@ -16,15 +16,28 @@ class CreateDoctorNotesTable extends Migration
         Schema::create('doctor_notes', function (Blueprint $table) {
 
             $table->id();
+
             $table->unsignedBigInteger('fk_patient_id');
             $table->unsignedBigInteger('fk_token_id')->nullable();
+            
             $table->string('prescription', 255)->nullable();
             $table->string('mode')->default('upload'); // 'upload' or 'manual'
-            $table->text('complaints')->nullable();
-            $table->text('history')->nullable();
-            $table->text('investigations')->nullable();
+            $table->text('c_o')->nullable();
+            $table->text('o_e')->nullable();
+            $table->string('va')->nullable();
+            $table->string('at')->nullable();
+            $table->string('lids')->nullable();
+            $table->string('conjunctiva')->nullable();
+            $table->string('cornea')->nullable();
+            $table->string('ac')->nullable();
+            $table->string('lens')->nullable();
+            $table->string('fundus')->nullable();
             $table->text('prescription_text')->nullable();
-            $table->text('remarks')->nullable();
+            $table->string('dm')->nullable();
+            $table->string('htn')->nullable();
+            $table->string('ihd')->nullable();
+            $table->string('asthma')->nullable();
+
             $table->timestamps();
 
             $table->foreign('fk_patient_id')->on('patients')->references('id')

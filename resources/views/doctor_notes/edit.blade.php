@@ -1,101 +1,203 @@
 <x-app-layout>
-    <main>
-        <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
-            
-            <div class="row pb-5">
-                <p class="h3 text-danger">
-                    <strong><em>Edit <span class="text-success">Doctor Notes</span></em></strong>
-                </p>
-                <hr />
+<main>
+<div class="container bg-white shadow-md rounded my-6 px-5 py-4">
+
+    <div class="row pb-4">
+        <h3 class="text-danger">
+            <strong><em>Edit <span class="text-success">Doctor Notes</span></em></strong>
+        </h3>
+    </div>
+
+    <form method="POST"
+          action="{{ route('admin.doctor_notes.update', $doctor_notes->id) }}"
+          enctype="multipart/form-data">
+
+        @csrf
+        @method('PUT')
+
+        <!-- PATIENT INFO -->
+        @if($doctor_notes->patient)
+        <div class="card mb-4">
+            <div class="card-header bg-light font-weight-bold">
+                Patient Information
             </div>
 
-            <form method="POST" action="{{ route('admin.doctor_notes.update', $doctor_notes->id) }}" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <div class="card-body">
 
-                <!-- Patient and Token Info (readonly) -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <label class="font-black">Token No:</label>
-                        <input type="text" class="form-control" value="{{ $doctor_notes->fk_token_id }}" disabled>
+                <div class="row py-2">
+                    <div class="col-md-4">
+                        <strong>MR No:</strong>
+                        {{ $doctor_notes->patient->id }}
                     </div>
-                    <div class="col-md-3">
-                        <label class="font-black">MR No:</label>
-                        <input type="text" class="form-control" value="{{ $doctor_notes->fk_patient_id }}" disabled>
+
+                    <div class="col-md-4">
+                        <strong>Name:</strong>
+                        {{ $doctor_notes->patient->name }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <strong>Referred By:</strong>
+                        {{ $doctor_notes->patient->reffered_by }}
                     </div>
                 </div>
 
-                <!-- Mode Selection -->
-                <div class="row mt-3">
+                <div class="row py-2">
                     <div class="col-md-12">
-                        <label class="font-black">Select Input Mode:</label><br>
-                        <label>
-                            <input type="radio" name="mode" value="upload" {{ $doctor_notes->mode == 'upload' ? 'checked' : '' }}>
-                            Upload Prescription
-                        </label>
-                        <label class="ml-3">
-                            <input type="radio" name="mode" value="manual" {{ $doctor_notes->mode == 'manual' ? 'checked' : '' }}>
-                            Manual Entry
-                        </label>
+                        <strong>Address:</strong>
+                        {{ $doctor_notes->patient->address }}
                     </div>
                 </div>
 
-                <!-- Upload Section -->
-                <div id="uploadSection" class="row mt-4" style="{{ $doctor_notes->mode == 'upload' ? '' : 'display:none;' }}">
-                    <div class="col-md-12">
-                        @if($doctor_notes->prescription)
-                            <p>
-                                Current file:
-                                <a href="{{ asset('assets/doctor_notes/'.$doctor_notes->prescription) }}" target="_blank">View</a>
-                            </p>
-                        @endif
-                        <label for="prescription" class="font-black">Upload New Prescription:</label>
-                        <input id="prescription" type="file" name="prescription" class="form-control" />
+            </div>
+        </div>
+        @endif
+
+        <!-- TOKEN INFO -->
+        @if($doctor_notes->token)
+        <div class="card mb-4">
+            <div class="card-header bg-light font-weight-bold">
+                Token Information
+            </div>
+
+            <div class="card-body">
+
+                <div class="row py-2">
+
+                    <div class="col-md-4">
+                        <strong>Token No:</strong>
+                        {{ $doctor_notes->token->token_id ?? $doctor_notes->token->id }}
                     </div>
+
+                    <div class="col-md-4">
+                        <strong>Date:</strong>
+                        {{ $doctor_notes->token->created_at ?? '' }}
+                    </div>
+
                 </div>
 
-                <!-- Manual Entry Section -->
-                <div id="manualSection" class="row mt-4" style="{{ $doctor_notes->mode == 'manual' ? '' : 'display:none;' }}">
-                    <div class="col-md-6 mt-2">
-                        <label>Complaints</label>
-                        <textarea name="complaints" class="form-control">{{ old('complaints', $doctor_notes->complaints) }}</textarea>
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        <label>History</label>
-                        <textarea name="history" class="form-control">{{ old('history', $doctor_notes->history) }}</textarea>
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        <label>Investigations</label>
-                        <textarea name="investigations" class="form-control">{{ old('investigations', $doctor_notes->investigations) }}</textarea>
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        <label>Prescription</label>
-                        <textarea name="prescription_text" class="form-control">{{ old('prescription_text', $doctor_notes->prescription_text) }}</textarea>
-                    </div>
-                    <div class="col-md-12 mt-2">
-                        <label>Remarks</label>
-                        <textarea name="remarks" class="form-control">{{ old('remarks', $doctor_notes->remarks) }}</textarea>
-                    </div>
-                </div>
+            </div>
+        </div>
+        @endif
 
-                <!-- Submit Buttons -->
-                <div class="row mt-5">
-                    <div class="col-md-12 text-center">
-                        <a class="btn btn-warning mx-2" href="{{ route('admin.doctor_notes.index') }}" role="button">Back</a>
-                        <button type="submit" class="btn btn-success mx-2">Update</button>
-                    </div>
-                </div>
-            </form>
+        <!-- HIDDEN IDS -->
+        <input type="hidden"
+               name="fk_patient_id"
+               value="{{ $doctor_notes->fk_patient_id }}">
+
+        <input type="hidden"
+               name="fk_token_id"
+               value="{{ $doctor_notes->fk_token_id }}">
+
+        <!-- MODE -->
+        <div class="form-group m-3">
+
+            <label class="form-label text-dark font-weight-bold">
+                Input Mode
+            </label>
+            <br>
+
+            <label>
+                <input type="radio"
+                       name="mode"
+                       value="upload"
+                       {{ $doctor_notes->mode == 'upload' ? 'checked' : '' }}>
+                Upload
+            </label>
+
+            <label class="ml-3">
+                <input type="radio"
+                       name="mode"
+                       value="manual"
+                       {{ $doctor_notes->mode == 'manual' ? 'checked' : '' }}>
+                Manual
+            </label>
 
         </div>
-    </main>
 
-    <script>
-        document.querySelectorAll('input[name="mode"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                document.getElementById('uploadSection').style.display = this.value === 'upload' ? 'flex' : 'none';
-                document.getElementById('manualSection').style.display = this.value === 'manual' ? 'flex' : 'none';
+        <!-- UPLOAD SECTION -->
+        <div id="uploadSection"
+             class="form-group m-3"
+             style="{{ $doctor_notes->mode == 'upload' ? '' : 'display:none;' }}">
+
+            <label class="form-label text-dark font-weight-bold">
+                Upload Prescription
+            </label>
+
+            @if($doctor_notes->prescription)
+                <div class="mb-2">
+                    <a href="{{ asset('assets/doctor_notes/'.$doctor_notes->prescription) }}"
+                       target="_blank"
+                       class="btn btn-sm btn-info">
+                        View Current File
+                    </a>
+                </div>
+            @endif
+
+            <input type="file"
+                   name="prescription"
+                   class="form-control">
+
+        </div>
+
+        <!-- MANUAL SECTION -->
+        <div id="manualSection"
+             style="{{ $doctor_notes->mode == 'manual' ? '' : 'display:none;' }}">
+
+            {{-- MANUAL PRESCRIPTION PARTIAL --}}
+            @include('doctor_notes.partials.manual_prescription')
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="text-center mt-4">
+
+            <a href="{{ route('admin.doctor_notes.index') }}"
+               class="btn btn-warning mx-2">
+                Back
+            </a>
+
+            <button type="submit"
+                    class="btn btn-success mx-2">
+                Update
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        let radios = document.querySelectorAll('input[name="mode"]');
+
+        if (radios.length > 0) {
+
+            radios.forEach(radio => {
+
+                radio.addEventListener('change', function () {
+
+                    let uploadSection = document.getElementById('uploadSection');
+                    let manualSection = document.getElementById('manualSection');
+
+                    if (uploadSection && manualSection) {
+
+                        uploadSection.style.display =
+                            this.value === 'upload' ? 'block' : 'none';
+
+                        manualSection.style.display =
+                            this.value === 'manual' ? 'block' : 'none';
+                    }
+
+                });
+
             });
-        });
-    </script>
+
+        }
+
+    });
+</script>
+
 </x-app-layout>

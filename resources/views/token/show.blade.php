@@ -16,10 +16,10 @@
 .urdu-text {
     font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
     direction: rtl;
+    color: rgb(77, 6, 192);
     font-size: 40px;
     line-height: 1.6;
     margin-top: 10px;
-    color: rgb(77, 6, 192);
 }
 
 .footer-urdu-remarks {
