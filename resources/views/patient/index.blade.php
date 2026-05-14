@@ -143,7 +143,7 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before {
 
                 <div class="table-responsive"> 
                     <table id="patientTable" class="table table-bordered table-striped align-middle"> 
-                        <thead class="table-primary"> 
+                        <thead class="bg-indigo-500 text-white text-center"> 
                         <tr> 
                             <th>MR No.</th> 
                             <th>PATIENT NAME</th> 
