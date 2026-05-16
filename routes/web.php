@@ -92,6 +92,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
     // AJAX routes for products
     Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');
+    Route::get('products-search', [App\Http\Controllers\Admin\ProductController::class, 'search'])->name('products.search');
 
     Route::get('/doctor-notes/products/search', [App\Http\Controllers\Admin\DoctorNotesController::class, 'searchProducts'])
         ->name('doctor_notes.products.search');

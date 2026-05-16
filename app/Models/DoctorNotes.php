@@ -34,18 +34,38 @@ class DoctorNotes extends Model
 
   public function patient()
   {
+
     return $this->belongsTo(Patient::class, 'fk_patient_id');
+
   }
 
   public function token()
   {
+
     return $this->belongsTo(Token::class, 'fk_token_id');
+
   }
     
   public function doctorName()
   {
+
     return $this->token?->doctor?->name
-      ?? $this->doctor_name
-      ?? 'Walk-in / Manual';
+    ?? $this->doctor_name
+    ?? 'Walk-in / Manual';
+
   }
+
+  protected $casts = [
+
+    'prescription_products' => 'array',
+    
+  ];
+
+  public function products()
+  {
+
+    return Product::whereIn('id', $this->prescription_products ?? []);
+    
+  }
+
 }

@@ -169,35 +169,144 @@
 </main>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
 
-        let radios = document.querySelectorAll('input[name="mode"]');
+    // =========================
+    // MODE TOGGLE
+    // =========================
+    let radios = document.querySelectorAll('input[name="mode"]');
 
-        if (radios.length > 0) {
+    if (radios.length > 0) {
 
-            radios.forEach(radio => {
+        radios.forEach(radio => {
 
-                radio.addEventListener('change', function () {
+            radio.addEventListener('change', function () {
 
-                    let uploadSection = document.getElementById('uploadSection');
-                    let manualSection = document.getElementById('manualSection');
+                let uploadSection =
+                    document.getElementById('uploadSection');
 
-                    if (uploadSection && manualSection) {
+                let manualSection =
+                    document.getElementById('manualSection');
 
-                        uploadSection.style.display =
-                            this.value === 'upload' ? 'block' : 'none';
+                if (uploadSection && manualSection) {
 
-                        manualSection.style.display =
-                            this.value === 'manual' ? 'block' : 'none';
-                    }
+                    uploadSection.style.display =
+                        this.value === 'upload'
+                        ? 'block'
+                        : 'none';
 
-                });
+                    manualSection.style.display =
+                        this.value === 'manual'
+                        ? 'block'
+                        : 'none';
+                }
 
             });
+
+        });
+
+    }
+
+
+    // =========================
+    // SELECT2 INIT
+    // =========================
+    $('#prescription_products').select2({
+
+        placeholder: "Search and select medicines",
+
+        multiple: true,
+
+        ajax: {
+
+            url: "{{ route('admin.products.search') }}",
+
+            dataType: 'json',
+
+            delay: 250,
+
+            data: function (params) {
+
+                return {
+                    term: params.term
+                };
+
+            },
+
+            processResults: function (data) {
+
+                return {
+                    results: data.map(item => ({
+                        id: item.id,
+                        text: item.name
+                    }))
+                };
+
+            },
+
+            cache: true
 
         }
 
     });
+
+
+    // =========================
+    // OLD PRODUCTS PRELOAD
+    // =========================
+    let selectedProducts =
+        @json($doctor_notes->prescription_products ?? []);
+
+    console.log(selectedProducts);
+
+
+    if (
+        Array.isArray(selectedProducts) &&
+        selectedProducts.length > 0
+    ) {
+
+        $.ajax({
+
+            url: "{{ route('admin.products.search') }}",
+
+            type: 'GET',
+
+            dataType: 'json',
+
+            data: {
+                ids: selectedProducts.join(',')
+            },
+
+            success: function (products) {
+
+                products.forEach(function (product) {
+
+                    let option = new Option(
+                        product.name,
+                        product.id,
+                        true,
+                        true
+                    );
+
+                    $('#prescription_products')
+                        .append(option)
+                        .trigger('change');
+
+                });
+
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+});
 </script>
 
 </x-app-layout>

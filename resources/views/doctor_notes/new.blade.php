@@ -156,23 +156,28 @@
 </div>
 </main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-        // AUTO FOCUS
-        setTimeout(function () {
-            let input = document.querySelector('.auto-focus');
+            // =========================
+            // AUTO FOCUS
+            // =========================
+            setTimeout(function () {
 
-            if (input) {
-                input.focus();
-                input.select();
-            }
-        }, 500);
+                let input = document.querySelector('.auto-focus');
 
-        // MODE TOGGLE
-        let radios = document.querySelectorAll('input[name="mode"]');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
 
-        if (radios.length > 0) {
+            }, 500);
+
+
+            // =========================
+            // MODE TOGGLE
+            // =========================
+            let radios = document.querySelectorAll('input[name="mode"]');
 
             radios.forEach(radio => {
 
@@ -189,13 +194,117 @@
                         manualSection.style.display =
                             this.value === 'manual' ? 'block' : 'none';
                     }
+
                 });
 
             });
 
-        }
 
-    });
-</script>
+            // =========================
+            // SELECT2 INIT
+            // =========================
+            $('#prescription_products').select2({
+
+                placeholder: "Search and select medicines",
+
+                multiple: true,
+
+                ajax: {
+
+                    url: "{{ route('admin.products.search') }}",
+
+                    dataType: 'json',
+
+                    delay: 250,
+
+                    data: function (params) {
+
+                        return {
+                            term: params.term
+                        };
+
+                    },
+
+                    processResults: function (data) {
+
+                        let results = data.data ?? data;
+
+                        return {
+                            results: results.map(item => ({
+                                id: item.id,
+                                text: item.name
+                            }))
+                        };
+
+                    },
+
+                    cache: true
+                }
+
+            });
+
+
+            // =========================
+            // EDIT MODE PRELOAD
+            // =========================
+            let selectedProducts =
+                @json($doctor_notes->prescription_products ?? []);
+
+            console.log('Selected Products:', selectedProducts);
+
+
+            if (
+                Array.isArray(selectedProducts) &&
+                selectedProducts.length > 0
+            ) {
+
+                $.ajax({
+
+                    url: "{{ route('admin.products.search') }}",
+
+                    type: 'GET',
+
+                    dataType: 'json',
+
+                    success: function (products) {
+
+                        let allProducts = products.data ?? products;
+
+                        selectedProducts.forEach(function (productId) {
+
+                            let product = allProducts.find(
+                                p => p.id == productId
+                            );
+
+                            if (product) {
+
+                                let option = new Option(
+                                    product.name,
+                                    product.id,
+                                    true,
+                                    true
+                                );
+
+                                $('#prescription_products')
+                                    .append(option)
+                                    .trigger('change');
+                            }
+
+                        });
+
+                    },
+
+                    error: function (xhr) {
+
+                        console.log('Preload Error:', xhr.responseText);
+
+                    }
+
+                });
+
+            }
+
+        });
+    </script>
 
 </x-app-layout>

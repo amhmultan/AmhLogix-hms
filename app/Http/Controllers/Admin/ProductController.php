@@ -185,5 +185,42 @@ class ProductController extends Controller
 
         return view('product.index');
     }
+
+    public function search(Request $request)
+{
+    // PRELOAD PRODUCTS
+    if ($request->has('ids')) {
+
+        $ids = explode(',', $request->ids);
+
+        $products = Product::whereIn('id', $ids)
+            ->select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($products);
+    }
+
+    // NORMAL SEARCH
+    $query = $request->get('term');
+
+    $products = Product::query()
+
+        ->when($query, function ($q) use ($query) {
+
+            $q->where('name', 'like', '%' . $query . '%');
+
+        })
+
+        ->select('id', 'name', 'description')
+
+        ->limit(20)
+
+        ->orderBy('name')
+
+        ->get();
+
+    return response()->json($products);
+}
     
 }

@@ -153,11 +153,11 @@ pre{
 }
 
 .rx-space {
-    font-size: 18px;
+    font-size: 16px;
     font-family: 'Noto Nastaliq Urdu', serif;
-    padding-top: 40px;
+    padding-top: 20px;
     padding-left: 60px;
-    line-height: 1.8;
+    line-height: 1.5;
 }
 
 .rx-footer{
@@ -460,9 +460,48 @@ pre{
         <div class="middle-col" style="min-width:0;">
 
             <div class="rx-space">
-                @foreach(explode("\n", $note->prescription_text) as $line)
-                    {{ $line }}<br>
-                @endforeach
+
+                {{-- =========================
+                    PRESCRIPTION TEXT
+                ========================= --}}
+                @if(!empty($note->prescription_text))
+                    {!! nl2br(e($note->prescription_text)) !!}
+                    <br><br>
+                @endif
+
+
+                {{-- =========================
+                    PRESCRIPTION PRODUCTS
+                ========================= --}}
+                @if(isset($products) && $products->count())
+
+                    <!-- <strong>Rx:</strong><br><br> -->
+
+                    @foreach($products as $product)
+
+                        <div style="margin-bottom:12px;">
+
+                            {{-- PRODUCT NAME --}}
+                            <strong>
+                                {{ $loop->iteration }}.
+                                {{ $product->name }}
+                            </strong>
+
+                            <br>
+
+                            {{-- DESCRIPTION --}}
+                            @if(!empty($product->description))
+                                <span style="margin-left:20px;">
+                                    {{ $product->description }}
+                                </span>
+                            @endif
+
+                        </div>
+
+                    @endforeach
+
+                @endif
+
             </div>
 
             <div class="rx-footer">

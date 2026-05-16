@@ -76,15 +76,13 @@
                             @endif
 
                         @else
-
                             <a href="{{ route('admin.doctor_notes.print', $note->id) }}" target="_blank" class="btn btn-sm btn-info">
                                 Manual Prescription
                             </a>
-
                         @endif
                     </td>
 
-                    {{-- TOKEN DATE --}}
+                    {{-- Checkup on --}}
                     <td>
                         {{ $note->created_at ? \Carbon\Carbon::parse($note->created_at)->format('d-m-y h:i A') : 'No Visit' }}
                     </td>

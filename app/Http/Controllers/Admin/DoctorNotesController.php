@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Hospital;
 use App\Models\DoctorNotes;
 use App\Models\Doctor;
+use App\Models\Product;
 
 class DoctorNotesController extends Controller
 {
@@ -170,6 +171,7 @@ class DoctorNotesController extends Controller
             $data->htn = null;
             $data->ihd = null;
             $data->asthma = null;
+            $data->prescription_products = null;
         }
 
         /* =======================
@@ -193,6 +195,7 @@ class DoctorNotesController extends Controller
             $data->htn = $request->htn;
             $data->ihd = $request->ihd;
             $data->asthma = $request->asthma;
+            $data->prescription_products = $request->prescription_products;
 
             $data->prescription = null;
         }
@@ -258,6 +261,7 @@ class DoctorNotesController extends Controller
             $note->lens = null;
             $note->fundus = null;
             $note->prescription_text = null;
+            $note->prescription_products = null;
             $note->dm = null;
             $note->htn = null;
             $note->ihd = null;
@@ -280,6 +284,7 @@ class DoctorNotesController extends Controller
             $note->lens = $request->lens;
             $note->fundus = $request->fundus;
             $note->prescription_text = $request->prescription_text;
+            $note->prescription_products = $request->prescription_products ?? [];
             $note->dm = $request->dm;
             $note->htn = $request->htn;
             $note->ihd = $request->ihd;
@@ -319,7 +324,7 @@ class DoctorNotesController extends Controller
         // Try token doctor first
         $doctor = $note->token?->doctor;
 
-        // If token doctor not available, fallback to first doctor
+        // If token doctor not available, fallback
         if (!$doctor) {
             $doctor = Doctor::first();
         }
@@ -328,11 +333,21 @@ class DoctorNotesController extends Controller
 
         $note->prescription_text = ltrim($note->prescription_text);
 
+        // =========================
+        // FETCH PRESCRIPTION PRODUCTS
+        // =========================
+        $productIds = $note->prescription_products ?? [];
+
+        $products = Product::whereIn('id', $productIds)
+            ->select('id', 'name', 'description')
+            ->get();
+
         return view('doctor_notes.print', compact(
             'note',
             'patient',
             'doctor',
-            'hospital'
+            'hospital',
+            'products'
         ));
     }
 }
