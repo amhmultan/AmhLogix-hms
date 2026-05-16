@@ -15,7 +15,7 @@ class Doctor extends Model
         'speciality_id', 'schedule', 'remarks', 'cnic', 'pmdc'
     ];
 
-    public function speciality()
+    public function specialty()
     {
         return $this->belongsTo(Speciality::class, 'speciality_id');
     }

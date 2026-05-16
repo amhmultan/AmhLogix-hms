@@ -1,13 +1,22 @@
 @can('Patient access')
-<a href="{{ route('admin.patients.show', $patient->id) }}"
-   class="btn btn-sm btn-primary mb-1">
-   Show
-</a>
+
+   <a href="{{ route('admin.patients.print', $patient->id) }}"
+      target="_blank"
+      class="btn btn-sm btn-info">
+      Print
+   </a>
+
+   <a href="{{ route('admin.patients.show', $patient->id) }}"
+      target="_blank"
+      class="btn btn-sm btn-primary">
+      Show
+   </a>
+
 @endcan
 
 @can('Patient edit')
 <a href="{{ route('admin.patients.edit', $patient->id) }}"
-   class="btn btn-sm btn-warning mb-1">
+   class="btn btn-sm btn-warning text-light">
    Edit
 </a>
 @endcan
@@ -18,7 +27,7 @@
       style="display:inline;">
     @csrf
     @method('delete')
-    <button class="btn btn-sm btn-danger mb-1"
+    <button class="btn btn-sm btn-danger"
             onclick="return confirm('Are you sure?')">
         Delete
     </button>

@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Patient;
+use App\Models\Hospital;
+use App\Models\Doctor;
 use Carbon\Carbon;
 
 class PatientController extends Controller
@@ -140,39 +142,49 @@ class PatientController extends Controller
     }
 
     public function getData(Request $request)
-{
-    $query = DB::table('patients')
-        ->join('users', 'users.id', '=', 'patients.fk_user_id')
-        ->select('patients.*', 'users.name as usersName');
+    {
+        $query = DB::table('patients')
+            ->join('users', 'users.id', '=', 'patients.fk_user_id')
+            ->select('patients.*', 'users.name as usersName');
 
-    // 🔥 SMART SEARCH LOGIC
-    if (!empty($request->smart_search)) {
+        // 🔥 SMART SEARCH LOGIC
+        if (!empty($request->smart_search)) {
 
-        $search = $request->smart_search;
+            $search = $request->smart_search;
 
-        $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search) {
 
-            $q->where('patients.id', 'like', "%$search%")
-              ->orWhere('patients.cnic', 'like', "%$search%")
-              ->orWhere('patients.phone', 'like', "%$search%");
+                $q->where('patients.id', 'like', "%$search%")
+                ->orWhere('patients.cnic', 'like', "%$search%")
+                ->orWhere('patients.phone', 'like', "%$search%");
 
-        });
+            });
+        }
+
+        return datatables()
+            ->of($query)
+            ->addColumn('age', function ($patient) {
+                return $patient->dob
+                    ? \Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years')
+                    : '';
+            })
+            ->addColumn('registered_on', fn($p) => \Carbon\Carbon::parse($p->created_at)->format('d-m-Y h:i A'))
+            ->addColumn('updated_on', fn($p) => \Carbon\Carbon::parse($p->updated_at)->format('d-m-Y h:i A'))
+            ->addColumn('action', function ($patient) {
+                return view('patient.partials.actions', compact('patient'))->render();
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
+    public function print($id)
+    {
+        $patient = Patient::findOrFail($id);
 
-    return datatables()
-        ->of($query)
-        ->addColumn('age', function ($patient) {
-            return $patient->dob
-                ? \Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years')
-                : '';
-        })
-        ->addColumn('registered_on', fn($p) => \Carbon\Carbon::parse($p->created_at)->format('d-m-Y h:i A'))
-        ->addColumn('updated_on', fn($p) => \Carbon\Carbon::parse($p->updated_at)->format('d-m-Y h:i A'))
-        ->addColumn('action', function ($patient) {
-            return view('patient.partials.actions', compact('patient'))->render();
-        })
-        ->rawColumns(['action'])
-        ->make(true);
-}
+        $hospitals = Hospital::first();
+
+        $doctors = Doctor::first();
+
+        return view('patient.print', compact('patient', 'hospitals', 'doctors'));
+    }
     
 }

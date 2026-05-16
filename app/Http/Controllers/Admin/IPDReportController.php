@@ -18,7 +18,7 @@ class IPDReportController extends Controller
     {
         $query = Admission::with([
             'patient',
-            'doctor.speciality',
+            'doctor.specialty',
             'bed.ward',
             'charges'
         ]);
@@ -58,7 +58,7 @@ class IPDReportController extends Controller
 
         $admissions = $query->latest()->get();
 
-        $doctors = Doctor::with('speciality')->get();
+        $doctors = Doctor::with('specialty')->get();
 
         $beds = Bed::with('ward')->get();
 

@@ -163,9 +163,10 @@
             Rx
         </div>
 
-        <textarea name="prescription_text"
-                  class="form-control flex-grow-1"
-                  style="min-height:350px;">{{ old('prescription_text', $doctor_notes->prescription_text ?? '') }}</textarea>
+        <!-- PRESCRIPTION TEXTAREA -->
+        <textarea name="prescription_text" class="form-control flex-grow-1" style="min-height:350px;">
+            {{ old('prescription_text', $doctor_notes->prescription_text ?? '') }}
+        </textarea>
 
     </div>
 

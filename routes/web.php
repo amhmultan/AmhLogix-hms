@@ -103,7 +103,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/tokens/token-report', [App\Http\Controllers\Admin\TokenReportController::class, 'index'])->name('tokens.token_report');
     Route::get('/tokens/token-report/data', [App\Http\Controllers\Admin\TokenReportController::class, 'data'])->name('tokens.token_report.data');
     Route::get('/tokens/token-report/pdf', [App\Http\Controllers\Admin\TokenReportController::class, 'reportPdf'])->name('tokens.token_report.pdf');
-        
+
     // Resources
     Route::resource('purchases', App\Http\Controllers\Admin\PurchaseInvoiceController::class);
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
@@ -127,7 +127,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('purchases/{purchase}/print', [App\Http\Controllers\Admin\PurchaseInvoiceController::class, 'print'])->name('purchases.print');
     Route::get('sales/{sale}/print', [App\Http\Controllers\Admin\SaleController::class, 'print'])->name('sales.print');
     Route::get('doctor_notes/{id}/print', [App\Http\Controllers\Admin\DoctorNotesController::class, 'print'])->name('doctor_notes.print');
-    
+    Route::get('patients/{id}/print', [App\Http\Controllers\Admin\PatientController::class, 'print'])->name('patients.print');
 
     // Stock reports
     Route::get('reports', [App\Http\Controllers\Admin\StockReportController::class, 'index'])->name('reports.index');

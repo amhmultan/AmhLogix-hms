@@ -12,8 +12,8 @@
         <div class="col-sm-6 text-right">
             @can('DoctorNotes add')
                 <a href="{{ route('admin.doctor_notes.create') }}"
-                   class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded shadow hover:bg-blue-500 transition-colors">
-                    Add Doctor Notes
+                   class="text-decoration-none bg-black text-white font-bold px-5 py-2 rounded shadow hover:bg-blue-500 transition-colors"
+                    accesskey="a"><u>A</u>dd Doctor Notes
                 </a>
             @endcan
         </div>

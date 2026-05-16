@@ -283,15 +283,15 @@ pre{
 <!-- ACTION BUTTONS -->
 <div class="container mt-3 text-center">
 
-    <a href="{{ route('admin.patients.index') }}" class="btn btn-info text-light">Back</a>
+    <a href="{{ route('admin.patients.index') }}" class="btn btn-info btn-sm text-light">Back</a>
 
-    <input class="btn btn-success text-light"
+    <input class="btn btn-success btn-sm text-light"
            type="button"
            onclick="printDiv('printableArea')"
            value="Print" />
 
     @can('Patient edit')
-    <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-warning">
+    <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-warning btn-sm text-light">
         Edit
     </a>
     @endcan
@@ -455,15 +455,15 @@ pre{
 
 <!-- PRINT SCRIPT -->
 <script>
-function printDiv(divName) {
-    let printContents = document.getElementById(divName).innerHTML;
-    let originalContents = document.body.innerHTML;
+    function printDiv(divName) {
+        let printContents = document.getElementById(divName).innerHTML;
+        let originalContents = document.body.innerHTML;
 
-    document.body.innerHTML = printContents;
-    window.print();
-    document.body.innerHTML = originalContents;
-    location.reload();
-}
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        location.reload();
+    }
 </script>
 
 </x-app-layout>
