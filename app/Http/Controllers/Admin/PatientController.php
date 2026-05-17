@@ -80,9 +80,11 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
+        $patient->load('users'); // 👈 important
+        
         $title = DB::table('hospitals')
                     ->select('hospitals.title', 'hospitals.logo', 'hospitals.address', 'hospitals.website', 'hospitals.contact', 'hospitals.phc_no')
-                    ->get();
+                    ->first();
         
         $doctor = DB::table('doctors')
                     ->select('doctors.*')
@@ -114,6 +116,7 @@ class PatientController extends Controller
         $request->validate([
             'name' => 'required',
             'age' => 'required|integer|min:0|max:120',
+            'phone' => 'required',
         ]);
 
         $patient = Patient::findOrFail($id);
@@ -121,10 +124,23 @@ class PatientController extends Controller
         // Convert age → DOB
         $dob = Carbon::now()->subYears($request->age)->format('Y-m-d');
 
-        $patient->name = $request->name;
-        $patient->dob = $dob;
-        $patient->fk_user_id = Auth::id(); // optional: or keep created_by separate
-        $patient->save();
+        $patient->update([
+            'name'            => $request->name,
+            'fname'           => $request->fname,
+            'dob'             => $dob,
+            'gender'          => $request->gender,
+            'marital_status'  => $request->marital_status,
+            'phone'           => $request->phone,
+            'email'           => $request->email,
+            'cnic'            => $request->cnic,
+            'address'         => $request->address,
+            'emr_name'        => $request->emr_name,
+            'relationship'    => $request->relationship,
+            'emr_phone'       => $request->emr_phone,
+            'reffered_by'     => $request->reffered_by,
+            'history'         => $request->history,
+            'fk_user_id'      => Auth::id(),
+        ]);
 
         return redirect('/admin/patients')->withSuccess('Patient updated successfully !!!');
     }
@@ -143,39 +159,88 @@ class PatientController extends Controller
 
     public function getData(Request $request)
     {
+        $search = $request->smart_search;
+
         $query = DB::table('patients')
             ->join('users', 'users.id', '=', 'patients.fk_user_id')
-            ->select('patients.*', 'users.name as usersName');
 
-        // 🔥 SMART SEARCH LOGIC
-        if (!empty($request->smart_search)) {
+            // ONLY REQUIRED FIELDS (VERY IMPORTANT)
+            ->selectRaw("
+                patients.id,
+                patients.name,
+                patients.fname,
+                patients.dob,
+                patients.marital_status,
+                patients.gender,
+                patients.phone,
+                patients.email,
+                patients.cnic,
+                patients.address,
+                patients.created_at,
+                patients.updated_at,
+                users.name as usersName
+            ");
 
-            $search = $request->smart_search;
+        /*
+        ----------------------------------------------------
+        🚀 ULTRA FAST SEARCH STRATEGY
+        ----------------------------------------------------
+        1. Exact match first (uses INDEX)
+        2. Prefix search only (NO %search%)
+        3. Avoid full table scan
+        */
+
+        if (!empty($search)) {
 
             $query->where(function ($q) use ($search) {
 
-                $q->where('patients.id', 'like', "%$search%")
-                ->orWhere('patients.cnic', 'like', "%$search%")
-                ->orWhere('patients.phone', 'like', "%$search%");
+                // FAST INDEXED MATCHES
+                $q->where('patients.id', $search)
+                ->orWhere('patients.phone', $search)
+                ->orWhere('patients.cnic', $search)
 
+                // PREFIX SEARCH ONLY (FAST LIKE)
+                ->orWhere('patients.name', 'like', $search . '%');
             });
         }
 
         return datatables()
             ->of($query)
-            ->addColumn('age', function ($patient) {
-                return $patient->dob
-                    ? \Carbon\Carbon::parse($patient->dob)->diff(\Carbon\Carbon::now())->format('%y years')
+
+            // AGE (FAST + SAFE)
+            ->editColumn('age', function ($row) {
+                if (!$row->dob) return '';
+
+                $dob = strtotime($row->dob);
+                if (!$dob) return '';
+
+                return date_diff(
+                    date_create($row->dob),
+                    date_create('today')
+                )->y . ' years';
+            })
+
+            // FORMAT DATES (FAST PHP, avoids SQL dependency issues)
+            ->addColumn('registered_on', function ($row) {
+                return $row->created_at
+                    ? date('d-m-Y h:i A', strtotime($row->created_at))
                     : '';
             })
-            ->addColumn('registered_on', fn($p) => \Carbon\Carbon::parse($p->created_at)->format('d-m-Y h:i A'))
-            ->addColumn('updated_on', fn($p) => \Carbon\Carbon::parse($p->updated_at)->format('d-m-Y h:i A'))
+
+            ->addColumn('updated_on', function ($row) {
+                return $row->updated_at
+                    ? date('d-m-Y h:i A', strtotime($row->updated_at))
+                    : '';
+            })
+
             ->addColumn('action', function ($patient) {
                 return view('patient.partials.actions', compact('patient'))->render();
             })
+
             ->rawColumns(['action'])
             ->make(true);
     }
+    
     public function print($id)
     {
         $patient = Patient::findOrFail($id);

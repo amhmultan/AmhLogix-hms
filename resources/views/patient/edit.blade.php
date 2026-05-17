@@ -43,20 +43,23 @@
                     <label for="gender" class="text-gray-700 font-black">Gender:</label>
                     <select class="form-control" name="gender">
                       <option value=""> ---- Please Select ---- </option>
-                      <option value="Male">Male</option>
-                     <option value="Female" @if($patient->gender) selected @endif>Female</option>
-                     <option value="Others" @if($patient->gender) selected @endif>Others</option>
+
+                      <option value="Male" {{ old('gender', $patient->gender) == 'Male' ? 'selected' : '' }}>Male</option>
+
+                      <option value="Female" {{ old('gender', $patient->gender) == 'Female' ? 'selected' : '' }}>Female</option>
+
+                      <option value="Others" {{ old('gender', $patient->gender) == 'Others' ? 'selected' : '' }}>Others</option>
                     </select>
                   </div>
                   <div class="col-md-2">
                     <label for="marital_status" class="text-gray-700 font-black">Marital Status:</label>
                     <select class="form-control" name="marital_status">
                       <option value=""> ---- Please Select ---- </option>
-                      <option value="Single">Single</option>
-                     <option value="Married" @if($patient->marital_status) selected @endif>Married</option>
-                     <option value="Widowed" @if($patient->marital_status) selected @endif>Widowed</option>
-                     <option value="Divorced" @if($patient->marital_status) selected @endif>Divorced</option>
-                     <option value="Separated" @if($patient->marital_status) selected @endif>Separated</option>
+                      <option value="Single" {{ old('marital_status', $patient->marital_status) == 'Single' ? 'selected' : '' }}>Single</option>
+                      <option value="Married" {{ old('marital_status', $patient->marital_status) == 'Married' ? 'selected' : '' }}>Married</option>
+                      <option value="Widowed" {{ old('marital_status', $patient->marital_status) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                      <option value="Divorced" {{ old('marital_status', $patient->marital_status) == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                      <option value="Separated" {{ old('marital_status', $patient->marital_status) == 'Separated' ? 'selected' : '' }}>Separated</option>
                     </select>
                   </div>
                   <div class="col-md-2">

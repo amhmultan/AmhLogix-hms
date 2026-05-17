@@ -27,7 +27,8 @@ class Patient extends Model
         $months = $dob->copy()->addYears($years)->diffInMonths($now);
         $days = $dob->copy()->addYears($years)->addMonths($months)->diffInDays($now);
 
-        return $years . ' Y ' . $months . ' M ' . $days . ' D ';
+        // return $years . ' Y ' . $months . ' M ' . $days . ' D ';
+        return $years . ' Years ' ;
     }
 
     public function users()

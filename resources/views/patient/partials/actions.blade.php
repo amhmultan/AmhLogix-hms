@@ -6,8 +6,7 @@
       Print
    </a>
 
-   <a href="{{ route('admin.patients.show', $patient->id) }}"
-      target="_blank"
+   <a href="{{ route('admin.patients.show', $patient->id) }}"      
       class="btn btn-sm btn-primary">
       Show
    </a>

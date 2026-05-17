@@ -7,6 +7,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+
+
     <style>
     /* =========================
     FONTS
@@ -274,9 +278,8 @@
             height: 16px;
         }
 
-        /* ✅ IMPORTANT FIX */
         .opd-writing-area{
-            min-height: 190mm;
+            min-height: 220mm;
         }
 
         .opd-col{

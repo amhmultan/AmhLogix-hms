@@ -128,8 +128,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before {
                         <i class="fa fa-search"></i> 
                     </span> 
 
-                    <input type="text" id="smartSearch" class="form-control" 
-                           placeholder="Search MR No / CNIC / Phone..."> 
+                    <input type="text" id="smartSearch" class="form-control auto-focus"
+                        placeholder="Search by Patient Name / MR No. / CNIC No. / Phone No.">
                 </div> 
             </div> 
         </div> 
@@ -196,15 +196,14 @@ $(document).ready(function () {
         autoWidth: false, 
         scrollX: false, 
 
-        ajax: { 
+        ajax: {
             url: "{{ route('admin.patients.data') }}", 
             data: function (d) { 
-                d.smart_search = $('#smartSearch').val(); 
+                d.smart_search = $('#smartSearch').val();
             } 
         }, 
-
-        pageLength: 10, 
-        searching: false, 
+        pageLength: 10,
+        searching: false,
         order: [[0, 'desc']], 
 
         columns: [ 
@@ -224,9 +223,7 @@ $(document).ready(function () {
             { data: 'action', orderable: false, searchable: false, responsivePriority: 1 } 
         ], 
 
-        drawCallback: function () { 
-            table.columns.adjust().responsive.recalc(); 
-        } 
+        responsive: true,
 
     }); 
 
@@ -284,19 +281,22 @@ $(document).ready(function () {
     } 
 
 
-    function checkViewMode(){ 
+    let mobileLoaded = false;
 
-        if(window.innerWidth < 768){ 
-            $('#desktopTableWrapper').hide(); 
-            $('#mobileCardsWrapper').show(); 
-            loadMobileCards(); 
-        } else { 
-            $('#mobileCardsWrapper').hide(); 
-            $('#desktopTableWrapper').show(); 
-            table.columns.adjust().responsive.recalc(); 
-        } 
+    function checkViewMode(){
+        if(window.innerWidth < 768){
+            $('#desktopTableWrapper').hide();
+            $('#mobileCardsWrapper').show();
 
-    } 
+            if(!mobileLoaded){
+                loadMobileCards();
+                mobileLoaded = true;
+            }
+        } else {
+            $('#mobileCardsWrapper').hide();
+            $('#desktopTableWrapper').show();
+        }
+    }
 
     checkViewMode(); 
 
@@ -328,9 +328,11 @@ $(document).ready(function () {
         forceTableResize(); 
     }); 
 
-    setInterval(function () { 
-        forceTableResize(); 
-    }, 1500); 
+    setTimeout(function () {
+
+    $('#smartSearch').focus().select();
+
+}, 800); 
 
 }); 
 

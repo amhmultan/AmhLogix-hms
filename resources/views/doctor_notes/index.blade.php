@@ -76,7 +76,7 @@
                             @endif
 
                         @else
-                            <a href="{{ route('admin.doctor_notes.print', $note->id) }}" target="_blank" class="btn btn-sm btn-info">
+                            <a href="{{ route('admin.doctor_notes.print', $note->id) }}" class="btn btn-sm btn-info">
                                 Manual Prescription
                             </a>
                         @endif
