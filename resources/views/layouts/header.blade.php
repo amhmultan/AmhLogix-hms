@@ -1,4 +1,4 @@
-<header class="container-fluid mx-auto bg-white shadow-md px-4 py-2">
+<header class="container-fluid mx-auto bg-white shadow-md px-4 py-2 overflow-visible">
     <div class="flex justify-between items-center w-full">
         
         <!-- Left Side -->

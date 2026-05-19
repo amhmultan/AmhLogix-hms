@@ -16,9 +16,9 @@
     FONTS
     ========================= */
     @font-face {
-        font-family: 'JameelNoori';
-        src: url('/fonts/JameelNooriNastaleeq.woff2') format('woff2'),
-            url('/fonts/JameelNooriNastaleeq.ttf') format('truetype');
+        font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
+        src: url('{{ asset('fonts/JameelNooriNastaleeq.ttf') }}') format('truetype'),
+            url('{{ asset('fonts/NotoNastaliqUrdu-Regular.ttf') }}') format('truetype');
         font-weight: normal;
         font-style: normal;
     }
@@ -159,6 +159,15 @@
 
     .rx-space{
         flex: 1;
+    }
+
+    #refractionSection {
+        position: absolute;
+        right: 6mm;
+        bottom: 28mm;
+        width: 50%;
+        max-width: 120mm;
+        box-sizing: border-box;
     }
 
     .rx-footer{
@@ -392,10 +401,14 @@
 
                         <div class="rx-space"></div>
 
-                        <!-- DOCTOR SIGNATURE INSIDE RX -->
-                        <div class="rx-footer">
-                            <div class="signature-line">----------------------<br/>Doctor's Signature</div>
+                        <div id="refractionSection">
+                            @include('patient.partials.refraction_card')
                         </div>
+
+                        <!-- DOCTOR SIGNATURE INSIDE RX -->
+                        <!-- <div class="rx-footer">
+                            <div class="signature-line">----------------------<br/>Doctor's Signature</div>
+                        </div> -->
 
                     </div>
 
@@ -423,7 +436,7 @@
                             <strong>Asthma:</strong>
                             <div class="line-space"></div>
                         </div>
-
+                                                
                     </div>
                     
                 </div>

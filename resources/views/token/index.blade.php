@@ -14,11 +14,10 @@
           </div>
         
         @if (!$tokens->isEmpty())
-          <div class="table-responsive bg-white shadow-md rounded border-collapse p-3">
-            <table id="tokenTable" class="table w-100 border-collapse">
+          <div class="table-responsive bg-white shadow-md rounded border-collapse p-2">
+            <table id="tokenTable" class="table w-100 border-collapse table-striped table-bordered p-2">
               <thead>
                 <tr class="bg-indigo-500 text-white">
-                  <th class="py-2 px-2 border text-center">PRESCRIPTION</th>
                   <th class="py-2 px-2 border text-center">Token ID</th>
                   <th class="py-2 px-2 border text-center">MR NO.</th>
                   <th class="py-2 px-2 border text-center">PATIENT NAME</th>
@@ -37,11 +36,6 @@
                 @can('Token access')
                   @foreach($tokens as $token)
                     <tr class="text-center">
-                      <td class="px-2 py-2 border">
-                        @can('Token access')
-                          <a href="{{route('admin.tokens.show',$token->id)}}" class="btn btn-info btn-sm">Show</a>
-                        @endcan
-                      </td>
                       <td class="px-2 py-2 border">{{ $token->id }}</td>
                       <td class="px-2 py-2 border">{{ $token->fk_patients_id }}</td>
                       <td class="px-2 py-2 border">{{ $token->pName }}</td>
@@ -56,6 +50,10 @@
 
                       <td class="px-2 py-2 border text-nowrap">
                         
+                        @can('Token access')
+                          <a href="{{route('admin.tokens.show',$token->id)}}" class="btn btn-info btn-sm" target="_blank">Print</a>
+                        @endcan
+
                         @can('Token edit')
                         <a href="{{route('admin.tokens.edit',$token->id)}}" class="btn btn-primary btn-sm">Edit</a>
                         @endcan
@@ -67,6 +65,7 @@
                             <button class="btn btn-danger btn-sm">Delete</button>
                         </form>
                         @endcan
+
                       </td>
                     </tr>
                   @endforeach

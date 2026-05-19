@@ -7,8 +7,8 @@
 ========================= */
 @font-face {
     font-family: 'JameelNoori';
-    src: url('/fonts/JameelNooriNastaleeq.woff2') format('woff2'),
-         url('/fonts/JameelNooriNastaleeq.ttf') format('truetype');
+    src: url( assets('/fonts/JameelNooriNastaleeq.woff2')) format('woff2'),
+         url( assets('/fonts/JameelNooriNastaleeq.ttf')) format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -55,12 +55,14 @@ pre{
 .opd-page{
     position: relative;
     width: 210mm;
-    min-height: 297mm;
+    min-height: auto;
+    height: auto;
     margin: 0 auto;
     padding: 6mm;
     padding-bottom: 30mm; /* ✅ reserve footer space */
     background: #fff;
     box-sizing: border-box;
+    page-break-after: avoid;
 }
 
 /* =========================
@@ -111,9 +113,7 @@ pre{
     display: flex;
     gap: 10px;
     margin-top: 10px;
-
-    /* ✅ FIXED HEIGHT (balanced) */
-    min-height: 180mm;
+    min-height: auto;
 }
 
 /* Base columns */
@@ -143,7 +143,7 @@ pre{
     width: 60%;
     display: flex;
     flex-direction: column;
-    min-height: 258mm;
+    min-height: 197mm /* 297mm total - 20mm top/bottom padding - 30mm footer - 50mm header = 197mm writing space */;
 }
 
 /* RX */
@@ -158,6 +158,15 @@ pre{
     padding-top: 20px;
     padding-left: 60px;
     line-height: 1.5;
+}
+
+#refractionSection {
+    position: absolute;
+    right: 6mm;
+    bottom: 22mm;
+    width: 50%;
+    max-width: 120mm;
+    box-sizing: border-box;
 }
 
 .rx-footer{
@@ -244,46 +253,77 @@ pre{
     }
 
     body{
-        font-size: 18px;
-        line-height: 1.4;
+        font-size: 16px;
+        line-height: 1.3;
     }
 
     .header-wrap {
-        font-size: 18px;
+        font-size: 16px;
+    }
+
+    .urdu-text {
+        font-size: 30px;
+    }
+
+    .footer-urdu-remarks {
+        font-size: 10px;
+    }
+
+    .footer-urdu-remarks-again {
+        font-size: 14px;
     }
 
     .opd-page{
         width: 100%;
-        min-height: 100%;
+        min-height: auto;
         padding: 0;
-        padding-bottom: 30mm; /* ✅ keep footer space */
+        padding-bottom: 20mm;
+        max-height: calc(297mm - 20mm);
+        box-sizing: border-box;
     }
 
     .opd-strip{
-        font-size: 14px;
-        padding: 6px 8px;
-        margin-top: 12px;
+        font-size: 12px;
+        padding: 4px 6px;
+        margin-top: 10px;
     }
 
     .opd-col{
-        font-size: 18px;
+        font-size: 14px;
+        page-break-inside: avoid;
     }
 
     .rx-header{
-        font-size: 34px;
+        font-size: 30px;
+    }
+
+    .rx-space {
+        font-size: 14px;
+        padding-top: 15px;
+        padding-left: 40px;
     }
 
     .line-space{
-        height: 16px;
+        height: 14px;
     }
 
-    /* ✅ IMPORTANT FIX */
+    .section-block {
+        margin-bottom: 4px;
+    }
+
+    .section-detail {
+        margin-bottom: 20px;
+    }
+
+    .footer {
+        bottom: 5mm;
+        font-size: 12px;
+        padding-top: 4px;
+    }
+
+    /* Remove forced minimum height to prevent extra page breaks */
     .opd-writing-area{
-        min-height: 190mm;
-    }
-
-    .opd-col{
-        page-break-inside: avoid;
+        min-height: auto;
     }
 }
 </style>
@@ -504,12 +544,12 @@ pre{
 
             </div>
 
-            <div class="rx-footer">
+            <!-- <div class="rx-footer">
                 <div class="signature-line">
                     ----------------------<br/>
                     Doctor's Signature
                 </div>
-            </div>
+            </div> -->
 
         </div>
 
@@ -544,6 +584,10 @@ pre{
                 <div class="section-detail">
                     {{ $note->asthma ?? '-' }}
                 </div>
+            </div>
+
+            <div id="refractionSection" class="section-block">
+                @include('doctor_notes.partials.refraction_card')
             </div>
 
         </div>

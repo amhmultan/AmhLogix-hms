@@ -1,0 +1,189 @@
+/* =========================
+SIDEBAR MAIN
+========================= */
+
+.sidebar-modern {
+    background: linear-gradient(180deg, #0f172a 0%, #0b1220 100%);
+    box-shadow: 4px 0 25px rgba(0,0,0,0.25);
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+}
+
+.sidebar-modern::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-modern::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+/* =========================
+LOGO AREA
+========================= */
+
+.sidebar-logo {
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.sidebar-logo h1 {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-logo h6 {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* =========================
+SEARCH BAR
+========================= */
+
+.sidebar-search {
+    padding: 14px;
+}
+
+.sidebar-search input {
+    width: 100%;
+    height: 42px;
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #fff !important;
+    border-radius: 12px;
+    padding-left: 12px;
+    transition: all 0.25s ease;
+}
+
+.sidebar-search input::placeholder {
+    color: #94a3b8;
+}
+
+.sidebar-search input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+    outline: none;
+}
+
+/* =========================
+SECTION TITLES
+========================= */
+
+.sidebar-title {
+    color: #64748b;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 16px 20px 6px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+/* =========================
+MAIN LINKS
+========================= */
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 2px 2px;
+    padding: 6px 10px;
+    color: #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background: rgba(59,130,246,0.15);
+    color: #ffffff;
+    transform: translateX(3px);
+}
+
+.sidebar-link.active {
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+    color: #fff !important;
+    box-shadow: 0 8px 18px rgba(37,99,235,0.35);
+}
+
+/* ICONS */
+.sidebar-link svg {
+    min-width: 20px;
+    fill: #60a5fa !important;
+}
+
+/* =========================
+SUBMENU CONTAINER
+========================= */
+
+.sidebar-submenu {
+    margin: 6px 14px 12px 18px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+/* =========================
+SUBMENU LINKS
+========================= */
+
+.sidebar-sublink {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    margin: 4px 0;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    text-decoration: none !important;
+    color: #cbd5e1 !important;
+    background: transparent !important;
+
+    transition: all 0.2s ease;
+}
+
+/* HOVER */
+.sidebar-sublink:hover {
+    background: rgba(59,130,246,0.12) !important;
+    color: #ffffff !important;
+    transform: translateX(3px);
+}
+
+/* ACTIVE */
+.sidebar-sublink.active {
+    background: rgba(59,130,246,0.20) !important;
+    color: #60a5fa !important;
+}
+
+/* SUBMENU ICON SAFETY */
+.sidebar-sublink svg {
+    color: #94a3b8;
+    fill: currentColor;
+}
+
+/* =========================
+DROPDOWN CARET
+========================= */
+
+.dropdown-toggle::after {
+    margin-left: auto;
+}
+
+/* =========================
+MOBILE
+========================= */
+
+@media (max-width: 991px) {
+    .sidebar-modern {
+        width: 280px;
+    }
+}

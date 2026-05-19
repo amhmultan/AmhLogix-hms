@@ -11,12 +11,13 @@
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sidebar-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('css/clock.css') }}">
     <link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/prescription.css') }}">
 
     <link href="{{ asset('bootstrap-5.1.3-dist/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('bootstrap-4.1.3-dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('bootstrap-4.1.3-dist/css/bootstrap.min.css') }}" rel="stylesheet"> -->
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -44,8 +45,8 @@
 
         {{-- SIDEBAR --}}
         <div
-            class="fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 overflow-y-auto transform transition-transform duration-300 lg:translate-x-0"
-            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+            class="sidebar-modern fixed inset-y-0 left-0 z-40 w-64 overflow-y-auto transform transition-transform duration-300 lg:translate-x-0"
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         >
             @include('layouts.sidebar')
         </div>
@@ -64,7 +65,7 @@
 
             @include('layouts.header')
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto" style="background-color: #dde5e6;">
                 {{ $slot }}
             </main>
 
@@ -147,6 +148,13 @@
         document.onclick = resetTimer;
         document.onscroll = resetTimer;
     })();
+    
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     </script>
 
     @stack('scripts')

@@ -104,7 +104,16 @@ class TokenController extends Controller
         $patient = Patient::find($token->fk_patients_id);
         $doctor = Doctor::find($token->fk_doctors_id);
 
-        return view('token.show', compact('hospital', 'doctor', 'patient', 'token'));
+        // QR DATA (you can customize this later)
+        $qrData = route('admin.tokens.show', $token->id);
+
+        return view('token.thermal', compact(
+            'hospital',
+            'doctor',
+            'patient',
+            'token',
+            'qrData'
+        ));
     }
 
 

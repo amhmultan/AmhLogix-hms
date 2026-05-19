@@ -1,6 +1,6 @@
 <x-app-layout>
   <main>
-    <div class="container-fluid py-4 px-5">
+    <div class="container py-4 px-5">
       <form method="POST" action="{{ route('admin.patients.store') }}" enctype="multipart/form-data">
         @csrf
         <p class="text-center text-yellow-600 font-black text-4xl">Patient<span class="text-green-600 font-black text-4xl"> Registration</span></p>

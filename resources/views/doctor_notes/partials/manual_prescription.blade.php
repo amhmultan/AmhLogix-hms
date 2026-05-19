@@ -74,6 +74,11 @@
         min-height: 55px;
     }
 
+    #refractionSection{
+        margin-top: 150px;
+        
+    }
+
     /* =========================
     MOBILE RESPONSIVE
     ========================= */
@@ -205,6 +210,9 @@
                    class="form-control"
                    value="{{ old('asthma', $doctor_notes->asthma ?? '') }}">
 
+                <div id="refractionSection" class="section-block">
+                    @include('doctor_notes.partials.refraction_card')
+                </div>
         </div>
 
     </div>
