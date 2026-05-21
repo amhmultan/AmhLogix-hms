@@ -172,6 +172,20 @@ class DoctorNotesController extends Controller
             $data->ihd = null;
             $data->asthma = null;
             $data->prescription_products = null;
+            $data->right_sph = null;
+            $data->right_cyl = null;
+            $data->right_axis = null;
+            $data->right_va = null;
+            $data->left_sph = null;
+            $data->left_cyl = null;
+            $data->left_axis = null;
+            $data->left_va = null;
+            $data->right_add = null;
+            $data->right_pd = null;
+            $data->left_add = null;
+            $data->left_pd = null;
+            $data->right_remarks = null;
+            $data->left_remarks = null;
         }
 
         /* =======================
@@ -196,6 +210,20 @@ class DoctorNotesController extends Controller
             $data->ihd = $request->ihd;
             $data->asthma = $request->asthma;
             $data->prescription_products = $request->prescription_products;
+            $data->right_sph = $request->right_sph;
+            $data->right_cyl = $request->right_cyl;
+            $data->right_axis = $request->right_axis;
+            $data->right_va = $request->right_va;
+            $data->left_sph = $request->left_sph;
+            $data->left_cyl = $request->left_cyl;
+            $data->left_axis = $request->left_axis;
+            $data->left_va = $request->left_va;
+            $data->right_add = $request->right_add;
+            $data->right_pd = $request->right_pd;
+            $data->left_add = $request->left_add;
+            $data->left_pd = $request->left_pd;
+            $data->right_remarks = $request->right_remarks;
+            $data->left_remarks = $request->left_remarks;
 
             $data->prescription = null;
         }
@@ -266,6 +294,20 @@ class DoctorNotesController extends Controller
             $note->htn = null;
             $note->ihd = null;
             $note->asthma = null;
+            $note->right_sph = null;
+            $note->right_cyl = null;
+            $note->right_axis = null;
+            $note->right_va = null;
+            $note->left_sph = null;
+            $note->left_cyl = null;
+            $note->left_axis = null;
+            $note->left_va = null;
+            $note->right_add = null;
+            $note->right_pd = null;
+            $note->left_add = null;
+            $note->left_pd = null;
+            $note->right_remarks = null;
+            $note->left_remarks = null;
         }
 
         /* =========================
@@ -289,6 +331,20 @@ class DoctorNotesController extends Controller
             $note->htn = $request->htn;
             $note->ihd = $request->ihd;
             $note->asthma = $request->asthma;
+            $note->right_sph = $request->right_sph;
+            $note->right_cyl = $request->right_cyl;
+            $note->right_axis = $request->right_axis;
+            $note->right_va = $request->right_va;
+            $note->left_sph = $request->left_sph;
+            $note->left_cyl = $request->left_cyl;
+            $note->left_axis = $request->left_axis;
+            $note->left_va = $request->left_va;
+            $note->right_add = $request->right_add;
+            $note->right_pd = $request->right_pd;
+            $note->left_add = $request->left_add;
+            $note->left_pd = $request->left_pd;
+            $note->right_remarks = $request->right_remarks;
+            $note->left_remarks = $request->left_remarks;
 
             $note->prescription = null;
         }

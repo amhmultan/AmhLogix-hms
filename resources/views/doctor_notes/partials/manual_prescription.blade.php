@@ -75,7 +75,7 @@
     }
 
     #refractionSection{
-        margin-top: 150px;
+        margin-top: 15px;
         
     }
 
@@ -175,9 +175,13 @@
         </select>
         
         <!-- PRESCRIPTION TEXTAREA -->
-        <textarea name="prescription_text" class="form-control flex-grow-1" style="min-height:350px;">
+        <textarea name="prescription_text" class="form-control flex-grow-1 mt-4" style="min-height:150px;">
             {{ old('prescription_text', $doctor_notes->prescription_text ?? '') }}
         </textarea>
+
+        <div id="refractionSection" class="section-block">
+            @include('doctor_notes.partials.refraction_card')
+        </div>
 
     </div>
 
@@ -210,9 +214,6 @@
                    class="form-control"
                    value="{{ old('asthma', $doctor_notes->asthma ?? '') }}">
 
-                <div id="refractionSection" class="section-block">
-                    @include('doctor_notes.partials.refraction_card')
-                </div>
         </div>
 
     </div>

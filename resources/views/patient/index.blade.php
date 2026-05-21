@@ -334,7 +334,7 @@ $(document).ready(function () {
 
 }, 800); 
 
-}); 
+});
 
 </script> 
 @endpush 

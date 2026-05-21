@@ -116,6 +116,68 @@ pre{
     min-height: auto;
 }
 
+/* =========================
+       CONTAINER FIX
+    ========================= */
+    .table-responsive {
+        border: 1px solid #000 !important;
+        border-radius: 5px;
+        width: 100% !important;
+        display: block !important;
+        overflow: visible !important;
+        page-break-inside: avoid;
+        margin-bottom: 10px;
+    }
+
+    /* =========================
+       TABLE FIX
+    ========================= */
+    .eye-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important; /* IMPORTANT */
+        margin: 0 !important;
+    }
+
+    /* =========================
+       CELLS FIX
+    ========================= */
+    .eye-table th,
+    .eye-table td {
+        border: 1px solid #000 !important;
+        padding: 6px !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        font-size: 14px !important;
+        word-wrap: break-word;
+    }
+
+    /* =========================
+       HEADER FIX
+    ========================= */
+    .eye-table thead th {
+        font-weight: bold;
+        background: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        border: 1px solid #000 !important;
+    }
+
+    /* =========================
+       ROW HEIGHT CONTROL
+    ========================= */
+    .eye-table tbody td {
+        height: auto !important;
+    }
+
+    /* =========================
+       REMOVE SCROLL BEHAVIOR
+    ========================= */
+    html, body {
+        overflow: visible !important;
+        height: auto !important;
+    }
+
 /* Base columns */
 .opd-col{
     /* border: 1px solid #ddd; */
@@ -587,7 +649,79 @@ pre{
             </div>
 
             <div id="refractionSection" class="section-block">
-                @include('doctor_notes.partials.refraction_card')
+                <div class="table-responsive">
+                    <table class="table mb-0 eye-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4">Right Eye (OD)</th>
+                                <th colspan="4">Left Eye (OS)</th>
+                            </tr>
+                            <tr>
+                                <th>SPH</th>
+                                <th>CYL</th>
+                                <th>AXIS</th>
+                                <th>VA</th>
+
+                                <th>SPH</th>
+                                <th>CYL</th>
+                                <th>AXIS</th>
+                                <th>VA</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+                                    {{ $note->right_sph ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->right_cyl ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->right_axis ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->right_va ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->left_sph ?? '-' }}
+                                <td>
+                                    {{ $note->left_cyl ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->left_axis ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->left_va ?? '-' }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="3">
+                                    {{ $note->right_add ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->right_pd ?? '-' }}
+                                </td>
+                                <td colspan="3">
+                                    {{ $note->left_add ?? '-' }}
+                                </td>
+                                <td>
+                                    {{ $note->left_pd ?? '-' }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="4">
+                                    {{ $note->right_remarks ?? '-' }}
+                                </td>
+                                <td colspan="4">
+                                    {{ $note->left_remarks ?? '-' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>

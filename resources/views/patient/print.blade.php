@@ -458,14 +458,25 @@
 
     <!-- PRINT SCRIPT -->
     <script>
+        function triggerPrintAndClose() {
+
+            // Open print dialog
+            window.print();
+        }
+
         window.onload = function () {
 
             setTimeout(function () {
-
-                window.print();
-
+                triggerPrintAndClose();
             }, 500);
+        };
 
+        // This fires after user prints OR cancels print dialog
+        window.onafterprint = function () {
+
+            setTimeout(function () {
+                window.close();
+            }, 200);
         };
     </script>
 </body>

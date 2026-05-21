@@ -73,26 +73,54 @@
 
         <tbody>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>
+                    <input type="text" name="right_sph" value="{{ old('right_sph', $doctor_notes->right_sph ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="right_cyl" value="{{ old('right_cyl', $doctor_notes->right_cyl ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="right_axis" value="{{ old('right_axis', $doctor_notes->right_axis ?? '') }}&deg;" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="right_va" value="{{ old('right_va', $doctor_notes->right_va ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="left_sph" value="{{ old('left_sph', $doctor_notes->left_sph ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="left_cyl" value="{{ old('left_cyl', $doctor_notes->left_cyl ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="left_axis" value="{{ old('left_axis', $doctor_notes->left_axis ?? '') }}&deg;" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="left_va" value="{{ old('left_va', $doctor_notes->left_va ?? '') }}" class="form-control">
+                </td>
             </tr>
 
             <tr>
-                <td colspan="3"></td>
-                <td></td>
-                <td colspan="3"></td>
-                <td></td>
+                <td colspan="3">
+                    <input type="text" name="right_add" value="{{ old('right_add', $doctor_notes->right_add ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="right_pd" value="{{ old('right_pd', $doctor_notes->right_pd ?? '') }}" class="form-control">
+                </td>
+                <td colspan="3">
+                    <input type="text" name="left_add" value="{{ old('left_add', $doctor_notes->left_add ?? '') }}" class="form-control">
+                </td>
+                <td>
+                    <input type="text" name="left_pd" value="{{ old('left_pd', $doctor_notes->left_pd ?? '') }}" class="form-control">
+                </td>
             </tr>
 
             <tr>
-                <td colspan="4"></td>
-                <td colspan="4"></td>
+                <td colspan="4">
+                    <input type="text" name="right_remarks" value="{{ old('right_remarks', $doctor_notes->right_remarks ?? '') }}" class="form-control">
+                </td>
+                <td colspan="4">
+                    <input type="text" name="left_remarks" value="{{ old('left_remarks', $doctor_notes->left_remarks ?? '') }}" class="form-control">
+                </td>
             </tr>
         </tbody>
     </table>
