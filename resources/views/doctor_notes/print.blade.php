@@ -746,9 +746,7 @@ pre{
 
 <!-- PRINT SCRIPT -->
 <script>
-    window.onload = function () {
-        window.print();
-    };
+    
     function printDiv(divName) {
         let printContents = document.getElementById(divName).innerHTML;
         let originalContents = document.body.innerHTML;

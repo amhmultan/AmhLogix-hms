@@ -94,60 +94,6 @@
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 
     <script src="{{ asset('bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js') }}"></script>
-
-    {{-- SESSION TIMEOUT --}}
-    <script>
-    (function() {
-        let timer;
-        const sessionLifetime = 1200000;
-        const warningTime = 10000;
-        let countdownInterval;
-
-        const modal = document.getElementById('logoutModal');
-        const countdownEl = document.getElementById('countdown');
-
-        function resetTimer() {
-            clearTimeout(timer);
-            clearInterval(countdownInterval);
-            modal.style.display = 'none';
-
-            timer = setTimeout(showWarning, sessionLifetime - warningTime);
-        }
-
-        function showWarning() {
-            let countdown = warningTime / 1000;
-            modal.style.display = 'flex';
-            countdownEl.textContent = countdown;
-
-            countdownInterval = setInterval(() => {
-                countdown--;
-                countdownEl.textContent = countdown;
-
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    logoutUser();
-                }
-            }, 1000);
-        }
-
-        function logoutUser() {
-            fetch("{{ route('admin.logout') }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            }).then(() => {
-                window.location.href = '/AmhLogix-hms/public/admin/login';
-            });
-        }
-
-        window.onload = resetTimer;
-        document.onmousemove = resetTimer;
-        document.onkeypress = resetTimer;
-        document.onclick = resetTimer;
-        document.onscroll = resetTimer;
-    })();
     
     $.ajaxSetup({
         headers: {
