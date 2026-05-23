@@ -58,18 +58,12 @@ class AdminSeeder extends Seeder
 
         // Configuration Menu permissions
         $permission = Permission::create(['name' => 'Configuration access']);
+
         $permission = Permission::create(['name' => 'HospitalConfig access']);
         $permission = Permission::create(['name' => 'HospitalConfig create']);
         $permission = Permission::create(['name' => 'HospitalConfig edit']);
         $permission = Permission::create(['name' => 'HospitalConfig delete']);
-        
-        $permission = Permission::create(['name' => 'PharmacyConfig access']);
-        $permission = Permission::create(['name' => 'PharmacyConfig add']);
-        $permission = Permission::create(['name' => 'PharmacyConfig edit']);
-        $permission = Permission::create(['name' => 'PharmacyConfig delete']);
-        
-        // Hospital Menus persmissions
-        $permission = Permission::create(['name' => 'Hospital access']);
+
         $permission = Permission::create(['name' => 'Speciality access']);
         $permission = Permission::create(['name' => 'Speciality create']);
         $permission = Permission::create(['name' => 'Speciality edit']);
@@ -79,6 +73,40 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Doctor create']);
         $permission = Permission::create(['name' => 'Doctor edit']);
         $permission = Permission::create(['name' => 'Doctor delete']);
+        
+        $permission = Permission::create(['name' => 'PharmacyConfig access']);
+        $permission = Permission::create(['name' => 'PharmacyConfig add']);
+        $permission = Permission::create(['name' => 'PharmacyConfig edit']);
+        $permission = Permission::create(['name' => 'PharmacyConfig delete']);
+
+        $permission = Permission::create(['name' => 'Manufacturer access']);
+        $permission = Permission::create(['name' => 'Manufacturer add']);
+        $permission = Permission::create(['name' => 'Manufacturer edit']);
+        $permission = Permission::create(['name' => 'Manufacturer delete']);
+
+        $permission = Permission::create(['name' => 'Supplier access']);
+        $permission = Permission::create(['name' => 'Supplier add']);
+        $permission = Permission::create(['name' => 'Supplier edit']);
+        $permission = Permission::create(['name' => 'Supplier delete']);
+        
+        $permission = Permission::create(['name' => 'Product access']);
+        $permission = Permission::create(['name' => 'Product create']);
+        $permission = Permission::create(['name' => 'Product edit']);
+        $permission = Permission::create(['name' => 'Product delete']);
+
+        $permission = Permission::create(['name' => 'Backup access']);
+        $permission = Permission::create(['name' => 'Backup create']);
+        $permission = Permission::create(['name' => 'Backup download']);
+        $permission = Permission::create(['name' => 'Backup delete']);
+        $permission = Permission::create(['name' => 'Backup restore']);
+
+        $permission = Permission::create(['name' => 'Dosage access']);
+        $permission = Permission::create(['name' => 'Dosage create']);
+        $permission = Permission::create(['name' => 'Dosage edit']);
+        $permission = Permission::create(['name' => 'Dosage delete']);
+
+        // Hospital Menus persmissions
+        $permission = Permission::create(['name' => 'Hospital access']);
         
         $permission = Permission::create(['name' => 'Appointment access']);
         $permission = Permission::create(['name' => 'Appointment create']);
@@ -102,20 +130,6 @@ class AdminSeeder extends Seeder
         
         // Pharmacy Menus persmissions
         $permission = Permission::create(['name' => 'Pharmacy access']);
-        $permission = Permission::create(['name' => 'Manufacturer access']);
-        $permission = Permission::create(['name' => 'Manufacturer add']);
-        $permission = Permission::create(['name' => 'Manufacturer edit']);
-        $permission = Permission::create(['name' => 'Manufacturer delete']);
-
-        $permission = Permission::create(['name' => 'Supplier access']);
-        $permission = Permission::create(['name' => 'Supplier add']);
-        $permission = Permission::create(['name' => 'Supplier edit']);
-        $permission = Permission::create(['name' => 'Supplier delete']);
-        
-        $permission = Permission::create(['name' => 'Product access']);
-        $permission = Permission::create(['name' => 'Product create']);
-        $permission = Permission::create(['name' => 'Product edit']);
-        $permission = Permission::create(['name' => 'Product delete']);
 
         $permission = Permission::create(['name' => 'Purchase access']);
         $permission = Permission::create(['name' => 'Purchase create']);
@@ -127,20 +141,16 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Sale edit']);
         $permission = Permission::create(['name' => 'Sale delete']);
         
-        // Stock Report permissions
         $permission = Permission::create(['name' => 'Stock_Report access']);
-
+        
         // Token Report permissions
         $permission = Permission::create(['name' => 'TokenReport access']);
         $permission = Permission::create(['name' => 'TokenReport add']);
         $permission = Permission::create(['name' => 'TokenReport edit']);
         $permission = Permission::create(['name' => 'TokenReport delete']);
 
-        $permission = Permission::create(['name' => 'Backup access']);
-        $permission = Permission::create(['name' => 'Backup create']);
-        $permission = Permission::create(['name' => 'Backup download']);
-        $permission = Permission::create(['name' => 'Backup delete']);
-        $permission = Permission::create(['name' => 'Backup restore']);
+        // IPD Menu permission
+        $permission = Permission::create(['name' => 'IPD access']);
 
         $permission = Permission::create(['name' => 'Ward access']);
         $permission = Permission::create(['name' => 'Ward create']);
@@ -151,9 +161,6 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Bed create']);
         $permission = Permission::create(['name' => 'Bed edit']);
         $permission = Permission::create(['name' => 'Bed delete']);
-
-        // IPD Menu permission
-        $permission = Permission::create(['name' => 'IPD access']);
         
         $permission = Permission::create(['name' => 'IPD_Admission access']);
         $permission = Permission::create(['name' => 'IPD_Admission create']);
@@ -175,10 +182,11 @@ class AdminSeeder extends Seeder
         $permission = Permission::create(['name' => 'Discharge edit']);
         $permission = Permission::create(['name' => 'Discharge delete']);
         
-        // IPD Reports permission
         $permission = Permission::create(['name' => 'IPD_Reports access']);
+        
 
 
+        // Assigning roles and permissions
         $admin->assignRole($admin_role);
         $writer->assignRole($writer_role);
 

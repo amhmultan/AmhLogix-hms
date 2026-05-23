@@ -119,8 +119,6 @@ class SpecialitySeeder extends Seeder
         $specialty = Speciality::create(['title' => 'Wellness Coach']);
         $specialty = Speciality::create(['title' => 'Fitness Trainer']);
         $specialty = Speciality::create(['title' => 'Yoga Instructor']);
-
-        // End of Specialities seeding
         
     }
 }

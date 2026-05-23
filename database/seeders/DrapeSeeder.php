@@ -13,45 +13,67 @@ class DrapeSeeder extends Seeder
         $filePath = storage_path('app/drap-products.json');
 
         if (!file_exists($filePath)) {
-            $this->command->error("❌ JSON file not found at: $filePath");
+            $this->command->error("❌ JSON file not found");
             return;
         }
 
-        $json = file_get_contents($filePath);
-        $data = json_decode($json, true);
+        $data = json_decode(file_get_contents($filePath), true);
 
-        if (empty($data) || !isset($data['value'])) {
-            $this->command->error("❌ Invalid or empty JSON file.");
+        if (!isset($data['value'])) {
+            $this->command->error("❌ Invalid JSON");
             return;
         }
+
+        // 🔥 CACHE ALL MANUFACTURERS FIRST (huge speed boost)
+        $manufacturers = Manufacturer::all()->keyBy('name');
+
+        $productsToInsert = [];
+        $now = now();
 
         foreach ($data['value'] as $item) {
-            // Get manufacturer from MarketAuthHolder (fallback if Mnufacturer is null)
+
             $manufacturerName = trim($item['MarketAuthHolder'] ?? $item['Mnufacturer'] ?? '');
             $productName = trim($item['BrandName'] ?? '');
-            $genericName = trim($item['Composition'] ?? '');
 
             if (!$manufacturerName || !$productName) {
                 continue;
             }
 
-            // 1️⃣ Insert or get manufacturer
-            $manufacturer = Manufacturer::firstOrCreate(['name' => $manufacturerName]);
+            // normalize
+            $manufacturerName = ucwords(strtolower($manufacturerName));
 
-            // 2️⃣ Insert or update product
-            Product::updateOrCreate(
-                ['name' => $productName, 'fk_manufacturer_id' => $manufacturer->id],
-                [
-                    'generic' => $genericName,
-                    'drug_class' => null, // No direct mapping in JSON
-                    'description' => $item['DosageForm'] ?? null,
-                    'pack_size' => null, // No pack size field in JSON
-                    'status' => 1,
-                    'remarks' => $item['RegNum'] ?? null,
-                ]
+            // 🔥 avoid query per loop
+            if (!isset($manufacturers[$manufacturerName])) {
+                $manufacturers[$manufacturerName] = Manufacturer::create([
+                    'name' => $manufacturerName
+                ]);
+            }
+
+            $manufacturerId = $manufacturers[$manufacturerName]->id;
+
+            $productsToInsert[] = [
+                'name' => $productName,
+                'fk_manufacturer_id' => $manufacturerId,
+                'generic' => trim($item['Composition'] ?? ''),
+                'description' => $item['DosageForm'] ?? null,
+                'remarks' => $item['RegNum'] ?? null,
+                'status' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        // 🔥 BULK INSERT IN CHUNKS (FAST)
+        foreach (array_chunk($productsToInsert, 1000) as $chunk) {
+            Product::upsert(
+                $chunk,
+                ['name', 'remarks'], // unique key
+                ['fk_manufacturer_id', 'generic', 'description', 'status', 'updated_at']
             );
         }
 
-        $this->command->info('✅ DRAP data imported from local JSON successfully.');
+        $this->command->info("✅ DRAP seeding completed fast!");
+        $this->command->info("📦 Total processed: " . count($productsToInsert));
     }
+
 }

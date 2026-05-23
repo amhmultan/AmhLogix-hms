@@ -123,6 +123,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('specialities', App\Http\Controllers\Admin\SpecialityController::class);
     Route::resource('doctors', App\Http\Controllers\Admin\DoctorController::class);
     Route::resource('appointments', App\Http\Controllers\Admin\AppointmentController::class);
+    Route::resource('dosages', App\Http\Controllers\Admin\DosageController::class);
 
     // Custom prints
     Route::get('purchases/{purchase}/print', [App\Http\Controllers\Admin\PurchaseInvoiceController::class, 'print'])->name('purchases.print');

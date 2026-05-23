@@ -119,27 +119,46 @@
 
         <input type="hidden" name="fk_token_id"
                value="{{ $token->id ?? $token->token_id ?? '' }}">
+       
+       <div class="form-group m-3">
 
-        <div class="form-group m-3">
-            <label class="form-label text-dark font-weight-bold">Input Mode</label><br>
+            <label class="form-label text-dark font-weight-bold">
+                Input Mode
+            </label><br>
 
             <label>
-                <input type="radio" name="mode" value="upload" checked>
+                <input type="radio"
+                    name="mode"
+                    value="upload">
                 Upload
             </label>
 
             <label class="ml-3">
-                <input type="radio" name="mode" value="manual">
+                <input type="radio"
+                    name="mode"
+                    value="manual"
+                    checked>
                 Manual
             </label>
+
         </div>
 
-        <div id="uploadSection" class="form-group m-3">
-            <label class="form-label text-dark font-weight-bold">Upload Prescription</label>
-            <input type="file" name="prescription" class="form-control">
+        <div id="uploadSection"
+            class="form-group m-3"
+            style="display:none;">
+
+            <label class="form-label text-dark font-weight-bold">
+                Upload Prescription
+            </label>
+
+            <input type="file"
+                name="prescription"
+                class="form-control">
+
         </div>
 
-        <div id="manualSection" style="display:none;">
+        <div id="manualSection"
+            style="display:block;">
 
             @include('doctor_notes.partials.manual_prescription')
 
@@ -179,21 +198,33 @@
             // =========================
             let radios = document.querySelectorAll('input[name="mode"]');
 
+            function toggleSections(mode) {
+
+                let uploadSection = document.getElementById('uploadSection');
+                let manualSection = document.getElementById('manualSection');
+
+                if (!uploadSection || !manualSection) return;
+
+                uploadSection.style.display =
+                    mode === 'upload' ? 'block' : 'none';
+
+                manualSection.style.display =
+                    mode === 'manual' ? 'block' : 'none';
+            }
+
+            // Initial load
+            let checkedMode = document.querySelector('input[name="mode"]:checked');
+
+            if (checkedMode) {
+                toggleSections(checkedMode.value);
+            }
+
+            // Change event
             radios.forEach(radio => {
 
                 radio.addEventListener('change', function () {
 
-                    let uploadSection = document.getElementById('uploadSection');
-                    let manualSection = document.getElementById('manualSection');
-
-                    if (uploadSection && manualSection) {
-
-                        uploadSection.style.display =
-                            this.value === 'upload' ? 'block' : 'none';
-
-                        manualSection.style.display =
-                            this.value === 'manual' ? 'block' : 'none';
-                    }
+                    toggleSections(this.value);
 
                 });
 

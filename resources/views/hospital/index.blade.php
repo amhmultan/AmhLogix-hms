@@ -82,24 +82,33 @@
 
       <div class="container-fluid py-4 px-5">
         <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {{-- Specialities --}}
+
             @can('Speciality access')
                 <a href="{{ route('admin.specialities.index') }}"
                   class="no-underline hover:no-underline group block bg-gradient-to-r from-gray-700 to-gray-900 text-white font-extrabold text-4xl py-8 rounded-2xl shadow-xl hover:from-gray-800 hover:to-gray-950 transition-all text-center relative"
                   accesskey="s">
-                  <!-- <i class="fas fa-user-md fa-3x mb-2"></i> -->
+                  <i class="fa-solid fa-hospital-user fa-3x"></i>
                   <div>Specialities</div>
                 </a>
             @endcan
-            {{-- Doctors --}}
+
             @can('Doctor access')
                 <a href="{{ route('admin.doctors.index') }}"
                   class="no-underline hover:no-underline group block bg-gradient-to-r from-red-500 to-pink-500 text-white font-extrabold text-4xl py-8 rounded-2xl shadow-xl hover:from-red-600 hover:to-pink-600 transition-all text-center relative"
                   accesskey="o">
-                  <!-- <i class="fas fa-user-md fa-3x mb-2"></i> -->
+                  <i class="fas fa-user-md fa-3x"></i>
                   <div>Doctors</div>
                 </a>
-            @endcan               
+            @endcan
+            
+            @can('Dosage access')
+                <a href="{{ route('admin.dosages.index') }}"
+                  class="no-underline hover:no-underline group block bg-gradient-to-r from-green-500 to-green-700 text-white font-extrabold text-4xl py-8 rounded-2xl shadow-xl hover:from-green-600 hover:to-green-800 transition-all text-center relative"
+                  accesskey="d">
+                  <i class="fas fa-pills fa-3x"></i>
+                  <div>Dosages</div>
+                </a>
+            @endcan
         </div>
       </div>
   </main>
