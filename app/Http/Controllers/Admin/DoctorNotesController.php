@@ -140,7 +140,6 @@ class DoctorNotesController extends Controller
             $data->htn = null;
             $data->ihd = null;
             $data->asthma = null;
-            $data->prescription_products = null;
             $data->right_sph = null;
             $data->right_cyl = null;
             $data->right_axis = null;
@@ -286,8 +285,8 @@ class DoctorNotesController extends Controller
         $note->mode = $request->mode;
 
         /* =========================
-    UPLOAD MODE
-    ========================= */
+        UPLOAD MODE
+        ========================= */
         if ($request->mode === 'upload') {
 
             if ($request->hasFile('prescription')) {
@@ -331,7 +330,6 @@ class DoctorNotesController extends Controller
                 'left_pd' => null,
                 'right_remarks' => null,
                 'left_remarks' => null,
-                'prescription' => null,
             ]);
 
             // ❌ IMPORTANT: delete old items if switching mode
@@ -339,8 +337,8 @@ class DoctorNotesController extends Controller
         }
 
         /* =========================
-    MANUAL OPD MODE
-    ========================= */ else {
+        MANUAL OPD MODE
+        ========================= */ else {
 
             $note->c_o = $request->c_o;
             $note->o_e = $request->o_e;
