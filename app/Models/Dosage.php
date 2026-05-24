@@ -12,6 +12,6 @@ class Dosage extends Model
     protected $fillable = [
         'name',
         'status',
-        'remarks'
+        'description'
     ];
 }

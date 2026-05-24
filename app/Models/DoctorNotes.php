@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class DoctorNotes extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    protected $fillable = [
+  protected $fillable = [
     'fk_patient_id',
     'fk_token_id',
     'prescription',
@@ -29,43 +29,43 @@ class DoctorNotes extends Model
     'htn',
     'ihd',
     'asthma',
-];
+  ];
 
 
   public function patient()
   {
 
     return $this->belongsTo(Patient::class, 'fk_patient_id');
-
   }
 
   public function token()
   {
 
     return $this->belongsTo(Token::class, 'fk_token_id');
-
   }
-    
+
   public function doctorName()
   {
 
     return $this->token?->doctor?->name
-    ?? $this->doctor_name
-    ?? 'Walk-in / Manual';
-
+      ?? $this->doctor_name
+      ?? 'Walk-in / Manual';
   }
 
   protected $casts = [
 
     'prescription_products' => 'array',
-    
+
   ];
 
   public function products()
   {
 
     return Product::whereIn('id', $this->prescription_products ?? []);
-    
   }
 
+  public function items()
+  {
+    return $this->hasMany(DoctorNoteItem::class, 'doctor_note_id');
+  }
 }

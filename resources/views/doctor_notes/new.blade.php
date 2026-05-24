@@ -1,187 +1,187 @@
 <x-app-layout>
-<main>
-<div class="container bg-white shadow-md rounded my-6 px-5 py-4">
+    <main>
+        <div class="container bg-white shadow-md rounded my-6 px-5 py-4">
 
-    <div class="row pb-4">
-        <h3 class="text-danger">
-            <strong><em>Add <span class="text-success">Doctor Notes</span></em></strong>
-        </h3>
-    </div>
-
-    <!-- SEARCH -->
-    <form method="GET" action="{{ route('admin.doctor_notes.create') }}">
-        <div class="row mb-3">
-
-            <div class="col-md-4">
-                <input type="text"
-                       name="search"
-                       value="{{ $search ?? '' }}"
-                       class="form-control auto-focus"
-                       placeholder="Enter Token No or MR No"
-                       required>
+            <div class="row pb-4">
+                <h3 class="text-danger">
+                    <strong><em>Add <span class="text-success">Doctor Notes</span></em></strong>
+                </h3>
             </div>
 
-            <div class="col-md-4">
+            <!-- SEARCH -->
+            <form method="GET" action="{{ route('admin.doctor_notes.create') }}">
+                <div class="row mb-3">
 
-                <label class="ml-3 my-1">
-                    <input type="radio" 
-                        name="search_type" 
-                        value="mr"
-                        {{ ($searchType ?? 'mr') == 'mr' ? 'checked' : '' }}>
-                    MR No
-                </label>
+                    <div class="col-md-4">
+                        <input type="text"
+                            name="search"
+                            value="{{ $search ?? '' }}"
+                            class="form-control auto-focus"
+                            placeholder="Enter Token No or MR No"
+                            required>
+                    </div>
 
-                <label class="ml-3 my-1">
-                    <input type="radio" 
-                        name="search_type" 
-                        value="token"
-                        {{ ($searchType ?? '') == 'token' ? 'checked' : '' }}>
-                    Token No
-                </label>
+                    <div class="col-md-4">
 
+                        <label class="ml-3 my-1">
+                            <input type="radio"
+                                name="search_type"
+                                value="mr"
+                                {{ ($searchType ?? 'mr') == 'mr' ? 'checked' : '' }}>
+                            MR No
+                        </label>
+
+                        <label class="ml-3 my-1">
+                            <input type="radio"
+                                name="search_type"
+                                value="token"
+                                {{ ($searchType ?? '') == 'token' ? 'checked' : '' }}>
+                            Token No
+                        </label>
+
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+
+                </div>
+            </form>
+
+            <!-- ALERTS -->
+
+            @if(!empty($search) && empty($patient) && empty($token))
+            <div class="alert alert-warning">
+                No record found for {{ $search }}
             </div>
+            @endif
 
-            <div class="col-md-2">
-                <button class="btn btn-primary">Search</button>
+            @if($tokenAlreadySaved ?? false)
+            <div class="alert alert-danger">
+                Doctor Notes already exist for this record.
             </div>
+            @endif
 
-        </div>
-    </form>
+            <!-- PATIENT INFO -->
+            @if($patient)
+            <div class="card mb-4">
+                <div class="card-header bg-light font-weight-bold">Patient Information</div>
+                <div class="card-body">
 
-    <!-- ALERTS -->
-    
-    @if(!empty($search) && empty($patient) && empty($token))
-        <div class="alert alert-warning">
-            No record found for {{ $search }}
-        </div>
-    @endif
+                    <div class="row py-2">
+                        <div class="col-md-4"><strong>MR No:</strong> {{ $patient->id }}</div>
+                        <div class="col-md-4"><strong>Name:</strong> {{ $patient->name }}</div>
+                        <div class="col-md-4"><strong>Referred By:</strong> {{ $patient->reffered_by }}</div>
+                    </div>
 
-    @if($tokenAlreadySaved ?? false)
-        <div class="alert alert-danger">
-            Doctor Notes already exist for this record.
-        </div>
-    @endif
+                    <div class="row py-2">
+                        <div class="col-md-12">
+                            <strong>Address:</strong> {{ $patient->address }}
+                        </div>
+                    </div>
 
-    <!-- PATIENT INFO -->
-    @if($patient)
-    <div class="card mb-4">
-        <div class="card-header bg-light font-weight-bold">Patient Information</div>
-        <div class="card-body">
-
-            <div class="row py-2">
-                <div class="col-md-4"><strong>MR No:</strong> {{ $patient->id }}</div>
-                <div class="col-md-4"><strong>Name:</strong> {{ $patient->name }}</div>
-                <div class="col-md-4"><strong>Referred By:</strong> {{ $patient->reffered_by }}</div>
-            </div>
-
-            <div class="row py-2">
-                <div class="col-md-12">
-                    <strong>Address:</strong> {{ $patient->address }}
                 </div>
             </div>
+            @endif
 
-        </div>
-    </div>
-    @endif
+            <!-- TOKEN INFO -->
+            @if($token)
+            <div class="card mb-4">
+                <div class="card-header bg-light font-weight-bold">Token Information</div>
+                <div class="card-body">
 
-    <!-- TOKEN INFO -->
-    @if($token)
-    <div class="card mb-4">
-        <div class="card-header bg-light font-weight-bold">Token Information</div>
-        <div class="card-body">
+                    <div class="row py-2">
+                        <div class="col-md-4">
+                            <strong>Token No:</strong> {{ $token->token_id ?? $token->id }}
+                        </div>
 
-            <div class="row py-2">
-                <div class="col-md-4">
-                    <strong>Token No:</strong> {{ $token->token_id ?? $token->id }}
-                </div>
+                        <div class="col-md-4">
+                            <strong>Date:</strong> {{ $token->created_at ?? '' }}
+                        </div>
+                    </div>
 
-                <div class="col-md-4">
-                    <strong>Date:</strong> {{ $token->created_at ?? '' }}
                 </div>
             </div>
+            @endif
+
+
+
+            <!-- FORM -->
+            @if($patient || $token)
+
+            <form method="POST"
+                action="{{ route('admin.doctor_notes.store') }}"
+                enctype="multipart/form-data">
+                @csrf
+
+                <input type="hidden" name="fk_patient_id"
+                    value="{{ $patient->id ?? $token->mr_no ?? '' }}">
+
+                <input type="hidden" name="fk_token_id"
+                    value="{{ $token->id ?? $token->token_id ?? '' }}">
+
+                <div class="form-group m-3">
+
+                    <label class="form-label text-dark font-weight-bold">
+                        Input Mode
+                    </label><br>
+
+                    <label>
+                        <input type="radio"
+                            name="mode"
+                            value="upload">
+                        Upload
+                    </label>
+
+                    <label class="ml-3">
+                        <input type="radio"
+                            name="mode"
+                            value="manual"
+                            checked>
+                        Manual
+                    </label>
+
+                </div>
+
+                <div id="uploadSection"
+                    class="form-group m-3"
+                    style="display:none;">
+
+                    <label class="form-label text-dark font-weight-bold">
+                        Upload Prescription
+                    </label>
+
+                    <input type="file"
+                        name="prescription"
+                        class="form-control">
+
+                </div>
+
+                <div id="manualSection"
+                    style="display:block;">
+
+                    @include('doctor_notes.partials.manual_prescription')
+
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-success">Submit</button>
+                </div>
+
+            </form>
+
+            @endif
 
         </div>
-    </div>
-    @endif
-    
-
-
-    <!-- FORM -->
-    @if($patient || $token)
-
-    <form method="POST"
-          action="{{ route('admin.doctor_notes.store') }}"
-          enctype="multipart/form-data">
-        @csrf
-
-        <input type="hidden" name="fk_patient_id"
-               value="{{ $patient->id ?? $token->mr_no ?? '' }}">
-
-        <input type="hidden" name="fk_token_id"
-               value="{{ $token->id ?? $token->token_id ?? '' }}">
-       
-       <div class="form-group m-3">
-
-            <label class="form-label text-dark font-weight-bold">
-                Input Mode
-            </label><br>
-
-            <label>
-                <input type="radio"
-                    name="mode"
-                    value="upload">
-                Upload
-            </label>
-
-            <label class="ml-3">
-                <input type="radio"
-                    name="mode"
-                    value="manual"
-                    checked>
-                Manual
-            </label>
-
-        </div>
-
-        <div id="uploadSection"
-            class="form-group m-3"
-            style="display:none;">
-
-            <label class="form-label text-dark font-weight-bold">
-                Upload Prescription
-            </label>
-
-            <input type="file"
-                name="prescription"
-                class="form-control">
-
-        </div>
-
-        <div id="manualSection"
-            style="display:block;">
-
-            @include('doctor_notes.partials.manual_prescription')
-
-        </div>
-
-        <div class="text-center mt-4">
-            <button class="btn btn-success">Submit</button>
-        </div>
-
-    </form>
-
-    @endif
-
-</div>
-</main>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
 
             // =========================
             // AUTO FOCUS
             // =========================
-            setTimeout(function () {
+            setTimeout(function() {
 
                 let input = document.querySelector('.auto-focus');
 
@@ -222,7 +222,7 @@
             // Change event
             radios.forEach(radio => {
 
-                radio.addEventListener('change', function () {
+                radio.addEventListener('change', function() {
 
                     toggleSections(this.value);
 
@@ -231,111 +231,121 @@
             });
 
 
-            // =========================
-            // SELECT2 INIT
-            // =========================
-            $('#prescription_products').select2({
+            // ===============================
+            // LIVE SEARCH (GLOBAL DELEGATION)
+            // ===============================
+            $(document).on('keyup', '.product-input', function() {
 
-                placeholder: "Search and select medicines",
+                let input = $(this);
+                let row = input.closest('.medicine-row');
+                let box = row.find('.product-suggestions');
 
-                multiple: true,
+                let query = input.val();
 
-                ajax: {
+                if (query.length < 1) {
+                    box.hide();
+                    return;
+                }
 
+                $.ajax({
                     url: "{{ route('admin.products.search') }}",
-
-                    dataType: 'json',
-
-                    delay: 250,
-
-                    data: function (params) {
-
-                        return {
-                            term: params.term
-                        };
-
+                    data: {
+                        term: query
                     },
 
-                    processResults: function (data) {
+                    success: function(data) {
 
-                        let results = data.data ?? data;
+                        console.log("RESULTS:", data);
 
-                        return {
-                            results: results.map(item => ({
-                                id: item.id,
-                                text: item.name
-                            }))
-                        };
+                        box.html('').show();
+
+                        if (!data || data.length === 0) {
+                            box.hide();
+                            return;
+                        }
+
+                        data.forEach(function(item) {
+
+                            box.append(`
+                    <a href="javascript:void(0)"
+                       class="list-group-item list-group-item-action product-item"
+                       data-id="${item.id}"
+                       data-name="${item.name}"
+                       style="cursor:pointer;">
+                        ${item.name}
+                    </a>
+                `);
+
+                        });
 
                     },
+                    error: function(xhr) {
+                        console.log("AJAX ERROR:", xhr.responseText);
+                    }
+                });
 
-                    cache: true
+            });
+
+
+            // ===============================
+            // SELECT ITEM (FIXED & SAFE)
+            // ===============================
+            $(document).on('click', '.product-item', function(e) {
+
+                e.preventDefault();
+
+                let row = $(this).closest('.medicine-row');
+
+                row.find('.product-input').val($(this).data('name'));
+                row.find('.product-id').val($(this).data('id'));
+
+                row.find('.product-suggestions').hide();
+
+            });
+
+
+            // ===============================
+            // CLOSE DROPDOWN OUTSIDE CLICK
+            // ===============================
+            $(document).on('click', function(e) {
+
+                if (!$(e.target).closest('.medicine-row').length) {
+                    $('.product-suggestions').hide();
                 }
 
             });
 
 
-            // =========================
-            // EDIT MODE PRELOAD
-            // =========================
-            let selectedProducts =
-                @json($doctor_notes->prescription_products ?? []);
-
-            console.log('Selected Products:', selectedProducts);
-
-
-            if (
-                Array.isArray(selectedProducts) &&
-                selectedProducts.length > 0
-            ) {
-
-                $.ajax({
-
-                    url: "{{ route('admin.products.search') }}",
-
-                    type: 'GET',
-
-                    dataType: 'json',
-
-                    success: function (products) {
-
-                        let allProducts = products.data ?? products;
-
-                        selectedProducts.forEach(function (productId) {
-
-                            let product = allProducts.find(
-                                p => p.id == productId
-                            );
-
-                            if (product) {
-
-                                let option = new Option(
-                                    product.name,
-                                    product.id,
-                                    true,
-                                    true
-                                );
-
-                                $('#prescription_products')
-                                    .append(option)
-                                    .trigger('change');
-                            }
-
-                        });
-
-                    },
-
-                    error: function (xhr) {
-
-                        console.log('Preload Error:', xhr.responseText);
-
-                    }
-
-                });
-
-            }
+            // ===============================
+            // REMOVE ROW
+            // ===============================
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('.medicine-row').remove();
+            });
 
         });
+    </script>
+    <script>
+        // ===============================
+        // ADD ROW (GLOBAL - FIXED)
+        // ===============================
+        function addMedicineRow() {
+            let template = document.querySelector('#medicine-template .medicine-row');
+
+            if (!template) {
+                console.error("Medicine template not found");
+                return;
+            }
+
+            let clone = template.cloneNode(true);
+
+            clone.querySelectorAll('input').forEach(i => i.value = '');
+            clone.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+
+            clone.style.display = 'flex';
+
+            document.getElementById('medicine-container').appendChild(clone);
+        }
     </script>
 
 </x-app-layout>

@@ -187,40 +187,19 @@ class ProductController extends Controller
     }
 
     public function search(Request $request)
-{
-    // PRELOAD PRODUCTS
-    if ($request->has('ids')) {
+    {
+        $query = $request->get('term');
 
-        $ids = explode(',', $request->ids);
+        return Product::query()
+            ->select('id', 'name')
 
-        $products = Product::whereIn('id', $ids)
-            ->select('id', 'name', 'description')
+            ->when($query, function ($q) use ($query) {
+                $q->where('name', 'like', $query . '%'); // FAST INDEX SEARCH
+            })
+
             ->orderBy('name')
+            ->limit(20)
             ->get();
-
-        return response()->json($products);
     }
-
-    // NORMAL SEARCH
-    $query = $request->get('term');
-
-    $products = Product::query()
-
-        ->when($query, function ($q) use ($query) {
-
-            $q->where('name', 'like', '%' . $query . '%');
-
-        })
-
-        ->select('id', 'name', 'description')
-
-        ->limit(20)
-
-        ->orderBy('name')
-
-        ->get();
-
-    return response()->json($products);
-}
     
 }

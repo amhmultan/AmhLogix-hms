@@ -8,15 +8,20 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Hospital;
 use App\Models\DoctorNotes;
 use App\Models\Doctor;
+use App\Models\DoctorNoteItem;
 use App\Models\Product;
+use App\Models\Token;
+use App\Models\Patient;
+use App\Models\Dosage;
+
 
 class DoctorNotesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role_or_permission:DoctorNotes access|DoctorNotes add|DoctorNotes edit|DoctorNotes delete', ['only' => ['index','show']]);
-        $this->middleware('role_or_permission:DoctorNotes add', ['only' => ['create','store']]);
-        $this->middleware('role_or_permission:DoctorNotes edit', ['only' => ['edit','update']]);
+        $this->middleware('role_or_permission:DoctorNotes access|DoctorNotes add|DoctorNotes edit|DoctorNotes delete', ['only' => ['index', 'show']]);
+        $this->middleware('role_or_permission:DoctorNotes add', ['only' => ['create', 'store']]);
+        $this->middleware('role_or_permission:DoctorNotes edit', ['only' => ['edit', 'update']]);
         $this->middleware('role_or_permission:DoctorNotes delete', ['only' => ['destroy']]);
     }
 
@@ -37,7 +42,6 @@ class DoctorNotesController extends Controller
      * CREATE
      */
     public function create(Request $request)
-
     {
         $search = trim($request->get('search'));
         $searchType = strtolower(trim($request->get('search_type', 'mr')));
@@ -48,81 +52,46 @@ class DoctorNotesController extends Controller
 
         if ($search !== '') {
 
-            // =========================
-            // MR SEARCH (PATIENT ONLY)
-            // =========================
             if ($searchType === 'mr') {
 
-                $patient = DB::table('patients')
+                $patient = Patient::find((int) $search);
+
+                if ($patient) {
+                    $token = Token::where('fk_patients_id', $patient->id)
+                        ->latest()
+                        ->first();
+                }
+            }
+
+            if ($searchType === 'token') {
+
+                $token = Token::with('patient')
                     ->where('id', (int) $search)
                     ->first();
 
-                if ($patient) {
-
-                    $token = DB::table('tokens')
-                        ->where('fk_patients_id', $patient->id)
-                        ->orderByDesc('id')
-                        ->first();
-
-                    // 🔥 NORMALIZE TOKEN (IMPORTANT FIX)
-                    if ($patient && !$token) {
-                        $token = (object)[
-                            'id' => null,
-                            'token_id' => null,
-                            'mr_no' => $patient->id,
-                            'name' => $patient->name,
-                            'pAddress' => $patient->address,
-                            'pAge' => $patient->dob,
-                            'reffered_by' => $patient->reffered_by,
-                            'created_at' => null
-                        ];
-                    }
-                }
-            }
-
-            // =========================
-            // TOKEN SEARCH
-            // =========================
-            if ($searchType === 'token') {
-
-                $token = DB::table('tokens')
-                    ->join('patients', 'tokens.fk_patients_id', '=', 'patients.id')
-                    ->select(
-                        'tokens.id as token_id',
-                        'tokens.created_at',
-                        'patients.id as mr_no',
-                        'patients.name',
-                        'patients.address as pAddress',
-                        'patients.dob as pAge',
-                        'patients.reffered_by'
-                    )
-                    ->where('tokens.id', (int) $search)
-                    ->first();
-
                 if ($token) {
-                    $patient = DB::table('patients')
-                        ->where('id', $token->mr_no)
-                        ->first();
+                    $patient = $token->patient;
 
-                    $tokenAlreadySaved = DB::table('doctor_notes')
-                        ->where('fk_token_id', $token->token_id)
-                        ->exists();
+                    $tokenAlreadySaved = DoctorNotes::where('fk_token_id', $token->id)->exists();
                 }
             }
         }
+
+        $dosages = Dosage::where('status', 0)->get();
 
         return view('doctor_notes.new', compact(
             'search',
             'searchType',
             'patient',
             'token',
-            'tokenAlreadySaved'
+            'tokenAlreadySaved',
+            'dosages'
         ));
     }
 
     /**
-    * STORE  
-    */
+     * STORE  
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -149,7 +118,7 @@ class DoctorNotesController extends Controller
             if ($request->hasFile('prescription')) {
 
                 $file = $request->file('prescription');
-                $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
                 $file->move(public_path('assets/doctor_notes'), $fileName);
 
@@ -190,10 +159,11 @@ class DoctorNotesController extends Controller
 
         /* =======================
         MANUAL MODE (OPD)
-        ======================= */
-        else {
+        ======================= */ else {
 
-            // NEW OPD FIELDS
+            // =========================
+            // OPD FIELDS
+            // =========================
             $data->c_o = $request->c_o;
             $data->o_e = $request->o_e;
             $data->va = $request->va;
@@ -204,24 +174,52 @@ class DoctorNotesController extends Controller
             $data->ac = $request->ac;
             $data->lens = $request->lens;
             $data->fundus = $request->fundus;
+
             $data->prescription_text = $request->prescription_text;
+
             $data->dm = $request->dm;
             $data->htn = $request->htn;
             $data->ihd = $request->ihd;
             $data->asthma = $request->asthma;
-            $data->prescription_products = $request->prescription_products;
+
+            // =========================
+            // 🔥 STRUCTURED PRODUCTS (FIXED)
+            // =========================
+            $products = [];
+
+            if ($request->product_id) {
+
+                foreach ($request->product_id as $key => $productId) {
+
+                    if (!$productId) continue;
+
+                    $products[] = [
+                        'product_id' => $productId,
+                        'dosage_id'  => $request->dosage_id[$key] ?? null,
+                        'duration'   => $request->duration[$key] ?? null,
+                        'remarks'    => $request->remarks[$key] ?? null,
+                    ];
+                }
+            }
+
+            // =========================
+            // OTHERS
+            // =========================
             $data->right_sph = $request->right_sph;
             $data->right_cyl = $request->right_cyl;
             $data->right_axis = $request->right_axis;
             $data->right_va = $request->right_va;
+
             $data->left_sph = $request->left_sph;
             $data->left_cyl = $request->left_cyl;
             $data->left_axis = $request->left_axis;
             $data->left_va = $request->left_va;
+
             $data->right_add = $request->right_add;
             $data->right_pd = $request->right_pd;
             $data->left_add = $request->left_add;
             $data->left_pd = $request->left_pd;
+
             $data->right_remarks = $request->right_remarks;
             $data->left_remarks = $request->left_remarks;
 
@@ -229,6 +227,20 @@ class DoctorNotesController extends Controller
         }
 
         $data->save();
+
+        // Save items
+        if (!empty($products)) {
+            foreach ($products as $item) {
+
+                DoctorNoteItem::create([
+                    'doctor_note_id' => $data->id,
+                    'product_id'     => $item['product_id'],
+                    'dosage_id'      => $item['dosage_id'],
+                    'duration'       => $item['duration'],
+                    'remarks'        => $item['remarks'],
+                ]);
+            }
+        }
 
         return redirect()
             ->route('admin.doctor_notes.index')
@@ -248,9 +260,20 @@ class DoctorNotesController extends Controller
      */
     public function edit($id)
     {
-        $doctor_notes = DoctorNotes::findOrFail($id);
+        $doctorNote = DoctorNotes::with([
+            'items.product',
+            'items.dosage'
+        ])->findOrFail($id);
 
-        return view('doctor_notes.edit', compact('doctor_notes'));
+        $products = Product::all();
+
+        $dosages = Dosage::where('status', 0)->get();
+
+        return view('doctor_notes.edit', compact(
+            'doctorNote',
+            'products',
+            'dosages'
+        ));
     }
 
     /**
@@ -263,57 +286,61 @@ class DoctorNotesController extends Controller
         $note->mode = $request->mode;
 
         /* =========================
-        UPLOAD MODE
-        ========================= */
+    UPLOAD MODE
+    ========================= */
         if ($request->mode === 'upload') {
 
             if ($request->hasFile('prescription')) {
 
                 $file = $request->file('prescription');
-                $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
 
                 $file->move(public_path('assets/doctor_notes'), $fileName);
 
                 $note->prescription = $fileName;
             }
 
-            // clear all manual fields
-            $note->c_o = null;
-            $note->o_e = null;
-            $note->va = null;
-            $note->at = null;
-            $note->lids = null;
-            $note->conjunctiva = null;
-            $note->cornea = null;
-            $note->ac = null;
-            $note->lens = null;
-            $note->fundus = null;
-            $note->prescription_text = null;
-            $note->prescription_products = null;
-            $note->dm = null;
-            $note->htn = null;
-            $note->ihd = null;
-            $note->asthma = null;
-            $note->right_sph = null;
-            $note->right_cyl = null;
-            $note->right_axis = null;
-            $note->right_va = null;
-            $note->left_sph = null;
-            $note->left_cyl = null;
-            $note->left_axis = null;
-            $note->left_va = null;
-            $note->right_add = null;
-            $note->right_pd = null;
-            $note->left_add = null;
-            $note->left_pd = null;
-            $note->right_remarks = null;
-            $note->left_remarks = null;
+            // clear manual fields
+            $note->fill([
+                'c_o' => null,
+                'o_e' => null,
+                'va' => null,
+                'at' => null,
+                'lids' => null,
+                'conjunctiva' => null,
+                'cornea' => null,
+                'ac' => null,
+                'lens' => null,
+                'fundus' => null,
+                'prescription_text' => null,
+                'dm' => null,
+                'htn' => null,
+                'ihd' => null,
+                'asthma' => null,
+                'right_sph' => null,
+                'right_cyl' => null,
+                'right_axis' => null,
+                'right_va' => null,
+                'left_sph' => null,
+                'left_cyl' => null,
+                'left_axis' => null,
+                'left_va' => null,
+                'right_add' => null,
+                'right_pd' => null,
+                'left_add' => null,
+                'left_pd' => null,
+                'right_remarks' => null,
+                'left_remarks' => null,
+                'prescription' => null,
+            ]);
+
+            // ❌ IMPORTANT: delete old items if switching mode
+            $note->items()->delete();
         }
 
         /* =========================
-        MANUAL OPD MODE
-        ========================= */
-        else {
+    MANUAL OPD MODE
+    ========================= */ else {
 
             $note->c_o = $request->c_o;
             $note->o_e = $request->o_e;
@@ -325,24 +352,51 @@ class DoctorNotesController extends Controller
             $note->ac = $request->ac;
             $note->lens = $request->lens;
             $note->fundus = $request->fundus;
+
             $note->prescription_text = $request->prescription_text;
-            $note->prescription_products = $request->prescription_products ?? [];
+
             $note->dm = $request->dm;
             $note->htn = $request->htn;
             $note->ihd = $request->ihd;
             $note->asthma = $request->asthma;
+
+            // =========================
+            // 🔥 ITEMS (RELATIONAL SAVE)
+            // =========================
+
+            $note->items()->delete(); // clear old items
+
+            if ($request->product_id) {
+
+                foreach ($request->product_id as $key => $productId) {
+
+                    if (!$productId) continue;
+
+                    $note->items()->create([
+                        'product_id' => $productId,
+                        'dosage_id'  => $request->dosage_id[$key] ?? null,
+                        'duration'   => $request->duration[$key] ?? null,
+                        'remarks'    => $request->remarks[$key] ?? null,
+                    ]);
+                }
+            }
+
+            // others
             $note->right_sph = $request->right_sph;
             $note->right_cyl = $request->right_cyl;
             $note->right_axis = $request->right_axis;
             $note->right_va = $request->right_va;
+
             $note->left_sph = $request->left_sph;
             $note->left_cyl = $request->left_cyl;
             $note->left_axis = $request->left_axis;
             $note->left_va = $request->left_va;
+
             $note->right_add = $request->right_add;
             $note->right_pd = $request->right_pd;
             $note->left_add = $request->left_add;
             $note->left_pd = $request->left_pd;
+
             $note->right_remarks = $request->right_remarks;
             $note->left_remarks = $request->left_remarks;
 
@@ -372,38 +426,37 @@ class DoctorNotesController extends Controller
      */
     public function print($id)
     {
-        $note = DoctorNotes::with(['patient', 'token.doctor'])
-                ->findOrFail($id);
+        $note = DoctorNotes::with([
+            'patient',
+            'token.doctor',
+            'items.product'
+        ])->findOrFail($id);
 
         $patient = $note->patient;
 
-        // Try token doctor first
-        $doctor = $note->token?->doctor;
-
-        // If token doctor not available, fallback
-        if (!$doctor) {
-            $doctor = Doctor::first();
-        }
+        $doctor = $note->token?->doctor ?? Doctor::first();
 
         $hospital = Hospital::first();
 
         $note->prescription_text = ltrim($note->prescription_text);
 
-        // =========================
-        // FETCH PRESCRIPTION PRODUCTS
-        // =========================
-        $productIds = $note->prescription_products ?? [];
-
-        $products = Product::whereIn('id', $productIds)
-            ->select('id', 'name', 'description')
-            ->get();
+        // DIRECT ITEMS FROM RELATION (NO JSON)
+        $items = $note->items->map(function ($item) {
+            return [
+                'product_id' => $item->product_id,
+                'name'       => $item->product?->name,
+                'dosage'     => $item->dosage_id,
+                'duration'   => $item->duration,
+                'remarks'    => $item->remarks,
+            ];
+        });
 
         return view('doctor_notes.print', compact(
             'note',
             'patient',
             'doctor',
             'hospital',
-            'products'
+            'items'
         ));
     }
 }

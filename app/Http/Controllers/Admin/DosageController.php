@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Dosage;
 
@@ -11,6 +12,15 @@ use Illuminate\Http\Request;
 
 class DosageController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('role_or_permission:Dosage access|Dosage create|Dosage edit|Dosage delete', ['only' => ['index','show']]);
+        $this->middleware('role_or_permission:Dosage create', ['only' => ['create','store']]);
+        $this->middleware('role_or_permission:Dosage edit', ['only' => ['edit','update']]);
+        $this->middleware('role_or_permission:Dosage delete', ['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +28,7 @@ class DosageController extends Controller
      */
     public function index()
     {
-        //
+        return view('dosages.index', ['dosages' => Dosage::all()]);
     }
 
     /**
@@ -28,7 +38,7 @@ class DosageController extends Controller
      */
     public function create()
     {
-        //
+        return view('dosages.create');
     }
 
     /**
@@ -39,7 +49,16 @@ class DosageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name'    => 'required|string|max:255',
+            'status'  => 'required|in:0,1',
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        Dosage::create($validated);
+
+        return redirect('/admin/dosages')
+                ->withSuccess('Dosage created successfully!');
     }
 
     /**
@@ -61,7 +80,7 @@ class DosageController extends Controller
      */
     public function edit(Dosage $dosage)
     {
-        //
+        return view('dosages.edit', compact('dosage'));
     }
 
     /**
@@ -73,7 +92,16 @@ class DosageController extends Controller
      */
     public function update(Request $request, Dosage $dosage)
     {
-        //
+        $validated = $request->validate([
+            'name'    => 'required|string|max:255|unique:dosages,name,' . $dosage->id,
+            'status'  => 'required|in:0,1',
+            'description' => 'nullable|string|max:255',
+        ]);        
+
+        $dosage->update($validated);
+
+        return redirect('/admin/dosages')
+            ->withSuccess('Dosage updated successfully!');
     }
 
     /**
@@ -84,6 +112,9 @@ class DosageController extends Controller
      */
     public function destroy(Dosage $dosage)
     {
-        //
+        $dosage->delete();
+
+        return redirect('/admin/dosages')
+            ->withSuccess('Dosage deleted successfully!');
     }
 }

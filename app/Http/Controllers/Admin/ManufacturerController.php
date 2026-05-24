@@ -23,7 +23,7 @@ class ManufacturerController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of these resource.
      *
      * @return \Illuminate\Http\Response
      */

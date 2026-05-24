@@ -17,8 +17,8 @@
     ========================= */
     @font-face {
         font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
-        src: url('{{ asset('fonts/JameelNooriNastaleeq.ttf') }}') format('truetype'),
-            url('{{ asset('fonts/NotoNastaliqUrdu-Regular.ttf') }}') format('truetype');
+        src: url("{{ asset('fonts/JameelNooriNastaleeq.ttf') }}") format('truetype'),
+            url("{{ asset('fonts/NotoNastaliqUrdu-Regular.ttf') }}") format('truetype');
         font-weight: normal;
         font-style: normal;
     }
@@ -35,7 +35,7 @@
     .footer-urdu-remarks {
         font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
         direction: rtl;
-        font-size: 12px;
+        font-size: 14px;
         line-height: 1.4;
         color: rgb(0, 0, 0);
     }
@@ -43,7 +43,7 @@
     .footer-urdu-remarks-again {
         font-family: 'JameelNoori', 'Noto Nastaliq Urdu', serif;
         direction: rtl;
-        font-size: 18px;
+        font-size: 20px;
         line-height: 1.4;
         color: rgb(77, 6, 192);
     }
@@ -251,6 +251,7 @@
             margin: 0;
             padding: 0;
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         body{
