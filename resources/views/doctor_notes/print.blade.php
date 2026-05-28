@@ -602,15 +602,15 @@
                             <span style="margin-left:20px;">
 
                                 @if(!empty($item['dosage']))
-                                Dosage: {{ $item['dosage'] }} |
+                                    {{ $item['dosage'] }}
                                 @endif
 
                                 @if(!empty($item['duration']))
-                                Duration: {{ $item['duration'] }} |
+                                    {{ $item['duration'] }}
                                 @endif
 
                                 @if(!empty($item['remarks']))
-                                Remarks: {{ $item['remarks'] }}
+                                    {{ $item['remarks'] }}
                                 @endif
 
                             </span>

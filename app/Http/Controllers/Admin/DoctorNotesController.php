@@ -443,7 +443,7 @@ class DoctorNotesController extends Controller
             return [
                 'product_id' => $item->product_id,
                 'name'       => $item->product?->name,
-                'dosage'     => $item->dosage_id,
+                'dosage'     => $item->dosage->name,
                 'duration'   => $item->duration,
                 'remarks'    => $item->remarks,
             ];
