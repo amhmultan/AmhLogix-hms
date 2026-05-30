@@ -73,6 +73,7 @@
             @if($admission->status == 'discharged')
               @can('Discharge access')
                 <a href="{{ route('admin.admissions.discharge-slip', $admission->id) }}" class="btn btn-sm btn-success mb-1">Discharge Slip</a>
+                <a href="{{ route('admin.admissions.discharge-notes', $admission->id) }}" class="btn btn-sm btn-danger mb-1">Discharge Notes</a>
               @endcan
           @endif
         </td>

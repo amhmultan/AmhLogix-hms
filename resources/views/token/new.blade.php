@@ -82,11 +82,7 @@
         @csrf
 
         {{-- Hidden Patient ID --}}
-        <select class="form-control" name="fk_patients_id" hidden>
-          @foreach ($data['patients'] as $patient)
-            <option value="{{ $patient->id }}" selected>{{ $patient->id }} - {{ $patient->name }}</option>
-          @endforeach
-        </select>
+        <input type="hidden" name="fk_patients_id" value="{{ request('search') }}">
 
         <div class="row my-4">
           <div class="col-md-6">

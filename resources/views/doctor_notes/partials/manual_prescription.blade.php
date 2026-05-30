@@ -101,9 +101,13 @@
 @endpush
 
 <hr/>
-
+<div class="rx-header">Rx</div>
+    <!-- PRODUCTS -->
+        <div id="prescriptionProductsSection" class="section-block">
+            @include('doctor_notes.partials.prescription_products')
+        </div>
 <div class="opd-writing-area">
-
+    
     <!-- LEFT -->
     <div class="opd-col left-col">
 
@@ -148,21 +152,15 @@
         </div>
 
     </div>
-
+    
     <!-- MIDDLE RX -->
-    <div class="opd-col middle-col">
-
-        <div class="rx-header">Rx</div>
-
-        <!-- PRODUCTS -->
-        <div id="prescriptionProductsSection" class="section-block">
-            @include('doctor_notes.partials.prescription_products')
-        </div>
+    <div class="opd-col middle-col">        
 
         <!-- PRESCRIPTION TEXT -->
+        <strong class="form-label mt-3">Remarks:</strong>
         <textarea name="prescription_text"
-                  class="form-control flex-grow-1 mt-4"
-                  style="min-height:150px;">{{ old('prescription_text', $doctorNote->prescription_text ?? '') }}</textarea>
+                  class="form-control"
+                  style="min-height: 100px;">{{ old('prescription_text', $doctorNote->prescription_text ?? '') }}</textarea>
 
         <div id="refractionSection" class="section-block">
             @include('doctor_notes.partials.refraction_card')

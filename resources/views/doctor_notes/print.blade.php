@@ -398,6 +398,15 @@
             .opd-writing-area {
                 min-height: auto;
             }
+
+            #refractionSection {
+                position: absolute;
+                right: 6mm;
+                bottom: 21mm;
+                width: 50%;
+                max-width: 120mm;
+                box-sizing: border-box;
+            }
         }
     </style>
     @endpush
@@ -583,15 +592,15 @@
                         @endif
 
 
-                        {{-- =========================
-    PRESCRIPTION PRODUCTS
-========================= --}}
+                                    {{-- =========================
+                            PRESCRIPTION PRODUCTS
+                        ========================= --}}
 
                         @if($items->count())
 
                         @foreach($items as $item)
 
-                        <div style="margin-bottom:12px;">
+                        <div class="my-1">
 
                             <strong>
                                 {{ $loop->iteration }}. {{ $item['name'] ?? 'Unknown Product' }}
@@ -599,18 +608,26 @@
 
                             <br>
 
-                            <span style="margin-left:20px;">
+                            <span style="display: inline-block; margin-top: 8px;">
 
                                 @if(!empty($item['dosage']))
+                                <span dir="ltr" style="unicode-bidi: plaintext;">
                                     {{ $item['dosage'] }}
+                                </span>
+                                &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
                                 @endif
 
                                 @if(!empty($item['duration']))
+                                <span dir="ltr" style="unicode-bidi: plaintext;">
                                     {{ $item['duration'] }}
+                                </span>
+                                &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
                                 @endif
 
                                 @if(!empty($item['remarks']))
+                                <span dir="auto" style="unicode-bidi: plaintext;">
                                     {{ $item['remarks'] }}
+                                </span>
                                 @endif
 
                             </span>
@@ -722,14 +739,14 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
+                                    <!-- <tr>
                                         <td colspan="4">
                                             {{ $note->right_remarks ?? '-' }}
                                         </td>
                                         <td colspan="4">
                                             {{ $note->left_remarks ?? '-' }}
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
@@ -738,18 +755,7 @@
                 </div>
 
             </div>
-            <!-- MAIN FOOTER  -->
-            <div class="footer">
-                <div class="row">
-                    <div class="col-sm-6 text-left">
-                        <span class="footer-urdu-remarks">ٹائم لینے کے لئے صبح 9 بجے اس نمبر پر رابطہ کریں:</span> <strong>{{ $hospital->contact }}</strong>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <span class="footer-urdu-remarks">(بروزجمعۃالمبارک کلینک بندرہےگا)</span>
-                    </div>
-                </div>
-                <span class="footer-urdu-remarks-again">{{ $doctor->remarks  ?? 'N/A' }}</span>
-            </div>
+            
         </div>
 
         @endcan

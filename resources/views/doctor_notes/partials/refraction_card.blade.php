@@ -170,7 +170,7 @@
 
             </tr>
 
-            <tr>
+            <!-- <tr>
 
                 <td colspan="4">
                     <input type="text"
@@ -186,7 +186,7 @@
                         class="form-control">
                 </td>
 
-            </tr>
+            </tr> -->
 
         </tbody>
 

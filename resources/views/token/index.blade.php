@@ -27,7 +27,7 @@
                   <th class="py-2 px-2 border text-center">FEES</th>
                   <th class="py-2 px-2 border text-center">PAID</th>
                   <th class="py-2 px-2 border text-center">BALANCE</th>
-                  <th class="py-2 px-2 border text-center">REGISTERED ON</th>
+                  <th class="py-2 px-2 border text-center">CREATED ON</th>
                   <th class="py-2 px-2 border text-center">UPDATED ON</th>
                   <th class="py-2 px-2 border text-center text-nowrap">ACTIONS</th>
                 </tr>

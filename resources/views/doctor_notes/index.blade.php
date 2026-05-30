@@ -1,11 +1,11 @@
 <x-app-layout>
 <main>
-<div class="container-fluid py-4 px-5">
+<div class="container-fluid mt-5 px-5">
 
-    <div class="row mb-5">
+    <div class="row mb-4">
         <div class="col-sm-6">
             <p class="h3 text-danger">
-                <strong><em>Prescr<span class="text-success">iptions</span></em></strong>
+                <strong><em>Doctor Notes<span class="text-success"> (Prescriptions)</span></em></strong>
             </p>
         </div>
 

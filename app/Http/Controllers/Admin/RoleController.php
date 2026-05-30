@@ -100,14 +100,14 @@ class RoleController extends Controller
         // $role->syncPermissions($request->permissions);
         // return redirect('/admin/roles')->withSuccess('Role updated !!!');
 
-        $abc = Role::find(1);
-        if ($role == $abc) {
-           return redirect('/admin/roles')->withSuccess('This role cannot be update!');
-         } else {
+        // $abc = Role::find(1);
+        // if ($role == $abc) {
+        //    return redirect('/admin/roles')->withSuccess('This role cannot be update!');
+        //  } else {
             $role->update(['name'=>$request->name]);
             $role->syncPermissions($request->permissions);
             return redirect('/admin/roles')->withSuccess('Role updated !!!');    
-        }
+        // }
     }
 
     /**

@@ -179,6 +179,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         ->name('admissions.discharge.store');
     Route::get('admissions/{admission}/discharge-slip', [App\Http\Controllers\Admin\DischargeController::class, 'printSlip'])
     ->name('admissions.discharge-slip');
+    Route::get('admissions/{admission}/discharge-notes', [App\Http\Controllers\Admin\DischargeController::class, 'printNotes'])
+    ->name('admissions.discharge-notes');
     
     // IPD Reports
     Route::get('ipd-reports', [App\Http\Controllers\Admin\IPDReportController::class, 'index'])->name('ipd.ipd_reports.index');

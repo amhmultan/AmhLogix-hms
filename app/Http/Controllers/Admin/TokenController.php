@@ -22,9 +22,9 @@ class TokenController extends Controller
      */
     function __construct()
     {
-        $this->middleware('role_or_permission:Token access|Token add|Token edit|Token delete', ['only' => ['index','show']]);
-        $this->middleware('role_or_permission:Token access', ['only' => ['create','store']]);
-        $this->middleware('role_or_permission:Token edit', ['only' => ['edit','update']]);
+        $this->middleware('role_or_permission:Token access|Token add|Token edit|Token delete', ['only' => ['index', 'show']]);
+        $this->middleware('role_or_permission:Token access', ['only' => ['create', 'store']]);
+        $this->middleware('role_or_permission:Token edit', ['only' => ['edit', 'update']]);
         $this->middleware('role_or_permission:Token delete', ['only' => ['destroy']]);
     }
 
@@ -35,16 +35,15 @@ class TokenController extends Controller
      */
     public function index()
     {
-        
-        $tokens = DB::table('tokens')
-                    ->leftJoin('patients','tokens.fk_patients_id','=','patients.id')
-                    ->leftJoin('doctors','tokens.fk_doctors_id','=','doctors.id')
-                    ->leftJoin('specialities','tokens.fk_specialty_id','=','specialities.id')
-                    ->select('tokens.id', 'tokens.fk_patients_id', 'patients.name as pName', 'patients.reffered_by', 'tokens.fk_doctors_id','doctors.name as dName', 'tokens.fk_specialty_id', 'specialities.title as sTitle', 'tokens.fees', 'tokens.denomination', 'tokens.balance', 'tokens.created_at', 'tokens.updated_at')
-                    ->get();
-                    
-        return view('token.index', ['tokens' => $tokens]);
 
+        $tokens = DB::table('tokens')
+            ->leftJoin('patients', 'tokens.fk_patients_id', '=', 'patients.id')
+            ->leftJoin('doctors', 'tokens.fk_doctors_id', '=', 'doctors.id')
+            ->leftJoin('specialities', 'tokens.fk_specialty_id', '=', 'specialities.id')
+            ->select('tokens.id', 'tokens.fk_patients_id', 'patients.name as pName', 'patients.reffered_by', 'tokens.fk_doctors_id', 'doctors.name as dName', 'tokens.fk_specialty_id', 'specialities.title as sTitle', 'tokens.fees', 'tokens.denomination', 'tokens.balance', 'tokens.created_at', 'tokens.updated_at')
+            ->get();
+
+        return view('token.index', ['tokens' => $tokens]);
     }
 
     /**
@@ -53,25 +52,25 @@ class TokenController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
-{
-    $search = $request->input('search', '');
+    {
+        $search = $request->input('search', '');
 
-    $patients = DB::table('patients')
-                ->where('id', 'like', "%$search%")
-                ->get();
+        $patients = DB::table('patients')
+            ->where('id', 'like', "%$search%")
+            ->get();
 
-    $doctors = Doctor::with('specialty')->get();
+        $doctors = Doctor::with('specialty')->get();
 
-    $specialities = DB::table('specialities')->select('id', 'title')->get();
+        $specialities = DB::table('specialities')->select('id', 'title')->get();
 
-    $data = [
-        "patients" => $patients,
-        "doctors" => $doctors,
-        "specialities" => $specialities,
-    ];
+        $data = [
+            "patients" => $patients,
+            "doctors" => $doctors,
+            "specialities" => $specialities,
+        ];
 
-    return view('token.new', compact('data', 'search'));
-}
+        return view('token.new', compact('data', 'search'));
+    }
 
 
     /**
@@ -83,12 +82,13 @@ class TokenController extends Controller
     public function store(Request $request)
     {
 
-        $data= $request->all();
+        $data = $request->all();
         $data['user_id'] = Auth::user()->id;
+
         $token = Token::create($data);
-        
+        //dd($token);
         return redirect('/admin/tokens')->withSuccess('Token created !!!');
-        
+
     }
 
     /**
@@ -97,7 +97,7 @@ class TokenController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-   public function show(Token $token)
+    public function show(Token $token)
     {
         $hospital = DB::table('hospitals')->first();
 

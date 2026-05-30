@@ -14,6 +14,10 @@ class DischargeSummary extends Model
         'clinical_notes',
         'medications',
         'follow_up',
+        'dm',
+        'htn',
+        'ihd',
+        'asthma',
     ];
 
     public function admission()

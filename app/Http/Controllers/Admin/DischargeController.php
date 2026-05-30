@@ -38,6 +38,10 @@ class DischargeController extends Controller
             'clinical_notes' => 'nullable|string',
             'medications' => 'nullable|string',
             'follow_up' => 'nullable|string',
+            'dm' => 'nullable|string',
+            'htn' => 'nullable|string',
+            'ihd' => 'nullable|string',
+            'asthma' => 'nullable|string',
         ]);
         
         // 1. Update Admission
@@ -53,6 +57,10 @@ class DischargeController extends Controller
                 'clinical_notes' => $request->clinical_notes,
                 'medications' => $request->medications,
                 'follow_up' => $request->follow_up,
+                'dm' => $request->dm,
+                'htn' => $request->htn,
+                'ihd' => $request->ihd,
+                'asthma' => $request->asthma,
             ]
         );
 
@@ -65,7 +73,7 @@ class DischargeController extends Controller
         $admission->bed->update(['status' => 'available']);
 
         return redirect()
-            ->route('admin.admissions.discharge-slip', $admission->id)
+            ->route('admin.admissions.index', $admission->id)
             ->with('success', 'Patient discharged successfully!');
     }
 
@@ -92,8 +100,23 @@ class DischargeController extends Controller
             'admission' => $admission,
             'totalDays' => $totalDays,
             'roomAmount' => $roomAmount,
-            'hospital' => auth()->user()->hospital ?? null,
             'hospital' => $hospital,
+        ]);
+    }
+    /**
+     * Print discharge notes
+     */
+    public function printNotes(Admission $admission)
+    {
+        $hospital = \App\Models\Hospital::first();
+        $doctor = \App\Models\Doctor::first();
+        
+        $admission->load(['patient', 'doctor', 'bed.ward']);
+
+        return view('admissions.discharge-notes', [
+            'hospital' => $hospital,
+            'admission' => $admission,
+            'doctor' => $doctor,
         ]);
     }
 }
