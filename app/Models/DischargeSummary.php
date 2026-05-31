@@ -24,4 +24,9 @@ class DischargeSummary extends Model
     {
         return $this->belongsTo(Admission::class);
     }
+    
+    public function items()
+    {
+        return $this->hasMany(DischargeSummaryItem::class);
+    }
 }

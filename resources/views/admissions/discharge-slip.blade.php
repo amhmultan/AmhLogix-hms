@@ -83,7 +83,44 @@
                     </tr>
                     <tr>
                         <th>Medications on Discharge</th>
-                        <td>{{ $admission->dischargeSummary->medications ?? 'N/A' }}</td>
+                        <td>
+                            <!-- {{ $admission->dischargeSummary->medications ?? 'N/A' }} -->
+                            {{-- ==============
+                                PRODUCTS
+                            =============== --}}
+
+                            @if($admission->dischargeSummary->items->count())
+
+                                @foreach($admission->dischargeSummary->items as $item)
+
+                                    <div>
+                                        <strong>{{ $loop->iteration }}. {{ $item->product->name ?? '-' }}</strong>
+                                        <br />
+                                        <span>
+                                            @if(!empty($item->dosage->name))
+                                            <span dir="ltr" style="unicode-bidi: plaintext;">
+                                                {{ $item->dosage->name ?? '-' }}
+                                            </span>
+                                            &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+                                            @endif
+                                            @if(!empty($item->duration))
+                                            <span dir="ltr" style="unicode-bidi: plaintext;">
+                                                {{ $item->duration ?? '-' }}
+                                            </span>
+                                            &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+                                            @endif
+                                            @if(!empty($item->remarks))
+                                            <span dir="auto" style="unicode-bidi: plaintext;">
+                                                {{ $item->remarks ?? '-' }}
+                                            </span>
+                                            @endif
+                                        </span>
+                                    </div>
+
+                                @endforeach
+
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <th>Follow-up Instructions</th>
@@ -123,24 +160,23 @@
                         <th>Total</th>
                         <th class="text-end">
                             {{ number_format(
-                            ($admission->admission_fees ?? 0) +
-                            $roomAmount +
-                            $admission->charges->sum('amount'),
-                            2
-                        ) }}
+                                ($admission->admission_fees ?? 0) +
+                                $roomAmount +
+                                $admission->charges->sum('amount'), 2)
+                            }}
                         </th>
                     </tr>
 
                 </tbody>
             </table>
 
-            {{-- Spacer --}}
-            <div style="height:400px;"></div>
+            <!-- {{-- Spacer --}}
+            <div style="height:300px;"></div>
 
             {{-- Doctor Signature --}}
-            <div class="text-end mt-2" style="font-size:12px;">
+            <div class="text-end mt-0" style="font-size:12px;">
                 <div>Doctor's Signature</div>
-            </div>
+            </div> -->
 
         </div>
     </div>

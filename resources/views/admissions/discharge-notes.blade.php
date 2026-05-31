@@ -37,13 +37,13 @@
             color: rgb(77, 6, 192);
         }
 
-        #content-pre{
+        #content-pre {
             font-family: 'Noto Nastaliq Urdu', serif;
             font-size: 18px;
             overflow: hidden;
         }
 
-        #header-pre{
+        #header-pre {
             font-family: 'Noto Nastaliq Urdu', serif;
             direction: rtl;
             font-size: 18px;
@@ -500,9 +500,45 @@
         <div class="opd-writing-area">
             <!-- LEFT -->
             <div class="opd-col left-col">
-                <pre class="text-left mb-5" id="content-pre">{{ $admission->dischargeSummary->clinical_notes ?? 'N/A' }}</pre>
-                <div class="rx-header">Follow-up Instructions:</div>{{ $admission->dischargeSummary->follow_up ?? 'N/A' }}
-                <div class="rx-header">Rx</div>{{ $admission->dischargeSummary->medications ?? 'N/A' }}
+                <pre class="text-left" id="content-pre">{{ $admission->dischargeSummary->clinical_notes ?? 'N/A' }}</pre>
+                <div class="rx-header mt-4">Follow-up Instructions:</div>{{ $admission->dischargeSummary->follow_up ?? 'N/A' }}
+                <div class="rx-header mt-4">Medications on Discharge:</div>
+                <!-- {{ $admission->dischargeSummary->medications ?? 'N/A' }} -->
+                {{-- ==============
+                    PRODUCTS
+                =============== --}}
+
+                @if($admission->dischargeSummary->items->count())
+
+                @foreach($admission->dischargeSummary->items as $item)
+
+                <div>
+                    <strong>{{ $loop->iteration }}. {{ $item->product->name ?? '-' }}</strong>
+                    <br />
+                    <span>
+                        @if(!empty($item->dosage->name))
+                        <span dir="ltr" style="unicode-bidi: plaintext;">
+                            {{ $item->dosage->name ?? '-' }}
+                        </span>
+                        &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+                        @endif
+                        @if(!empty($item->duration))
+                        <span dir="ltr" style="unicode-bidi: plaintext;">
+                            {{ $item->duration ?? '-' }}
+                        </span>
+                        &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
+                        @endif
+                        @if(!empty($item->remarks))
+                        <span dir="auto" style="unicode-bidi: plaintext;">
+                            {{ $item->remarks ?? '-' }}
+                        </span>
+                        @endif
+                    </span>
+                </div>
+
+                @endforeach
+
+                @endif
 
             </div>
             <!-- RIGHT -->
@@ -510,22 +546,22 @@
                 <h6 class="fw-bold">(History)</h6>
 
                 <div class="section-block">
-                    <strong>DM:</strong><br/>
+                    <strong>DM:</strong><br />
                     {{ $admission->dischargeSummary->dm ?? ' - ' }}
                 </div>
 
                 <div class="section-block">
-                    <strong>HTN:</strong><br/>
+                    <strong>HTN:</strong><br />
                     {{ $admission->dischargeSummary->htn ?? ' - ' }}
                 </div>
 
                 <div class="section-block">
-                    <strong>IHD:</strong><br/>
+                    <strong>IHD:</strong><br />
                     {{ $admission->dischargeSummary->ihd ?? ' - ' }}
                 </div>
 
                 <div class="section-block">
-                    <strong>Asthma:</strong><br/>
+                    <strong>Asthma:</strong><br />
                     {{ $admission->dischargeSummary->asthma ?? ' - ' }}
                 </div>
             </div>
@@ -550,8 +586,7 @@
 
     </div>
 
-
-    {{-- Print Script --}}
+    {{-- Scripts --}}
     <script>
         function printDiv(printableArea) {
 

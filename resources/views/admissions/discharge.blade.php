@@ -90,7 +90,11 @@
         <div class="row my-4">
           <div class="col-md-12">
             <label class="text-gray-700 font-black">Medications on Discharge:</label>
-            <textarea name="medications" class="form-control" rows="3"></textarea>
+            <!-- <textarea name="medications" class="form-control" rows="3"></textarea> -->
+            <!-- PRODUCTS -->
+            <div id="prescriptionProductsSection" class="section-block">
+              @include('admissions.partials.prescription_products')
+            </div>
           </div>
         </div>
 
@@ -101,8 +105,135 @@
           </div>
         </div>
       </form>
-
-
     </div>
   </main>
+  <script>
+    // Products search script
+    document.addEventListener('DOMContentLoaded', function() {
+      // ===============================
+      // LIVE SEARCH (GLOBAL DELEGATION)
+      // ===============================
+      $(document).on('keyup', '.product-input', function() {
+
+        let input = $(this);
+        let row = input.closest('.medicine-row');
+        let box = row.find('.product-suggestions');
+
+        let query = input.val();
+
+        if (query.length < 1) {
+          box.hide();
+          return;
+        }
+
+        $.ajax({
+          url: "{{ route('admin.products.search') }}",
+          data: {
+            term: query
+          },
+
+          success: function(data) {
+
+            console.log("RESULTS:", data);
+
+            box.html('').show();
+
+            if (!data || data.length === 0) {
+              box.hide();
+              return;
+            }
+
+            data.forEach(function(item) {
+
+              box.append(`
+                    <a href="javascript:void(0)"
+                       class="list-group-item list-group-item-action product-item"
+                       data-id="${item.id}"
+                       data-name="${item.name}"
+                       style="cursor:pointer;">
+                        ${item.name}
+                    </a>
+                `);
+
+            });
+
+          },
+          error: function(xhr) {
+            console.log("AJAX ERROR:", xhr.responseText);
+          }
+        });
+
+      });
+
+
+      // ===============================
+      // SELECT ITEM (FIXED & SAFE)
+      // ===============================
+      $(document).on('click', '.product-item', function(e) {
+
+        e.preventDefault();
+
+        let row = $(this).closest('.medicine-row');
+
+        row.find('.product-input').val($(this).data('name'));
+        row.find('.product-id').val($(this).data('id'));
+
+        row.find('.product-suggestions').hide();
+
+      });
+
+
+      // ===============================
+      // CLOSE DROPDOWN OUTSIDE CLICK
+      // ===============================
+      $(document).on('click', function(e) {
+
+        if (!$(e.target).closest('.medicine-row').length) {
+          $('.product-suggestions').hide();
+        }
+
+      });
+
+
+      // ===============================
+      // REMOVE ROW
+      // ===============================
+      $(document).on('click', '.remove-row', function() {
+        $(this).closest('.medicine-row').remove();
+      });
+    });
+  </script>
+  <script>
+    // ===============================
+    // ADD ROW (GLOBAL - FIXED)
+    // ===============================
+    let medicineIndex = document.querySelectorAll('.medicine-row').length;
+
+    function addMedicineRow() {
+
+      let template = document.querySelector('#medicine-template .medicine-row');
+      let clone = template.cloneNode(true);
+
+      // reset values
+      clone.querySelectorAll('input').forEach(i => i.value = '');
+      clone.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+
+      // assign correct names (IMPORTANT)
+      clone.querySelector('.product-id')
+        .setAttribute('name', `items[${medicineIndex}][product_id]`);
+
+      clone.querySelector('select')
+        .setAttribute('name', `items[${medicineIndex}][dosage_id]`);
+
+      clone.querySelector('input[placeholder="Duration"]')
+        .setAttribute('name', `items[${medicineIndex}][duration]`);
+
+      clone.querySelector('input[placeholder="Remarks"]')
+        .setAttribute('name', `items[${medicineIndex}][remarks]`);
+
+      document.getElementById('medicine-container').appendChild(clone);
+
+      medicineIndex++;
+    }
+  </script>
 </x-app-layout>

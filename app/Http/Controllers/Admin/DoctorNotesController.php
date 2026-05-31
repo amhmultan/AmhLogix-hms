@@ -158,7 +158,8 @@ class DoctorNotesController extends Controller
 
         /* =======================
         MANUAL MODE (OPD)
-        ======================= */ else {
+        ======================= */ 
+        else {
 
             // =========================
             // OPD FIELDS

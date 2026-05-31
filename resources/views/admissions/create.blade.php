@@ -29,11 +29,11 @@
           <label class="text-gray-700 font-black">Patient Name:</label>
           <select class="form-control" disabled>
             @if ($search != "")
-              @foreach ($patients as $patient)
-                <option>{{ $patient->name }}</option>
-              @endforeach
+            @foreach ($patients as $patient)
+            <option>{{ $patient->name }}</option>
+            @endforeach
             @else
-              <option></option>
+            <option></option>
             @endif
           </select>
         </div>
@@ -41,11 +41,11 @@
           <label class="text-gray-700 font-black">Contact Number:</label>
           <select class="form-control" disabled>
             @if ($search != "")
-              @foreach ($patients as $patient)
-                <option>{{ $patient->phone }}</option>
-              @endforeach
+            @foreach ($patients as $patient)
+            <option>{{ $patient->phone }}</option>
+            @endforeach
             @else
-              <option></option>
+            <option></option>
             @endif
           </select>
         </div>
@@ -56,11 +56,11 @@
           <label class="text-gray-700 font-black">CNIC:</label>
           <select class="form-control" disabled>
             @if ($search != "")
-              @foreach ($patients as $patient)
-                <option>{{ $patient->cnic }}</option>
-              @endforeach
+            @foreach ($patients as $patient)
+            <option>{{ $patient->cnic }}</option>
+            @endforeach
             @else
-              <option></option>
+            <option></option>
             @endif
           </select>
         </div>
@@ -68,11 +68,11 @@
           <label class="text-gray-700 font-black">Panel:</label>
           <select class="form-control" disabled>
             @if ($search != "")
-              @foreach ($patients as $patient)
-                <option>{{ $patient->reffered_by }}</option>
-              @endforeach
+            @foreach ($patients as $patient)
+            <option>{{ $patient->reffered_by }}</option>
+            @endforeach
             @else
-              <option></option>
+            <option></option>
             @endif
           </select>
         </div>
@@ -87,7 +87,7 @@
         {{-- Hidden Patient ID --}}
         <select class="form-control" name="patient_id" hidden>
           @foreach ($patients as $patient)
-            <option value="{{ $patient->id }}" selected>{{ $patient->id }} - {{ $patient->name }}</option>
+          <option value="{{ $patient->id }}" selected>{{ $patient->id }} - {{ $patient->name }}</option>
           @endforeach
         </select>
 
@@ -97,21 +97,21 @@
             <select id="doctorSelect" class="form-control" name="doctor_id" required>
               <option value="">-- Select Doctor --</option>
               @foreach ($doctors as $doctor)
-                <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
+              <option value="{{ $doctor->id }}">{{ $doctor->name }}</option>
               @endforeach
             </select>
           </div>
 
           <div class="col-md-6">
-              <label class="font-black">Select Bed:</label>
-              <select name="bed_id" class="form-control" required>
-                  <option value="">-- Select Available Bed --</option>
-                  @foreach ($beds as $bed)
-                      <option value="{{ $bed->id }}">
-                          {{ $bed->bed_number }} ({{ ucfirst($bed->ward->name) }} - {{ ucfirst($bed->ward->type) }})
-                      </option>
-                  @endforeach
-              </select>
+            <label class="font-black">Select Bed:</label>
+            <select name="bed_id" class="form-control" required>
+              <option value="">-- Select Available Bed --</option>
+              @foreach ($beds as $bed)
+              <option value="{{ $bed->id }}">
+                {{ $bed->bed_number }} ({{ ucfirst($bed->ward->name) }} - {{ ucfirst($bed->ward->type) }})
+              </option>
+              @endforeach
+            </select>
           </div>
         </div>
 
