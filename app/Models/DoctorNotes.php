@@ -38,6 +38,11 @@ class DoctorNotes extends Model
     return $this->belongsTo(Patient::class, 'fk_patient_id');
   }
 
+  public function doctor()
+  {
+    return $this->belongsTo(Doctor::class, 'fk_doctor_id');
+  }
+
   public function token()
   {
 

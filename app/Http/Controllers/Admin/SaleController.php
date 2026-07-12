@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -14,16 +15,16 @@ class SaleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role_or_permission:Sale access|Sale add|Sale edit|Sale delete', ['only' => ['index','show']]);
-        $this->middleware('role_or_permission:Sale add', ['only' => ['create','store']]);
-        $this->middleware('role_or_permission:Sale edit', ['only' => ['edit','update']]);
+        $this->middleware('role_or_permission:Sale access|Sale add|Sale edit|Sale delete', ['only' => ['index', 'show']]);
+        $this->middleware('role_or_permission:Sale add', ['only' => ['create', 'store']]);
+        $this->middleware('role_or_permission:Sale edit', ['only' => ['edit', 'update']]);
         $this->middleware('role_or_permission:Sale delete', ['only' => ['destroy']]);
     }
 
     public function index()
     {
         $sales = SaleInvoice::with('patient')->latest()->paginate(10);
-        
+
         return view('sale.index', compact('sales'));
     }
 
@@ -94,7 +95,7 @@ class SaleController extends Controller
 
     public function show($id)
     {
-        $sale = SaleInvoice::with(['patient','items.product'])->findOrFail($id);
+        $sale = SaleInvoice::with(['patient', 'items.product'])->findOrFail($id);
         return view('sale.show', compact('sale'));
     }
 
@@ -110,12 +111,12 @@ class SaleController extends Controller
 
     public function print($id)
     {
-        $sale = SaleInvoice::with(['patient','items.product'])->findOrFail($id);
+        $sale = SaleInvoice::with(['patient', 'items.product'])->findOrFail($id);
         $pharmacy = Pharmacy::firstOrFail();
         if (!$pharmacy->pic) {
             return redirect()->back()->withErrors('Pharmacy logo not found.');
         }
-        return view('sale.print', compact('sale','pharmacy'));
+        return view('sale.print', compact('sale', 'pharmacy'));
     }
 
     public function destroy($id)
@@ -128,19 +129,25 @@ class SaleController extends Controller
     public function getProductsAjax(Request $request)
     {
         $search = $request->q;
-        $products = Product::query()
-            ->when($search, function($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
+
+        $products = DB::table('purchase_invoice_items')
+            ->join('products', 'products.id', '=', 'purchase_invoice_items.product_id')
+            ->when($search, function ($query, $search) {
+                $query->where('products.name', 'like', "%{$search}%");
             })
-            ->select('id', 'name')
-            ->limit(50) // limit for performance
+            ->select(
+                'products.id',
+                DB::raw("CONCAT(products.name, ' | Batch: ', IFNULL(purchase_invoice_items.batch_no,'N/A')) as text"),
+                'purchase_invoice_items.batch_no',
+                'purchase_invoice_items.expiry_date',
+                'purchase_invoice_items.unit_price'
+            )
+            ->orderByDesc('purchase_invoice_items.id')
+            ->limit(50)
             ->get();
 
         return response()->json([
-            'results' => $products->map(function ($product) {
-                return ['id' => $product->id, 'text' => $product->name];
-            }),
+            'results' => $products
         ]);
     }
-
 }

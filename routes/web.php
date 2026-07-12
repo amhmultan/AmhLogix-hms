@@ -3,8 +3,11 @@
 
 use App\Http\Controllers\Admin\PurchaseInvoiceController;
 use App\Http\Controllers\Admin\SaleController;
-use App\Http\Controllers\Admin\NoteController;
+use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\PatientController;
+use App\Models\Doctor;
+use App\Models\Hospital;
+use App\Models\Speciality;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +23,13 @@ use Illuminate\Support\Facades\Route;
 
 //Public routes
 Route::get('/', function () {
-    return view('welcome');
+    
+    return view('welcome', [
+        'hospital'     => Hospital::first(),
+        'doctors'      => Doctor::all(),
+        'specialities' => Speciality::all(),
+    ]);
+
 });
 
 Route::get('/about', function () {
@@ -72,6 +81,8 @@ Route::get('/dashboard', function () {
     return view('front.dashboard');
 })->middleware(['front'])->name('dashboard');
 
+Route::post('/appointments', [AppointmentController::class, 'store'])
+    ->name('appointments.store');
 
 require __DIR__.'/front_auth.php';
 
@@ -88,7 +99,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     
     // AJAX routes for Select2 product search
     Route::get('/products/ajax', [PurchaseInvoiceController::class, 'getProductsAjax'])->name('products.ajax');
-    Route::get('/products/ajax', [SaleController::class, 'getProductsAjax'])->name('products.ajax');
+    Route::get('/products/saledata', [SaleController::class, 'getProductsAjax'])->name('products.saledata');
     
     // AJAX routes for products
     Route::get('products-data', [App\Http\Controllers\Admin\ProductController::class, 'getProducts'])->name('products.data');

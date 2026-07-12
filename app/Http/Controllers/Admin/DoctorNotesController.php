@@ -30,8 +30,11 @@ class DoctorNotesController extends Controller
      */
     public function index()
     {
-        $doctor_notes = DoctorNotes::with('patient', 'token')
-            ->select('doctor_notes.*')
+        $doctor_notes = DoctorNotes::with([
+            'patient',
+            'token',
+            'doctor.specialty'
+        ])
             ->orderByDesc('id')
             ->get();
 
@@ -78,14 +81,26 @@ class DoctorNotesController extends Controller
         }
 
         $dosages = Dosage::where('status', 0)->get();
-
+        
+        $doctors = DB::table('doctors')
+            ->leftJoin('specialities', 'doctors.speciality_id', '=', 'specialities.id')
+            ->select(
+                'doctors.id',
+                'doctors.name',
+                'doctors.speciality_id',
+                'specialities.title as speciality_title'
+            )
+            ->get();
+        
+        //dd($doctors->toArray());
         return view('doctor_notes.new', compact(
             'search',
             'searchType',
             'patient',
             'token',
             'tokenAlreadySaved',
-            'dosages'
+            'dosages',
+            'doctors'
         ));
     }
 
@@ -97,12 +112,16 @@ class DoctorNotesController extends Controller
         $request->validate([
             'fk_patient_id' => 'required',
             'mode' => 'required|in:upload,manual',
-            'fk_token_id' => 'nullable'
+            'fk_token_id' => 'nullable',
+            'fk_doctor_id' => 'required|exists:doctors,id'
         ]);
+
 
         $data = new DoctorNotes();
 
         $data->fk_patient_id = $request->fk_patient_id;
+
+        $data->fk_doctor_id = $request->fk_doctor_id ?: null;
 
         $data->fk_token_id = ($request->fk_token_id == 0 || $request->fk_token_id == '')
             ? null
@@ -158,8 +177,7 @@ class DoctorNotesController extends Controller
 
         /* =======================
         MANUAL MODE (OPD)
-        ======================= */ 
-        else {
+        ======================= */ else {
 
             // =========================
             // OPD FIELDS
@@ -425,6 +443,10 @@ class DoctorNotesController extends Controller
      */
     public function print($id)
     {
+
+        $hospitals = Hospital::first();
+        $doctors = Doctor::first();
+
         $note = DoctorNotes::with([
             'patient',
             'token.doctor',

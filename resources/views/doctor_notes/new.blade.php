@@ -120,6 +120,30 @@
                 <input type="hidden" name="fk_token_id"
                     value="{{ $token->id ?? $token->token_id ?? '' }}">
 
+                <div class="row my-4">
+                    <div class="col-md-6">
+                        <label class="text-gray-700 font-black">Doctor:</label>
+                        <select id="doctorSelect" class="form-control" name="fk_doctor_id" required>
+                            @foreach ($doctors as $doctor)
+                            <option value="{{ $doctor->id }}"
+                                data-specialty-id="{{ $doctor->speciality_id ?? '' }}"
+                                data-specialty="{{ $doctor->speciality_title ?? 'N/A' }}"
+                                {{ $loop->first ? 'selected' : '' }}>
+                                {{ $doctor->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="text-gray-700 font-black">Specialty:</label>
+                        <div class="form-control mt-2" id="specialtyTitle">--</div>
+                        <input type="hidden" name="fk_specialty_id" id="fk_specialty_id">
+                    </div>
+                </div>
+
+                <hr />
+
                 <div class="form-group m-3">
 
                     <label class="form-label text-dark font-weight-bold">
@@ -322,6 +346,33 @@
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('.medicine-row').remove();
             });
+
+        });
+
+        // ===============================
+        // UPDATE SPECIALTY
+        // ===============================
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const doctorSelect = document.getElementById('doctorSelect');
+            const specialtyTitle = document.getElementById('specialtyTitle');
+            const specialtyInput = document.getElementById('fk_specialty_id');
+
+            if (!doctorSelect || !specialtyTitle || !specialtyInput) {
+                return;
+            }
+
+            function updateSpecialty() {
+
+                const option = doctorSelect.options[doctorSelect.selectedIndex];
+
+                specialtyTitle.textContent = option.dataset.specialty || '--';
+                specialtyInput.value = option.dataset.specialtyId || '';
+            }
+
+            doctorSelect.addEventListener('change', updateSpecialty);
+
+            updateSpecialty();
 
         });
     </script>

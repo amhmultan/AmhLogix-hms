@@ -1,5 +1,5 @@
 <div class="row g-3">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <label class="form-label">Patient Name</label>
     <input type="text" class="form-control" value="{{ old('patient_name', $appointment->patient_name ?? '') }}" name="patient_name" required>
     {{-- <select name="patient_id" class="form-select" required>
@@ -12,8 +12,13 @@
       >
     </select> --}}
   </div>
+  
+  <div class="col-md-4">
+    <label class="form-label">Phone Number</label>
+    <input type="text" class="form-control" value="{{ old('phone_number', $appointment->phone_number ?? '') }}" name="phone_number" required>
+  </div>
 
-  <div class="col-md-6">
+  <div class="col-md-4">
     <label class="form-label">Doctor</label>
     <select name="doctor_id" class="form-select" required>
       <option value="">-- Select Doctor --</option>
@@ -32,7 +37,7 @@
 
   <div class="col-md-4">
     <label class="form-label">Time</label>
-    <input type="time" name="appointment_time" class="form-control" value="{{ old('appointment_time', $appointment->appointment_time ?? '') }}" required>
+    <input type="text" name="appointment_time" class="form-control" value="{{ old('appointment_time', $appointment->appointment_time ?? '') }}" required>
   </div>
 
   <div class="col-md-4">
@@ -45,8 +50,9 @@
   </div>
 
   <div class="col-12">
-    <label class="form-label">Notes</label>
+    <label class="form-label">Message</label>
     <textarea name="notes" rows="3" class="form-control">{{ old('notes', $appointment->notes ?? '') }}</textarea>
+    <input type="hidden" name="source" value="admin">
   </div>
 
   <div class="col-12 text-end">

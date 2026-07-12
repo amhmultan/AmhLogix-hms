@@ -32,6 +32,8 @@
                     <th class="px-4 py-2 text-center">TOKEN NO.</th>
                     <th class="px-4 py-2 text-center">PATIENT NAME</th>
                     <th class="px-4 py-2 text-center">PRESCRIPTION</th>
+                    <th class="px-4 py-2 text-center">DOCTOR</th>
+                    <th class="px-4 py-2 text-center">SPECIALTY</th>
                     <th class="px-4 py-2 text-center">CHECKUP ON</th>
                     <th class="px-4 py-2 text-center">UPDATED ON</th>
                     <th class="px-4 py-2 text-center">ACTIONS</th>
@@ -56,6 +58,10 @@
 
                     {{-- PATIENT NAME --}}
                     <td>{{ $note->patient->name ?? 'Walk-in Patient' }}</td>
+
+                    {{-- DOCTOR NAME --}}
+                    <td>{{ $note->doctor->name ?? 'N/A' }}</td>
+                    <td>{{ $note->doctor?->specialty?->title ?? 'N/A' }}</td>
 
                     {{-- PRESCRIPTION --}}
                     <td>

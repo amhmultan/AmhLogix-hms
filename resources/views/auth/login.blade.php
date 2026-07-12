@@ -1,50 +1,118 @@
+@php
+    $hospital = \App\Models\Hospital::first();
+@endphp
 <x-guest-layout>
-  <div  style="background-image: url({{ asset('images/healthcare.jpg') }}); background-repeat: no-repeat; background-size: 100% 100%;">
 
-    <div class="font-sans min-h-screen antialiased pt-24 pb-5">
+<div class="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+     style="background-image: url('{{ asset('images/healthcare.jpg') }}');">
 
-      <div class="row mb-5">
-        <h1 class="font-bold text-center tracking-wider text-8xl my-5" style="color:#DF752E">Amh<span class="text-white">Logix</span></h1>
-        <h6 class="font-sans font-bold text-center text-2xl	text-pink-700">Hospital Management System</span></h6>
-      </div>
-        <div class="flex flex-col justify-center sm:w-96 sm:m-auto mx-5 mb-5 space-y-8">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black opacity-60"></div>
+
+    <div class="relative z-10 w-full max-w-md px-4">
+
+        <!-- Logo Section -->
+        <div class="text-center mb-8">
+            <p class="font-extrabold text-4xl">
+                <span style="color:#DF752E">{{ $hospital->title ?? config('app.name') }}</span>
+            </p>
+
+            <p class="text-white text-sm mt-2">
+                Hospital Information Management System
+            </p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800">
+                    Welcome Back
+                </h2>
+
+                <p class="text-gray-500 mt-2">
+                    Sign in to continue
+                </p>
+            </div>
+
             <!-- Session Status -->
             <x-auth-session-status class="mb-4" :status="session('status')" />
+
             <!-- Validation Errors -->
             <x-auth-validation-errors class="mb-4" :errors="$errors" />
-          <form method="POST" action="{{ route('admin.login') }}">
-            @csrf
-            <div class="flex flex-col bg-white p-10 rounded-lg shadow space-y-6">
-              <h1 class="tracking-widest font-bold text-3xl text-center">Sign in</h1>
 
-              <div class="flex flex-col space-y-1">
-                <input type="email" name="email" id="email" class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow" placeholder="Email" :value="old('email')" required autofocus />
-              </div>
+            <form method="POST" action="{{ route('admin.login') }}">
+                @csrf
 
-              <div class="flex flex-col space-y-1">
-                <input type="password" name="password" id="password" class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow" placeholder="Password" required autocomplete="current-password"/>
-              </div>
+                <!-- Email -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        Email Address
+                    </label>
 
-              <!-- <div class="relative">
-                <input type="checkbox" name="remember" id="remember_me" class="inline-block align-middle" />
-                <label class="inline-block align-middle" for="remember_me">Remember me</label>
-              </div> -->
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter your email"
+                        required
+                        autofocus>
+                </div>
 
-              <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center">
-                @if (Route::has('password.request'))
-                    {{-- <a href="{{ route('password.request') }}" class="inline-block text-blue-500 hover:text-blue-800 hover:underline">Forgot your password?</a> --}}
-                    <a href="#" class="inline-block text-blue-500 hover:text-blue-800 hover:underline">Forgot your password?</a>
-                @endif
-                <button type="submit" class="bg-blue-500 text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors">Log In</button>
-              </div>
-            </div>
-          </form>
-          <div class="flex justify-center text-yellow-300 text-sm font-sans font-bold">
-            <p>&copy;{{ now()->year }} All right reserved.</p>
-          </div>
+                <!-- Password -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter your password"
+                        required>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center mb-6">
+                    <input
+                        type="checkbox"
+                        name="remember"
+                        id="remember_me"
+                        class="rounded border-gray-300">
+
+                    <label for="remember_me" class="ml-2 text-sm text-gray-600">
+                        Remember Me
+                    </label>
+                </div>
+
+                <!-- Login Button -->
+                <button
+                    type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300 shadow-md">
+
+                    Sign In
+                </button>
+
+                <!-- Forgot Password -->
+                <div class="text-center mt-4">
+                    <a href="#"
+                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        Forgot Password?
+                    </a>
+                </div>
+
+            </form>
         </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-white text-xs">
+            © {{ now()->year }} AmhLogix HIMS. All Rights Reserved.
+        </div>
+
     </div>
 
+</div>
 
-  </div> 
 </x-guest-layout>

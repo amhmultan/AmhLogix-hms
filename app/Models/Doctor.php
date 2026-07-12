@@ -9,15 +9,29 @@ class Doctor extends Model
 {
     use HasFactory;
 
-    protected $fillable = 
+    protected $fillable =
     [
-        'pic', 'name', 'contact', 'email', 'address', 'dob',
-        'speciality_id', 'schedule', 'remarks', 'cnic', 'pmdc'
+        'pic',
+        'name',
+        'contact',
+        'email',
+        'address',
+        'dob',
+        'speciality_id',
+        'schedule',
+        'remarks',
+        'cnic',
+        'pmdc'
     ];
 
     public function specialty()
     {
         return $this->belongsTo(Speciality::class, 'speciality_id');
+    }
+
+    public function doctorNotes()
+    {
+        return $this->hasMany(DoctorNotes::class, 'fk_doctor_id');
     }
 
     public function token()

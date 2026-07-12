@@ -324,7 +324,7 @@
 
                     <div class="col-sm-4 text-center">
                         <span class="footer-urdu-remarks-again">ھوالشافی</span><br/>
-                        <img src="{{ asset('img/'.$hospitals->logo) }}" width="250px" alt="Hospital Logo" class="rounded mx-auto d-block"/>
+                        <img src="{{ asset('img/'.$hospitals->logo) }}" width="150px" height="150px" alt="Hospital Logo" class="rounded mx-auto d-block"/>
                     </div>
 
                     <div class="col-sm-4 text-right">
@@ -441,18 +441,18 @@
                     </div>
                     
                 </div>
-                    <!-- MAIN FOOTER  -->
-                    <div class="footer">
-                        <div class="row">
-                            <div class="col-sm-6 text-left">
-                                <span class="footer-urdu-remarks">ٹائم لینے کے لئے صبح 9 بجے اس نمبر پر رابطہ کریں:</span> {{ $hospitals->contact }}
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <span class="footer-urdu-remarks">(بروزجمعۃالمبارک کلینک بندرہےگا)</span>
-                            </div>
+                <!-- MAIN FOOTER  -->
+                <div class="footer">
+                    <div class="row">
+                        <div class="col-sm-6 text-left">
+                            <span class="footer-urdu-remarks">ٹائم لینے کے لئے صبح 9 بجے اس نمبر پر رابطہ کریں:</span> {{ $hospitals->contact }}
                         </div>
-                        <span class="footer-urdu-remarks-again">{{ $doctors->remarks }}</span>
+                        <div class="col-sm-6 text-right">
+                            <span class="footer-urdu-remarks">(بروزجمعۃالمبارک کلینک بندرہےگا)</span>
+                        </div>
                     </div>
+                    <span class="footer-urdu-remarks-again">{{ $doctors->remarks }}</span>
+                </div>
             </div>
         @endcan
     </div>

@@ -18,12 +18,13 @@
       </div>
 
       @if($appointments->isNotEmpty())
-        <div class="table-responsive bg-white p-3 shadow rounded">
-          <table id="appointmentTable" class="table w-100 border-collapse">
+        <div class="table-responsive">
+          <table id="appointmentTable" class="table w-100 border-collapse p-3">
             <thead>
               <tr class="bg-indigo-500 text-white text-sm text-center">
                 <th class="py-3 px-4 border text-center">ID</th>
-                <th class="py-3 px-4 border text-center">Patient</th>
+                <th class="py-3 px-4 border text-center">Patient Name</th>
+                <th class="py-3 px-4 border text-center">Phone Number</th>
                 <th class="py-3 px-4 border text-center">Doctor</th>
                 <th class="py-3 px-4 border text-center">Date</th>
                 <th class="py-3 px-4 border text-center">Time</th>
@@ -39,6 +40,7 @@
                 <tr class="text-center text-xs">
                   <td class="px-4 py-2 border">{{ $appointment->id }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->patient_name ?? 'N/A' }}</td>
+                  <td class="px-4 py-2 border">{{ $appointment->phone_number ?? 'N/A' }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->doctor->name ?? 'N/A' }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->appointment_date }}</td>
                   <td class="px-4 py-2 border">{{ $appointment->appointment_time }}</td>
@@ -47,13 +49,9 @@
                   <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->created_at)->format('d-m-y h:i A') }}</td>
                   <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($appointment->updated_at)->format('d-m-y h:i A') }}</td>
                   <td class="px-3 py-2 border">
-                    @can('Appointment view')
-                      <a href="{{ route('admin.appointments.show', $appointment->id) }}"
-                         class="btn btn-sm btn-info mb-1">View</a>
-                    @endcan
                     @can('Appointment edit')
                       <a href="{{ route('admin.appointments.edit', $appointment->id) }}"
-                         class="btn btn-sm btn-warning mb-1">Edit</a>
+                         class="btn btn-sm btn-warning">Edit</a>
                     @endcan
                     @can('Appointment delete')
                       <form action="{{ route('admin.appointments.destroy', $appointment->id) }}"
@@ -86,7 +84,7 @@
     <script>
       $(document).ready(function () {
         $('#appointmentTable').DataTable({
-          order: [[0, 'asc']],
+          order: [[0, 'desc']],
         });
       });
     </script>
