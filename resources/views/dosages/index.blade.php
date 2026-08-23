@@ -45,13 +45,17 @@
                             </td>
                             <td>
                                 @can('Dosage edit')
-                                <a href="{{ route('admin.dosages.edit', $dosage->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="{{ route('admin.dosages.edit', $dosage->id) }}" class="text-decoration-none text-2xl px-3 py-1 text-blue-500" title="Edit Dosage">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
                                 @endcan
                                 @can('Dosage delete')
                                 <form action="{{ route('admin.dosages.destroy', $dosage->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                    <button type="submit" class="text-decoration-none text-2xl px-3 py-1 text-red-500" title="Delete Dosage" onclick="return confirm('Are you sure you want to delete this dosage?')">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
                                 </form>
                                 @endcan
                             </td>

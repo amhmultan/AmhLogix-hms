@@ -14,7 +14,7 @@
                     <tr>
                       <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light w-2/12">Role Name</th>
                       <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light w-8/12 text-center">Permissions</th>
-                      <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light w-3/12 text-center">Actions</th>
+                      <th class="py-4 px-6 bg-grey-lightest font-bold text-xl text-grey-dark border-b border-grey-light w-3/12 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -25,17 +25,21 @@
                         <td class="py-4 px-6 border-b border-grey-light text-center">
                               <span class="inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-white bg-gray-500 rounded-full">{{ $role->permissions->count() }}</span>
                         </td>
-                        <td class="py-4 px-6 border-b border-grey-light text-right">
+                        <td class="border-b border-grey-light text-center">
 
                           @can('Role edit')
-                          <a href="{{route('admin.roles.edit',$role->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-blue-400">Edit</a>
+                          <a href="{{route('admin.roles.edit',$role->id)}}" class="text-decoration-none text-1xl px-3 py-1 text-blue-500">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                          </a>
                           @endcan
 
                           @can('Role delete')
                           <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" class="inline">
                               @csrf
                               @method('delete')
-                              <button class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark text-red-400">Delete</button>
+                              <button class="text-decoration-none text-1xl px-3 py-1 text-red-500" type="submit" title="Delete Role" onclick="return confirm('Are you sure you want to delete this role?')">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                              </button>
                           </form>
                           @endcan
 

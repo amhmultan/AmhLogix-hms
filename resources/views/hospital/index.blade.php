@@ -51,14 +51,18 @@
                     <td class="text-nowrap text-xs px-3 border-grey-light">
                       
                       @can('HospitalConfig edit')
-                      <a href="{{route('admin.hospitals.edit',$hospital->id)}}" class="text-decoration-none text-grey-lighter font-bold py-1 px-3 rounded text-xs bg-green hover:bg-green-dark text-blue-400">Edit</a>
+                      <a href="{{route('admin.hospitals.edit',$hospital->id)}}" class="text-decoration-none text-2xl px-3 py-1 text-blue-500">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </a>
                       @endcan
   
                       @can('HospitalConfig delete')
                       <form action="{{ route('admin.hospitals.destroy', $hospital->id) }}" method="POST" class="inline">
                           @csrf
                           @method('delete')
-                          <button class="text-decoration-none text-grey-lighter font-bold py-1 px-1 rounded text-xs bg-blue hover:bg-blue-dark text-red-400">Delete</button>
+                          <button class="text-decoration-none text-2xl px-3 py-1 text-red-500" type="submit" title="Delete Hospital" onclick="return confirm('Are you sure you want to delete this hospital?')">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
                       </form>
                       @endcan
                     </td>

@@ -65,7 +65,13 @@
 
             @include('layouts.header')
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto" style="background-color: #dde5e6;">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto"
+                style="
+                    min-height: 100vh;
+                    background:linear-gradient(135deg,#f0f9ff 0%,#dbeafe 30%,#e0e7ff 55%,#ccfbf1 80%,#f0fdfa 100%);
+                    background-size: 400% 400%;
+                    animation: gradientMove 15s ease infinite;
+                ">
                 {{ $slot }}
             </main>
 

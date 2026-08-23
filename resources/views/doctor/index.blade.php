@@ -64,8 +64,9 @@
                   <td class="px-2 py-3 border">{{ $doctor->updated_at }}</td>
                   <td class="px-2 py-3 border">
                     @can('Doctor edit')
-                      <a href="{{ route('admin.doctors.edit', $doctor->id) }}"
-                         class="btn btn-sm btn-warning mb-1">Edit</a>
+                      <a href="{{ route('admin.doctors.edit', $doctor->id) }}" title="Edit Doctor" class="text-decoration-none text-2xl px-3 py-1 text-blue-500">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </a>
                     @endcan
 
                     @can('Doctor delete')
@@ -74,7 +75,9 @@
                             onsubmit="return confirm('Are you sure you want to delete this doctor?');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        <button type="submit" class="text-decoration-none text-2xl px-3 py-1 text-red-500" title="Delete Doctor" onclick="return confirm('Are you sure you want to delete this doctor?')">
+                          <i class="fa-solid fa-trash-can"></i>
+                        </button>
                       </form>
                     @endcan
                   </td>

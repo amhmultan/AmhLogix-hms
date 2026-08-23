@@ -172,11 +172,15 @@ class ProductController extends Controller
                     return \Carbon\Carbon::parse($row->updated_at)->format('d M Y');
                 })
                 ->addColumn('actions', function ($row) {
-                    $edit = '<a href="' . route('admin.products.edit', $row->id) . '" class="btn btn-sm btn-outline-primary me-1">Edit</a>';
+                    $edit = '<a href="' . route('admin.products.edit', $row->id) . '" class="text-decoration-none text-2xl px-3 py-1 text-blue-500" title="Edit Product">'
+                        . '<i class="fa-solid fa-pen-to-square"></i>'
+                        . '</a>';
                     $delete = '<form action="' . route('admin.products.destroy', $row->id) . '" method="POST" class="d-inline">'
                         . csrf_field()
                         . method_field('delete')
-                        . '<button type="submit" class="btn btn-sm btn-outline-danger">Delete</button></form>';
+                        . '<button type="submit" class="text-decoration-none text-2xl px-3 py-1 text-red-500" title="Delete Product" onclick="return confirm(\'Are you sure you want to delete this product?\')">'
+                        . '<i class="fa-solid fa-trash-can"></i>'
+                        . '</button></form>';
                     return $edit . $delete;
                 })
                 ->rawColumns(['status', 'actions'])
